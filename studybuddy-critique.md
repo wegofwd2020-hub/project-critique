@@ -1,6 +1,6 @@
 # StudyBuddy OnDemand — Code Review & Critique
 
-**Reviewed:** April 2026  
+**Reviewed:** April 2026 (v1.1 — updated to reflect clarified two-client architecture)  
 **Repos:** `wegofwd2020-hub/StudyBuddy_OnDemand` · `wegofwd2020-hub/studybuddy-docs`  
 **Phase:** Mid-build  
 **Rating key:** ✅ Strong · ⚠️ Gap / Risk · ❌ Critical Issue
@@ -11,7 +11,9 @@
 
 StudyBuddy OnDemand is a well-conceived platform. The architectural pivot from a device-side API-key model to a backend-driven pre-generated content model is the right call. The codebase shows experienced engineering instincts: structured logging with correlation IDs, Sentry PII scrubbing, Stripe idempotency, Auth0 JWKS caching, bcrypt in executor, and a CI pipeline with Bandit + pip-audit + Snyk. These are not beginner choices.
 
-The risks are primarily in the gaps: a 70% test coverage threshold that is low for a children's SaaS, synchronous Stripe calls inside an async router, a plain-dict JWKS cache with no TTL enforcement, two frontend clients (Kivy + Next.js) whose feature-parity cost has not been fully reckoned, and a filesystem content store that will break horizontal scaling before launch.
+The platform intentionally serves two distinct client audiences: the Kivy mobile app targets students (Grades 5–12) with a focused content consumption, offline-capable experience, while the Next.js web app serves teachers, admins, and school management workflows. This is a deliberate role-based client segmentation strategy, not a feature-parity problem.
+
+The risks are primarily in the gaps: a 70% test coverage threshold that is low for a children's SaaS, synchronous Stripe calls inside an async router, a plain-dict JWKS cache with no TTL enforcement, and a filesystem content store that will break horizontal scaling before launch.
 
 The documentation is strong. The scalability planning is genuinely impressive for a mid-build project.
 
@@ -29,7 +31,20 @@ The documentation is strong. The scalability planning is genuinely impressive fo
 
 ### Gaps & Risks
 
-⚠️ **Two active frontends.** A Kivy mobile client and a Next.js web client both exist in mid-build. Every feature now needs to be built and maintained twice. The Kivy mobile app makes sense for a future React Native or Flutter client, but the ongoing cost of feature parity across two runtimes (Python/Kivy vs TypeScript/React) should be explicitly decided. If Next.js is the primary path, Kivy should be frozen or deprecated.
+✅ **Role-based client segmentation is the correct design.** The Kivy mobile app and Next.js web app serve distinct audiences with deliberately different capability surfaces:
+
+| Client | Runtime | Audience | Capability Surface |
+|---|---|---|---|
+| Kivy mobile app | Python/Kivy | Students (Grades 5–12) | Content consumption, quizzes, progress, offline sync |
+| Next.js web app | TypeScript/React | Teachers, admins, parents, school management | Admin, analytics, reporting, roster, subscriptions |
+
+This is not a feature-parity problem — it is intentional scope separation. The mobile client is rightly kept lean and student-focused. Administrative complexity belongs on the web, not in a student's pocket. This pattern is well-established in EdTech SaaS (e.g., Google Classroom mobile vs. web).
+
+⚠️ **The mobile/web capability boundary should be formally documented.** As new features are added, there will be ambiguity about which client owns them (e.g., "should a student be able to manage their subscription from mobile?"). An explicit boundary document prevents scope creep and keeps each client focused. Include guidance on cross-client handoffs — e.g., a "Manage Subscription" button in the mobile app that deep-links to the web app rather than leaving students at a dead end.
+
+⚠️ **Cross-client auth continuity should be explicitly tested.** A student using both the mobile app and the web app must have the same JWT refresh flow, subscription entitlements, and progress state across both clients. This cross-client session continuity is not covered by any current test suite and should be a specific test scenario.
+
+⚠️ **Kivy's mobile packaging story is a long-term platform risk.** This is not a mid-build blocker, but worth tracking: Kivy's iOS/Android distribution via Buildozer is harder to maintain than React Native or Flutter as app complexity grows. The student experience is shaped heavily by the mobile client. At a future milestone (e.g., App Store submission or significant student growth), a platform assessment should evaluate whether Kivy remains the right choice or whether migration cost is justified.
 
 ⚠️ **Filesystem content store blocks horizontal scaling.** `CONTENT_STORE_PATH = "/data/content"` is a named Docker volume. This works on a single host with bind-mounted containers, but the moment a second API worker runs on a different host, both workers need access to the same content. The transition to S3 (already documented in `SCALABILITY.md`) must happen before the first real deployment, not after. Currently, this is a silent scalability cliff.
 
@@ -203,9 +218,11 @@ The documentation is strong. The scalability planning is genuinely impressive fo
 | P1 | Fix `upsert_student` to update `account_status` on conflict | Code Quality |
 | P1 | Add rate limiting to auth endpoints | Security |
 | P1 | Deduplicate `verify_auth0_token` / `verify_auth0_teacher_token` | Code Quality |
-| P2 | Decide on Kivy vs Next.js as primary client and freeze the other | Architecture |
+| P2 | Document the mobile/web capability boundary and cross-client handoff patterns | Architecture |
+| P2 | Add cross-client auth continuity tests (mobile + web same student session) | Testing |
 | P2 | Move Celery app definition out of `src.auth.tasks` | Code Quality |
 | P2 | Add E2E tests (Playwright) for core student flows | Testing |
 | P2 | Add `invoice.payment_action_required` Stripe webhook | Subscription |
 | P3 | Add a `Makefile` | DevEx |
 | P3 | Add runbooks for common failure scenarios | Operations |
+| P3 | Schedule Kivy platform assessment at App Store submission milestone | Architecture |
