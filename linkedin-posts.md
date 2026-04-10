@@ -8,8 +8,36 @@
 
 ## Table of Contents
 
+- [Headlines](#headlines)
 - [Executive Summaries (LinkedIn About)](#executive-summaries--linkedin-about)
 - [Posts](#posts)
+
+---
+
+## Headlines
+
+> LinkedIn headlines appear under your name everywhere on the platform — search results,
+> posts, comments, connection requests. No company names used; these work at any career
+> stage and remain accurate regardless of employment status.
+>
+> **Algorithm note:** LinkedIn surfaces profiles on keywords. Having `Enterprise Architect`,
+> `Cloud`, and `AI` in the headline helps with recruiter and client searches.
+> **Character limit:** 220 characters.
+
+---
+
+| # | Headline | Angle | Recommended when |
+|---|---|---|---|
+| 1 | Enterprise Architect — 30 years \| Problem Originator \| Compliance by Design \| AI-Native Platforms \| Available for Consulting | Full identity | Active consulting search |
+| 2 | Enterprise Architect \| I design platforms that enforce correct behaviour by structure, not by policy | Thought leadership hook | Strong general visibility |
+| 3 | Enterprise Architect who builds \| Cloud · AI-Native · Multi-Tenant SaaS · Regulated Industries | Builder identity | Product / startup audience |
+| 4 | Enterprise Architect \| Standards before code · Compliance at the data layer · 30 years across regulated environments | Standards & compliance | Regulated sector outreach |
+| 5 | Enterprise Architect — 30 years \| Available for Architecture Consulting & Advisory | Clean and direct | Open to opportunities signal |
+| 6 | Enterprise Architect \| I write the problem statement, then build the solution \| Cloud · AI · Compliance by Design | Problem originator | Innovation / CTO audience |
+| 7 | Enterprise Architect \| Cloud · Integration · AI-Native Platforms · Compliance by Design \| Open to Opportunities | Capability + availability | Active job search, keyword-rich |
+
+**Top pick for stopping the scroll:** Version 2
+**Top pick for search visibility:** Version 7
 
 ---
 
