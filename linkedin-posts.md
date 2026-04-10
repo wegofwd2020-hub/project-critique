@@ -1,4 +1,4 @@
-# LinkedIn Posts — Sivakumar (Siva) Mambakkam
+# LinkedIn Content — Sivakumar (Siva) Mambakkam
 
 **Purpose:** Professional visibility, consulting availability, thought leadership
 **Author:** Sivakumar (Siva) Mambakkam
@@ -6,7 +6,132 @@
 
 ---
 
-## Usage Notes
+## Table of Contents
+
+- [Executive Summaries (LinkedIn About)](#executive-summaries--linkedin-about)
+- [Posts](#posts)
+
+---
+
+## Executive Summaries — LinkedIn About
+
+> The LinkedIn About section is your profile's first impression. These versions are
+> written for different audiences and contexts. Swap them as your focus shifts —
+> active job search, consulting pipeline, thought leadership, or sector-specific outreach.
+> LinkedIn About supports up to 2,600 characters; all versions below are within that limit.
+
+---
+
+### Version A — The Full Picture
+*Best for: general visibility, senior roles, consulting. Covers the complete story.*
+
+---
+
+Thirty years of enterprise architecture across some of the most demanding environments in industry — Ford (autonomous vehicles and connected platforms), GM (infotainment and telematics), GE Aerospace (enterprise integration), and United Wholesale Mortgage (API governance and MLOps at mortgage scale).
+
+What ties all of it together: I come in where the business problem is real but the technical path is unclear, and I build the bridge between them. At Ford that meant defining how cloud services talk to a vehicle. At UWM it meant turning raw telemetry into KPIs that executives use to make capital allocation decisions.
+
+Over the past two years I took that same discipline and applied it to two products I conceived from scratch — not side projects, but production-grade platforms built to the same standards I apply in enterprise engagements.
+
+**StudyBuddy OnDemand** is a FERPA and COPPA-compliant AI tutoring SaaS for K-12 schools — where the AI content pipeline is completely separated from the student-facing API, schools subscribe as the primary billing entity, and compliance is enforced at the PostgreSQL layer, not the application layer.
+
+**Thittam** is a multi-tenant production management SaaS with a double-entry general ledger and a vertical plugin system that serves film production, construction, software teams, and event management from a single Go microservices codebase — because the financial model underneath is identical across all four; only the vocabulary changes.
+
+Building those taught me something I couldn't have learned purely from enterprise engagements: what it costs to make the wrong architectural call early, and how to design standards that hold up when you're the one who has to live with them.
+
+I'm available for architecture consulting and advisory engagements — platform modernisation, greenfield builds, and architecture governance. I engage where strategy and engineering meet.
+
+→ siva.mambakkam@gmail.com
+
+---
+
+### Version B — The Problem Originator
+*Best for: product companies, startups, innovation-focused roles. Leads with founder instinct.*
+
+---
+
+Most architects receive a problem statement. I write them.
+
+Thirty years across Ford, GM, GE Aerospace, and United Wholesale Mortgage — designing platforms for autonomous vehicles, enterprise integration, and regulated financial services — taught me to see where the architecture is missing before anyone asks.
+
+That instinct produced two independent platforms over the past two years.
+
+The first: no AI tutoring tool was built for schools as institutions. They were all consumer products — individual subscriptions, API keys on student devices, no FERPA compliance by design. I built StudyBuddy OnDemand to fix that: school-level billing, pre-generated AI content with no direct API exposure to students, and tenant isolation enforced at the database layer, not by application code.
+
+The second: film production, construction, software development, and event management all run on the same financial model — budget, actuals, approvals, reporting. Only the vocabulary differs. Thittam serves all four from one Go microservices codebase, with a double-entry general ledger and a YAML-driven vertical plugin system.
+
+Both were built to enterprise standards: codified engineering rules, Architecture Decision Records, compliance by design, and structured observability from day one.
+
+I bring this combination — enterprise-scale experience and the founder's instinct to own a problem end to end — to consulting engagements, advisory relationships, and senior architecture roles.
+
+→ siva.mambakkam@gmail.com
+
+---
+
+### Version C — The Regulated Industries Specialist
+*Best for: financial services, healthcare, aerospace, or any compliance-heavy sector.*
+
+---
+
+Compliance is not a checklist. It is an architecture decision.
+
+That is the conviction I have carried through 30 years in regulated environments — banking (United Wholesale Mortgage), aerospace (GE), healthcare (BCBSM), and automotive platforms where safety and security are non-negotiable.
+
+The practical difference: compliance enforced in a policy document depends on every developer remembering it under deadline pressure. Compliance enforced at the database layer, in the type system, or in a gRPC interceptor cannot be bypassed without changing the structure itself. I design for the second kind.
+
+That principle is embedded in both platforms I built independently in 2024–2026:
+
+**StudyBuddy OnDemand** — FERPA and COPPA controls enforced via PostgreSQL Row-Level Security. A forgotten WHERE clause still returns only that school's data. Compliance survives any application-layer bug because the database enforces it, not the code.
+
+**Thittam** — Financial data classified by sensitivity tier; T1 data (payroll, tax IDs) encrypted at the column level with AES-256-GCM. Audit trail is append-only by structural constraint — UPDATE and DELETE are revoked, not just discouraged.
+
+This approach — compliance as a first-class architectural constraint, enforced by structure rather than process — is what I bring to regulated platform builds, modernisation programs, and architecture governance engagements.
+
+→ siva.mambakkam@gmail.com
+
+---
+
+### Version D — The Engineering Standards Leader
+*Best for: CTOs, VP Engineering roles, or teams building platform foundations.*
+
+---
+
+Before I write a line of application code, I write the rules the code must follow.
+
+Not guidelines. Not aspirational best practices. Rules that every component must conform to — and that are enforced by the type system, the database schema, or the CI pipeline, not by hoping engineers remember them under pressure.
+
+Across two production platforms built independently over the past two years, I codified 17 non-negotiable engineering rules and 9 Architecture Decision Records before implementation began. Both platforms still conform to every one of them. The rules covered things most teams settle informally and regret later: monetary precision (never a float, anywhere in the stack), secret management (fail at startup if a required variable is missing), idempotency (every write safe to retry), and audit trails (append-only by structural constraint, not policy).
+
+That discipline comes from 30 years of enterprise architecture — Ford autonomous vehicle platforms, GE Aerospace integration, United Wholesale Mortgage API governance — where the cost of a wrong foundational decision is measured in quarters, not sprints.
+
+I work with engineering leaders who are building or modernising platforms and want the foundations done correctly the first time: standards that hold, contracts that are explicit, and compliance that survives the first production incident.
+
+If that is the problem you are working on, I would welcome a conversation.
+
+→ siva.mambakkam@gmail.com
+
+---
+
+### Version E — The Short Version
+*Best for: keeping the profile clean and letting the experience section carry the detail. Under 400 characters.*
+
+---
+
+Enterprise Architect — 30 years across Ford, GM, GE Aerospace, and United Wholesale Mortgage.
+
+I design platforms where compliance is enforced by structure, standards are codified before code, and the architecture holds under pressure.
+
+Most recently: two production-grade SaaS platforms built from problem statement to working software — AI-native, multi-tenant, regulated by design.
+
+Available for consulting and advisory engagements.
+
+→ siva.mambakkam@gmail.com
+
+---
+
+## Posts
+
+### Usage Notes
 
 | Post | Angle | Best for |
 |---|---|---|
