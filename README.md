@@ -12,8 +12,12 @@ Code review and architectural critique for StudyBuddy OnDemand and Thittam.
 
 | File | Project | Description |
 |---|---|---|
-| [studybuddy-critique.md](studybuddy-critique.md) | StudyBuddy OnDemand | FastAPI + Kivy + Next.js STEM tutoring SaaS |
-| [thittam-critique.md](thittam-critique.md) | Thittam | Go microservices multi-tenant production management SaaS |
+| [studybuddy-critique.md](studybuddy-critique.md) | StudyBuddy OnDemand | Code review — architecture, quality, security, scalability |
+| [thittam-critique.md](thittam-critique.md) | Thittam | Code review — architecture, quality, security, scalability |
+| [studybuddy-development-pattern.md](studybuddy-development-pattern.md) | StudyBuddy OnDemand | Full lifecycle analysis — scoping, design, architecture, development |
+| [thittam-development-pattern.md](thittam-development-pattern.md) | Thittam | Full lifecycle analysis — scoping, design, architecture, development |
+| [studybuddy-practices.md](studybuddy-practices.md) | StudyBuddy OnDemand | Good practices, bad practices, and how to improve |
+| [thittam-practices.md](thittam-practices.md) | Thittam | Good practices, bad practices, and how to improve |
 
 ---
 
