@@ -18,6 +18,7 @@ Code review and architectural critique for StudyBuddy OnDemand and Thittam.
 | [thittam-development-pattern.md](thittam-development-pattern.md) | Thittam | Full lifecycle analysis — scoping, design, architecture, development |
 | [studybuddy-practices.md](studybuddy-practices.md) | StudyBuddy OnDemand | Good practices, bad practices, and how to improve |
 | [thittam-practices.md](thittam-practices.md) | Thittam | Good practices, bad practices, and how to improve |
+| [elevator-pitch.md](elevator-pitch.md) | Siva Mambakkam | Elevator pitch for employers and consulting clients |
 
 ---
 
