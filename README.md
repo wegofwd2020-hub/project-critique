@@ -20,6 +20,7 @@ Code review and architectural critique for StudyBuddy OnDemand and Thittam.
 | [thittam-practices.md](thittam-practices.md) | Thittam | Good practices, bad practices, and how to improve |
 | [elevator-pitch.md](elevator-pitch.md) | Siva Mambakkam | Elevator pitch for employers and consulting clients |
 | [personality-review.md](personality-review.md) | Siva Mambakkam | Practice personality review — strengths, blind spots, and improvement plan |
+| [linkedin-posts.md](linkedin-posts.md) | Siva Mambakkam | Five LinkedIn posts — thought leadership, compliance, standards, availability |
 
 ---
 
