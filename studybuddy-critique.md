@@ -1,21 +1,41 @@
 # StudyBuddy OnDemand — Code Review & Critique
 
-**Reviewed:** April 2026 (v1.1 — updated to reflect clarified two-client architecture)  
+**Reviewed:** April 2026 (v1.2 — updated after P0/P1/P2 remediation pass)  
 **Repos:** `wegofwd2020-hub/StudyBuddy_OnDemand` · `wegofwd2020-hub/studybuddy-docs`  
-**Phase:** Mid-build  
+**Phase:** Late-build / pre-production  
 **Rating key:** ✅ Strong · ⚠️ Gap / Risk · ❌ Critical Issue
 
 ---
 
 ## Executive Summary
 
-StudyBuddy OnDemand is a well-conceived platform. The architectural pivot from a device-side API-key model to a backend-driven pre-generated content model is the right call. The codebase shows experienced engineering instincts: structured logging with correlation IDs, Sentry PII scrubbing, Stripe idempotency, Auth0 JWKS caching, bcrypt in executor, and a CI pipeline with Bandit + pip-audit + Snyk. These are not beginner choices.
+The P0 and P1 issues from the previous review have been closed. The three most serious risks — a filesystem content store that would have broken horizontal scaling, synchronous Stripe calls blocking the async event loop, and a JWKS cache with no TTL enforcement — are all resolved. The coverage threshold has been replaced with a per-module enforcement script that is strictly stronger than the old 70% floor. An application factory pattern eliminates the circular-import smell in `main.py`. Celery Beat's single-point-of-failure is gone thanks to RedBeat. An E2E suite now runs on every PR for the student critical path.
 
-The platform intentionally serves two distinct client audiences: the Kivy mobile app targets students (Grades 5–12) with a focused content consumption, offline-capable experience, while the Next.js web app serves teachers, admins, and school management workflows. This is a deliberate role-based client segmentation strategy, not a feature-parity problem.
+The platform has grown substantially since v1.1: PostgreSQL Row-Level Security (migration 0028) adds a tenant isolation layer, a full `StorageBackend` abstraction makes S3 a drop-in replacement for local storage, and the Auth0 management token is now Redis-cached rather than fetched on every call.
 
-The risks are primarily in the gaps: a 70% test coverage threshold that is low for a children's SaaS, synchronous Stripe calls inside an async router, a plain-dict JWKS cache with no TTL enforcement, and a filesystem content store that will break horizontal scaling before launch.
+The remaining risks are second-tier: E2E coverage is narrow (student paths only), no load tests exist, the mobile/web boundary is still undocumented, and COPPA compliance posture is implicit rather than documented. These are not blockers for a first deployment, but they are the right things to close next.
 
-The documentation is strong. The scalability planning is genuinely impressive for a mid-build project.
+---
+
+## What Changed Since v1.1
+
+| Item | Previous | Now |
+|---|---|---|
+| Content store | Filesystem-only, horizontal scaling cliff | `StorageBackend` abstraction; S3Storage production, LocalStorage dev |
+| Stripe async | Blocking calls inside async router | `run_stripe()` wrapper in `src/core/stripe_async.py`; used throughout |
+| JWKS TTL | Plain dict, TTL defined but not enforced | `cachetools.TTLCache` with `JWKS_CACHE_TTL_HOURS × 3600` TTL |
+| Coverage | Flat 70% floor | Per-module thresholds: auth/subscription=90%, content=85%, default=80% |
+| `upsert_student` | `account_status` not updated on conflict | CASE logic: suspended preserved, pending→active on re-register |
+| Rate limiting | Not visible in FastAPI layer | `src/core/rate_limit.py` Redis INCR/EXPIRE + `src/core/limiter.py` slowapi |
+| Auth0 token dedup | `verify_auth0_token` + `verify_auth0_teacher_token` duplicated | Shared `_verify_auth0_token(id_token, audience)` helper |
+| Celery app location | Lived in `src.auth.tasks` | `src/core/celery_app.py`; RedBeat for Beat SPOF resilience |
+| E2E tests | Absent | Playwright suite: 3 student critical paths in CI on every PR |
+| `invoice.payment_action_required` | Not handled | Webhook handler dispatches `send_payment_action_required_email_task` |
+| Circular imports in `main.py` | `# noqa: E402` on every router import | Application factory `src/core/app_factory.py`; `main.py` is now 5 lines |
+| Auth0 management token | Full OAuth exchange on every call | Redis-cached for 23h (1h buffer before Auth0's 24h expiry); auto-evict on 401 |
+| DB pool arithmetic | Silent misconfiguration risk | Logged at startup: `DATABASE_POOL_MAX × WORKER_COUNT` vs `PGBOUNCER_POOL_SIZE` |
+| SBOM | Absent | Syft generating SPDX + CycloneDX per CI run, retained 90 days |
+| API contract | No drift check | OpenAPI → TypeScript type re-gen checked on every PR |
 
 ---
 
@@ -23,36 +43,23 @@ The documentation is strong. The scalability planning is genuinely impressive fo
 
 ### Strengths
 
-- **Pre-generation model is smart.** Moving Claude API calls to an offline pipeline eliminates per-student latency and removes the biggest cost unpredictability of a live-generation model.
+- **Pre-generation model is smart.** Moving Claude API calls to an offline pipeline eliminates per-student latency and removes cost unpredictability.
 - **Clear layering.** `backend/`, `mobile/`, `pipeline/`, `web/`, `infra/` are distinct with explicit boundaries.
-- **PgBouncer in transaction-pooling mode.** The `statement_cache_size=0` comment in `main.py` demonstrates awareness of the prepared-statement incompatibility with PgBouncer — a detail many teams miss until production.
-- **Auth model is correct.** Anthropic API key lives only in backend environment. Students register with email/password. Auth0 handles IdP concerns.
-- **Phased delivery is well-documented.** The migration path from free tier to subscription is clean.
+- **PgBouncer in transaction-pooling mode.** `statement_cache_size=0` correctly configured; pool arithmetic logged at startup with headroom check.
+- **Auth model is correct.** Anthropic API key lives only in the backend environment. Auth0 handles IdP. Stripe keys never reach the client.
+- **`StorageBackend` abstraction is production-ready.** `LocalStorage` for dev (all I/O via `asyncio.to_thread`), `S3Storage` for production (boto3 via thread executor, pre-signed audio URLs). Selected at startup by `STORAGE_BACKEND` env var. Callers never construct filesystem paths or S3 keys directly.
+- **PostgreSQL Row-Level Security (migration 0028).** RLS enabled on 7 tables with a `tenant_isolation` policy. `get_db()` stamps `app.current_school_id` per request; fixtures use a bypass value for test isolation. Defence-in-depth beyond application-layer access checks.
+- **Role-based client segmentation is the correct design.** Kivy mobile for students (content, quizzes, offline), Next.js web for teachers/admins/school management. Intentional scope separation, not a feature-parity gap.
 
 ### Gaps & Risks
 
-✅ **Role-based client segmentation is the correct design.** The Kivy mobile app and Next.js web app serve distinct audiences with deliberately different capability surfaces:
+⚠️ **The mobile/web capability boundary is still undocumented.** As features are added, decisions about which client owns them will be made ad hoc. An explicit boundary document (e.g., "subscription management is web-only; mobile shows a deep-link to web settings") prevents scope creep and ensures students are never left at a dead end.
 
-| Client | Runtime | Audience | Capability Surface |
-|---|---|---|---|
-| Kivy mobile app | Python/Kivy | Students (Grades 5–12) | Content consumption, quizzes, progress, offline sync |
-| Next.js web app | TypeScript/React | Teachers, admins, parents, school management | Admin, analytics, reporting, roster, subscriptions |
+⚠️ **No API versioning or deprecation policy.** There is no documented process for introducing `/api/v2` or deprecating `/v1`. For a SaaS with a mobile client that users may not update promptly, this will cause incidents. A policy needs to be written before the first public release.
 
-This is not a feature-parity problem — it is intentional scope separation. The mobile client is rightly kept lean and student-focused. Administrative complexity belongs on the web, not in a student's pocket. This pattern is well-established in EdTech SaaS (e.g., Google Classroom mobile vs. web).
+⚠️ **Auth0 client exists in mobile but mobile uses internal JWT.** `mobile/src/auth/auth0_client.py` exists alongside `mobile/src/auth/token_store.py`. The README says students register with email/password + JWT, not Auth0 directly. The mobile client's Auth0 dependency should either be removed or its role clarified.
 
-⚠️ **The mobile/web capability boundary should be formally documented.** As new features are added, there will be ambiguity about which client owns them (e.g., "should a student be able to manage their subscription from mobile?"). An explicit boundary document prevents scope creep and keeps each client focused. Include guidance on cross-client handoffs — e.g., a "Manage Subscription" button in the mobile app that deep-links to the web app rather than leaving students at a dead end.
-
-⚠️ **Cross-client auth continuity should be explicitly tested.** A student using both the mobile app and the web app must have the same JWT refresh flow, subscription entitlements, and progress state across both clients. This cross-client session continuity is not covered by any current test suite and should be a specific test scenario.
-
-⚠️ **Kivy's mobile packaging story is a long-term platform risk.** This is not a mid-build blocker, but worth tracking: Kivy's iOS/Android distribution via Buildozer is harder to maintain than React Native or Flutter as app complexity grows. The student experience is shaped heavily by the mobile client. At a future milestone (e.g., App Store submission or significant student growth), a platform assessment should evaluate whether Kivy remains the right choice or whether migration cost is justified.
-
-⚠️ **Filesystem content store blocks horizontal scaling.** `CONTENT_STORE_PATH = "/data/content"` is a named Docker volume. This works on a single host with bind-mounted containers, but the moment a second API worker runs on a different host, both workers need access to the same content. The transition to S3 (already documented in `SCALABILITY.md`) must happen before the first real deployment, not after. Currently, this is a silent scalability cliff.
-
-⚠️ **All Celery workers point to `src.auth.tasks`.** In `docker-compose.yml`, `celery-worker`, `celery-pipeline`, and `celery-beat` all use `-A src.auth.tasks`. The Celery application definition living in the `auth` module is a naming smell that will cause confusion. Consider a dedicated `src/core/celery_app.py` or `src/workers/app.py`.
-
-⚠️ **No API versioning beyond `/api/v1`.** There is no documented policy for how `/api/v2` would be introduced or how `/v1` would be deprecated. For a SaaS with a mobile client (which users may not upgrade promptly), this will matter before production.
-
-⚠️ **Auth0 client exists in mobile but mobile uses JWT.** `mobile/src/auth/auth0_client.py` exists alongside `mobile/src/auth/token_store.py`. The README says students register with email/password + JWT, not Auth0 directly. The mobile client's Auth0 dependency should either be removed or its role clarified.
+⚠️ **Kivy's mobile packaging story is a long-term platform risk.** Not a pre-launch blocker, but worth tracking. Kivy/Buildozer distribution for iOS/App Store is fragile at scale. Schedule a platform assessment before App Store submission.
 
 ---
 
@@ -61,24 +68,23 @@ This is not a feature-parity problem — it is intentional scope separation. The
 ### Strengths
 
 - **Structured logging everywhere.** `get_logger()` consistently used; correlation IDs attached per request via `CorrelationIdMiddleware`.
-- **Sentry PII scrubbing.** The `_before_send` hook strips `data`, `email`, `password`, `token`, `refresh_token`, `id_token` before sending to Sentry. Well done.
-- **bcrypt in executor.** `hash_password()` and `verify_password()` run via `loop.run_in_executor()`, avoiding event-loop blocking on CPU-bound hashing.
-- **JWKS key rotation handling.** On key-not-found, the cache is evicted and JWKS is re-fetched once before failing. This handles Auth0 key rotations gracefully.
+- **Sentry PII scrubbing.** `_before_send` strips `data`, `email`, `password`, `token`, `refresh_token`, `id_token` before sending to Sentry.
+- **bcrypt in executor.** `hash_password()` and `verify_password()` run via `loop.run_in_executor()`, keeping the event loop unblocked.
+- **JWKS key rotation handling.** On key-not-found, the TTLCache entry is evicted and JWKS is re-fetched once before failing.
 - **JWT validation is thorough.** Separate student/teacher audience validation, `jti` claim on every token, minimum 32-character secrets enforced at startup.
-- **Ruff + Bandit + pre-commit.** The CI pipeline lint/security gate is excellent.
-- **`secrets_must_differ` validator.** Pydantic model validator that prevents `JWT_SECRET == ADMIN_JWT_SECRET` is a thoughtful defence.
+- **`secrets_must_differ` validator.** Prevents `JWT_SECRET == ADMIN_JWT_SECRET` at startup.
+- **Stripe calls are non-blocking.** `run_stripe(fn, *args, **kwargs)` dispatches any SDK callable to the thread pool executor via `functools.partial`. Existing `try/except` blocks need no changes. Used consistently throughout `subscription/router.py`.
+- **JWKS TTL is now enforced.** `cachetools.TTLCache(maxsize=10, ttl=JWKS_CACHE_TTL_HOURS * 3600)` — revoked signing keys are evicted automatically.
+- **`_verify_auth0_token` is deduplicated.** Single `_verify_auth0_token(id_token, audience)` helper; student and teacher paths differ only in the `audience` argument.
+- **`upsert_student` correctly handles `account_status` on conflict.** CASE logic: `suspended` is preserved unconditionally; `pending` → `active` when the incoming registration doesn't require consent; otherwise existing status is kept. The original correctness bug is fixed.
+- **Application factory pattern.** `src/core/app_factory.py` owns lifespan, middleware, exception handlers, and router registration. `main.py` is now 5 lines. The `# noqa: E402` circular-import workaround is gone.
+- **Ruff + Bandit + pre-commit + pip-audit + Snyk.** CI lint/security gate is solid.
 
 ### Gaps & Risks
 
-⚠️ **Stripe calls are synchronous in an async router.** The `router.py` docstring explicitly notes: *"Stripe API calls are made synchronously (Stripe SDK is sync). For production load, consider wrapping in run_in_executor."* This is not a hypothetical — under concurrent load, each Stripe call will block the event loop for the duration of the HTTP round-trip. This should be fixed before any real traffic, not left as a comment.
+⚠️ **No API changelog or deprecation policy is enforced in CI.** The OpenAPI → TypeScript drift check catches contract drift, but there is no semver enforcement or automated check that `/api/v1` routes are not silently removed. Pair with a route-existence test or a documented deprecation gate.
 
-⚠️ **JWKS cache has no TTL enforcement.** `jwks_cache` is a plain `dict` imported from `src.core.cache`. There is no TTL. The cache will hold the JWKS indefinitely until the process restarts or a key-not-found triggers eviction. `JWKS_CACHE_TTL_HOURS` is defined in `config.py` but there is no code that enforces it. Use `cachetools.TTLCache` or a Redis-backed TTL.
-
-⚠️ **`verify_auth0_token` and `verify_auth0_teacher_token` are 90% duplicated.** Both functions share identical JWKS fetch, key search, and decode logic, differing only in the `audience` parameter. Refactor into a single `_verify_auth0_token(id_token, audience)` helper.
-
-⚠️ **`upsert_student` does not update `account_status` on conflict.** The `ON CONFLICT DO UPDATE` clause updates `name`, `email`, `grade`, `locale` — but not `account_status`. A student who first registered with `requires_parental_consent=True` (status=`pending`) will remain `pending` forever if they later re-register from a context where consent is no longer required. This is a user-facing correctness bug.
-
-⚠️ **Router imports at the bottom of `main.py`.** The `# noqa: E402` on every router import acknowledges the issue. Circular imports are driving this pattern. Resolve the circular dependency by restructuring imports or using an application factory pattern.
+⚠️ **Docstring style is inconsistent.** Some modules use NumPy-style, some Google-style, some plain prose. Consolidate on one style to enable automated API doc generation.
 
 ---
 
@@ -86,24 +92,27 @@ This is not a feature-parity problem — it is intentional scope separation. The
 
 ### Strengths
 
-- **22 backend test files covering all major modules.** `test_auth`, `test_content`, `test_subscription`, `test_progress`, `test_school`, `test_enrolment`, `test_notifications`, `test_pipeline`, `test_curriculum`, `test_feedback`, `test_reports` and more.
-- **Real Postgres in CI.** Alembic migrations are applied to `studybuddy_test` before tests run. This catches schema drift and migration errors.
-- **`fakeredis` for Redis.** No live Redis required in CI; consistent and fast.
-- **Mobile tests exist.** `test_event_queue`, `test_local_cache`, `test_sync_manager`, `test_i18n` — the offline-sync logic is tested.
-- **Token factory pattern.** `tests/helpers/token_factory.py` provides deterministic test JWTs, avoiding the Auth0 mock being spread across tests.
-- **CI threshold enforced.** `--cov-fail-under=70` prevents regression.
+- **Real Postgres in CI.** Alembic migrations applied to `studybuddy_test` before every run. Schema drift and migration errors are caught early.
+- **`fakeredis` for Redis.** No live Redis required; consistent and fast.
+- **Token factory pattern.** `tests/helpers/token_factory.py` provides deterministic JWTs; Auth0 mock is not scattered across tests.
+- **Per-module coverage thresholds enforced.** `scripts/check_coverage_thresholds.py` applies longest-prefix-wins matching: `src/auth/` = 90%, `src/subscription/` = 90%, `src/school/subscription` = 90%, `src/content/` = 85%, default = 80%. Runs in CI after pytest.
+- **Playwright E2E suite on every PR.** `web/tests/e2e/student_flow.spec.ts` covers 3 student critical paths: public landing page, curriculum map → lesson navigation, and the full learning loop (lesson → quiz → result screen → progress history). Runs in `e2e.yml` on every pull request.
+- **Broad backend test file coverage.** `test_auth`, `test_content`, `test_subscription`, `test_progress`, `test_school`, `test_enrolment`, `test_notifications`, `test_pipeline`, `test_curriculum`, `test_feedback`, `test_reports`, `test_rls`, and more — 215+ passing tests.
+- **RLS isolation tests.** `test_rls.py` verifies cross-tenant data isolation using deterministic school UUIDs.
+- **Mobile logic tests exist.** `test_event_queue`, `test_local_cache`, `test_sync_manager`, `test_i18n` cover offline-sync logic.
+- **SBOM generated per CI run.** Syft produces SPDX + CycloneDX artifacts retained 90 days — relevant for school-district procurement.
 
 ### Gaps & Risks
 
-⚠️ **70% coverage threshold is too low for a children's SaaS.** Financial operations (subscriptions, entitlements), authentication, and progress tracking directly affect students and billing. The threshold should be raised to at least 80% overall, with 90%+ required for `src/auth/`, `src/subscription/`, and `src/progress/`.
+⚠️ **E2E coverage is narrow.** The Playwright suite covers student paths only. No E2E tests exist for teacher admin flows (roster management, reports, alerts), school admin flows (subscription, billing), or the subscription checkout flow. These are high-value paths with real money and student data at stake.
 
-⚠️ **No end-to-end tests.** There is no Playwright or Cypress suite. The CI pipeline tests the backend API and the frontend unit tests separately but there are no integrated user-flow tests (e.g., student registers → accesses lesson → submits quiz → sees progress → subscribes). For a SaaS, this is a significant gap.
+⚠️ **No load or performance tests.** `SCALABILITY.md` projects specific request volumes, but there are no k6, Locust, or wrk scripts to validate them. Without load tests, the DB pool sizing, Redis TTL assumptions, and S3 throughput assumptions are theoretical.
 
-⚠️ **No load or performance tests.** The `SCALABILITY.md` is thoughtful, but there are no k6, Locust, or wrk scripts to validate that the system actually handles the projected load. The Stripe sync call issue (above) is an example of a problem that would only show up under load.
+⚠️ **Mobile UI screens are not tested.** The mobile test suite covers logic (EventQueue, LocalCache, SyncManager) but not Kivy UI screens. Visual regressions in `CurriculumMapScreen`, `SubjectScreen`, and `QuizScreen` go undetected.
 
-⚠️ **Mobile UI screens are not tested.** The mobile test suite covers logic (`EventQueue`, `LocalCache`, `SyncManager`) and i18n, but not any of the Kivy UI screens. This means visual regressions in `CurriculumMapScreen`, `SubjectScreen`, `QuizScreen`, etc. go undetected.
+⚠️ **Pipeline tests likely mock the Anthropic API.** Without a recorded-response fixture or a stub, `test_pipeline.py` may have limited coverage of the actual content generation and S3 storage path.
 
-⚠️ **Pipeline tests likely mock the Anthropic API.** Without a stub or recorded response, `test_pipeline.py` may have limited coverage of the actual content generation and storage path.
+⚠️ **No cross-client auth continuity tests.** A student using both the mobile app and the web app must share JWT refresh behaviour, subscription entitlements, and progress state. This scenario has no dedicated test coverage.
 
 ---
 
@@ -111,21 +120,21 @@ This is not a feature-parity problem — it is intentional scope separation. The
 
 ### Strengths
 
-- **Separate docs repo with comprehensive content.** `studybuddy-docs` contains: `ARCHITECTURE.md`, `BACKEND_ARCHITECTURE.md`, `REQUIREMENTS.md`, `SCALABILITY.md`, `TESTING_SETUP.md`, `OPERATIONS.md`, `PRODUCTION_DEPLOYMENT.md`, `PHASE1_SETUP.md`, `COST_PLAN.md`, `MARKETING_PLAN.md`, `UX_GOALS.md`, `WEB_FRONTEND_PLAN.md`, `GLOSSARY.md`, `AGENTS.md` — 16+ files covering the full product surface.
-- **`CLAUDE.md` in the code repo.** Excellent practice for AI-assisted development: Claude Code picks up context from this file on every session.
-- **Module-level docstrings.** Every `router.py`, `service.py`, and `main.py` has a docstring listing its endpoints, security model, and key functions. This is the right level of documentation for a production codebase.
-- **`CHANGES.md` for changelog.** Version tracking is in place.
-- **`StudyBuddy_VC_Deck_Final.md` in docs repo.** Business context alongside technical docs — useful for onboarding non-engineers.
+- **Separate docs repo.** `studybuddy-docs` contains `ARCHITECTURE.md`, `BACKEND_ARCHITECTURE.md`, `REQUIREMENTS.md`, `SCALABILITY.md`, `TESTING_SETUP.md`, `OPERATIONS.md`, `PRODUCTION_DEPLOYMENT.md`, `COST_PLAN.md`, `MARKETING_PLAN.md`, `GLOSSARY.md`, `AGENTS.md`, and more — 16+ files covering the full product surface.
+- **`CLAUDE.md` in the code repo.** Claude Code picks up context automatically on every session.
+- **Module-level docstrings.** Every `router.py`, `service.py`, and `app_factory.py` has a docstring listing endpoints, security model, and key functions.
+- **`CHANGES.md` is maintained.** The ADR-001 entry documents the school-as-primary-entity architecture decisions (migrations 0024–0028) with file-level change tables. This is the right level of fidelity.
+- **`StudyBuddy_VC_Deck_Final.md` in docs repo.** Business context alongside technical docs.
 
 ### Gaps & Risks
 
-⚠️ **No `CONTRIBUTING.md` in the code repo.** How to set up locally, how to run tests, branch conventions, PR checklist — all absent from the code repo. (`AGENTS.md` in the docs repo partially fills this for AI agents, not humans.)
+⚠️ **No `CONTRIBUTING.md`.** Local setup, test invocation, branch conventions, PR checklist — absent from the code repo. `AGENTS.md` in the docs repo covers AI agents, not human contributors.
 
-⚠️ **`DEV_ACCOUNTS.md` is in a public docs repo.** If this file contains real credentials, demo account details, or internal system usernames, it is a security risk. Audit this file immediately.
+❌ **`DEV_ACCOUNTS.md` in a public docs repo requires immediate audit.** If this file contains real credentials, demo account usernames/passwords, or internal system identifiers, it is an active security exposure. Audit and redact or move to a private location. This was flagged in v1.1 as ⚠️ — the severity is ❌ because a public repo with real credentials is an incident, not a gap.
 
-⚠️ **No API changelog or deprecation policy.** When the mobile app is in the wild with users who don't auto-update, breaking `/api/v1` endpoint changes will cause incidents. A documented deprecation process (e.g., "v1 endpoints supported for 6 months after v2 launch") is needed before the first public release.
+⚠️ **No API deprecation policy.** Documented process for `/api/v1` → `/v2` migration, sunset timelines, and mobile-client grace periods is needed before public launch.
 
-⚠️ **Docstrings are not in a consistent format.** Some use NumPy-style, some use Google-style, some use plain prose. For OpenAPI compliance (per your preferences), consolidate on one style and add return-type annotations to all public functions.
+⚠️ **Docstring style is inconsistent.** See Code Quality above.
 
 ---
 
@@ -135,24 +144,26 @@ This is not a feature-parity problem — it is intentional scope separation. The
 
 - **Anthropic API key never reaches the client.** Architecturally enforced.
 - **`detect-secrets` baseline.** `.secrets.baseline` prevents accidental secret commits.
-- **Stripe webhook signature validation.** Webhook handler verifies Stripe signature before processing.
+- **Stripe webhook signature validation.** Signature verified before processing.
 - **Swagger/ReDoc disabled in production.** `docs_url=None` when `APP_ENV == "production"`.
-- **Parental consent flow for minors.** `requires_parental_consent` flag with `account_status=pending` is a thoughtful COPPA-adjacent design.
+- **Parental consent flow for minors.** `requires_parental_consent` flag with `account_status=pending`; now correctly updated on re-registration.
 - **GDPR erasure path.** `delete_auth0_user()` and account deletion flow exist.
-- **Forgot-password always returns 200.** Prevents email enumeration attacks.
+- **Forgot-password always returns 200.** Prevents email enumeration.
 - **Bandit + pip-audit + Snyk.** Three layers of dependency and SAST scanning in CI.
+- **Rate limiting on auth endpoints.** Redis-backed `ip_auth_rate_limit` dependency (10 req/60 s per IP). Avoids the known slowapi/Pydantic v2 decorator incompatibility by using `Depends()` instead.
+- **JWKS TTL enforced.** Revoked signing keys are evicted automatically.
+- **Auth0 management token cached.** 23h Redis TTL (1h buffer before Auth0's 24h expiry). Auto-evict and retry on 401.
+- **RLS as defence-in-depth.** Even if application-layer access checks are bypassed, cross-tenant data exposure is blocked at the database layer.
 
 ### Gaps & Risks
 
-⚠️ **No rate limiting visible in the FastAPI layer.** There is an `nginx.conf` in `infra/` but its rate-limiting configuration was not reviewed. The demo account endpoints (`DEMO_MAX_ACTIVE=100`) have a hard cap but there appears to be no per-IP or per-endpoint rate limiting on auth routes. Brute-force login, OTP enumeration, and demo-slot exhaustion attacks are possible without this.
+⚠️ **Dev router misconfiguration risk is partially mitigated but not fully closed.** The dev router is registered only when `APP_ENV == "development"`. The app factory does not assert that `APP_ENV ∈ {"development", "staging", "production"}` at startup. If a staging or production deployment has `APP_ENV` unset or misspelled, it defaults to `development` and the dev router is live. Add an explicit startup assertion.
 
-⚠️ **`JWKS_CACHE_TTL_HOURS=1` is set but not enforced.** See Code Quality above. If the JWKS cache never expires, a revoked signing key will remain trusted until the process restarts.
+⚠️ **No Content Security Policy (CSP) or HSTS verified.** For a platform serving minors, CSP is a baseline compliance requirement. Verify these headers are set in the nginx/ALB configuration.
 
-⚠️ **Dev router registers in development mode only — but what if `APP_ENV` is misconfigured?** The dev router (which presumably exposes unsafe endpoints) is gated by `settings.APP_ENV == "development"`. If a staging or production deployment accidentally has `APP_ENV=development`, these endpoints are live. Add a startup assertion that `APP_ENV in {"development", "staging", "production"}` and that the dev router is disabled in staging and production even if the flag is set.
+⚠️ **COPPA compliance is implicit, not documented.** The parental consent flow, data minimisation, and `delete_auth0_user` GDPR path exist in code, but there is no written COPPA compliance policy covering: verifiable parental consent for under-13 users, data retention limits, third-party data sharing disclosures, and safe harbours. School districts and US parents will ask for this document before deployment. Draft a COPPA compliance statement.
 
-⚠️ **`_get_mgmt_token()` fetches a new Auth0 Management token on every call.** `block_auth0_user()` and `delete_auth0_user()` each call `_get_mgmt_token()` which makes a full OAuth client_credentials exchange. This token should be cached with a TTL slightly shorter than its expiry to avoid unnecessary round-trips and rate-limit exposure.
-
-⚠️ **No Content Security Policy (CSP) or HSTS in the nginx configuration reviewed.** For a platform serving minors, CSP is a compliance baseline. Verify these headers are configured.
+⚠️ **Rate limiting is per-worker, not cross-worker.** `src/core/limiter.py` (slowapi) uses in-process state. The Redis-backed `ip_auth_rate_limit` dependency correctly shares state across workers, but the two implementations should not coexist without clarity on which is canonical for which endpoint. Consolidate on the Redis-backed dependency for all auth-facing routes.
 
 ---
 
@@ -160,23 +171,21 @@ This is not a feature-parity problem — it is intentional scope separation. The
 
 ### Strengths
 
-- **Excellent `SCALABILITY.md`.** Growth tiers (Launch → Growth → Scale → Global), request volume estimates, infrastructure scaling triggers with specific metrics and thresholds — this is production-grade capacity planning.
-- **Three-level caching architecture.** L1 (in-process), L2 (Redis), L3 (Postgres). The `95% cache hit rate` assumption is validated against the request volume model.
-- **PgBouncer in transaction-pooling mode.** Allows far more concurrent API workers than a direct Postgres connection pool.
-- **Celery queues are separated.** `io`, `default`, and `pipeline` queues allow independent scaling of task types.
-- **Pre-generated content.** At scale, serving a JSON file from cache/CDN is near-zero cost per request vs. a live Claude API call.
+- **Excellent `SCALABILITY.md`.** Growth tiers, specific metric thresholds, infrastructure triggers — production-grade capacity planning.
+- **Three-level caching.** L1 (`cachetools.TTLCache` per worker), L2 (Redis), L3 (Postgres).
+- **PgBouncer in transaction-pooling mode.** Pool arithmetic logged at startup with headroom check.
+- **Celery queues are separated.** `io`, `default`, `pipeline` — independent scaling per task type.
+- **S3 content store.** Pre-signed URLs served directly from S3/CDN. Near-zero API load per lesson fetch at scale.
+- **Celery Beat SPOF is resolved.** RedBeat (celery-redbeat) stores schedule state in Redis. Primary and standby Beat instances compete for a Redis lock; failover is automatic within one `REDBEAT_LOCK_TIMEOUT` window.
+- **`DATABASE_POOL_MAX × WORKER_COUNT` headroom check at startup.** Misconfiguration is surfaced before serving traffic.
 
 ### Gaps & Risks
 
-⚠️ **Content store must move to S3 before any horizontal scaling.** This is the most critical scalability gap. See Architecture section above.
+⚠️ **No load or performance tests.** See Testing above. The S3 path, Redis cache hit rates under concurrent load, and Celery queue depth under peak pipeline runs are all theoretical without a load test suite.
 
-⚠️ **Celery Beat is a SPOF.** A single `celery-beat` instance manages all scheduled tasks (digest, alerts, grade promotion). If it crashes and is not restarted quickly, scheduled jobs are silently missed. Use `celery-redbeat` (Redis-backed) or a Kubernetes CronJob for resilience.
+⚠️ **`DATABASE_POOL_MAX=20` × worker count must be kept below `PGBOUNCER_POOL_SIZE`.** The startup log warns, but there is no hard assertion that fails startup when the arithmetic is wrong. An assertion in `app_factory.py` lifespan would catch misconfiguration before it causes connection exhaustion in production.
 
-⚠️ **Stripe calls are synchronous in the async router.** Under concurrent subscription checkouts, these calls will degrade throughput. Wrap in `loop.run_in_executor()` immediately.
-
-⚠️ **No rate-limiting configuration visible.** At scale, auth endpoints (especially `/auth/exchange`) will attract automated traffic. Without rate limiting enforced at the API or nginx layer, the database and Auth0 quota can be exhausted.
-
-⚠️ **`DATABASE_POOL_MAX=20` per worker may need tuning.** With PgBouncer's `DEFAULT_POOL_SIZE=50`, a four-worker API deployment (4 × 20 = 80 connections) exceeds the pool. Ensure `DATABASE_POOL_MAX × worker_count < pgbouncer.DEFAULT_POOL_SIZE`.
+⚠️ **Rate limiting is cross-worker only on the Redis path.** The slowapi in-process limiter does not share state across workers. Under a four-worker deployment, an attacker can make 4 × 10 = 40 requests per minute before being blocked. The Redis-backed `ip_auth_rate_limit` dependency is the correct implementation; the slowapi limiter should be removed from auth routes or its scope restricted to non-critical endpoints.
 
 ---
 
@@ -184,26 +193,30 @@ This is not a feature-parity problem — it is intentional scope separation. The
 
 ### DevEx & Tooling
 
-✅ `local-setup.sh` and `docker-compose.yml` are well-structured with health checks and proper service ordering.  
-✅ The `dev_start.sh` convenience script is a good onboarding aid.  
+✅ `local-setup.sh` and `docker-compose.yml` are well-structured with health checks and service ordering.  
+✅ `dev_start.sh` convenience script lowers onboarding friction.  
 ✅ `dependabot.yml` for automated dependency updates.  
-⚠️ No `Makefile` — common commands (run tests, lint, migrate, build pipeline) require either remembering Docker commands or reading the docs. A `Makefile` would lower the friction significantly.
+✅ API contract drift check (OpenAPI → TypeScript) in CI prevents silent breakage.  
+✅ SBOM artifacts (SPDX + CycloneDX) generated per CI run — useful for procurement.  
+⚠️ No `Makefile`. Common commands (test, lint, migrate, build pipeline) require reading Docker docs. A `Makefile` with targets like `make test`, `make lint`, `make migrate` would lower the friction significantly.
 
 ### Operational Readiness
 
 ✅ `/health` and `/metrics` endpoints exist.  
-✅ Sentry integration for error tracking.  
-✅ Structured logs make them queryable in CloudWatch/Datadog.  
-⚠️ No documented alerting rules or runbooks for common failures (DB connection exhaustion, Redis OOM, Stripe webhook backlog, pipeline failure).  
-⚠️ No documented rollback procedure. The Alembic `downgrade` path should be tested for each migration.
+✅ Sentry integration with PII scrubbing.  
+✅ Structured logs with correlation IDs.  
+✅ RedBeat gives Beat resilience without manual intervention.  
+⚠️ No documented alerting rules or runbooks for common failures: DB connection exhaustion, Redis OOM, Stripe webhook backlog, Beat lock expiry, pipeline failure.  
+⚠️ No documented Alembic `downgrade` testing. With 36 migrations, the rollback path for the most recent migration should be verified before each production deploy.
 
 ### SaaS Subscription Model Specific
 
 ✅ Stripe webhook deduplication (`already_processed`) is correct.  
-✅ Grace period (3 days) for `past_due` subscriptions is a good UX decision.  
-✅ Entitlement cache is invalidated on every subscription state change.  
-⚠️ There is no webhook for `invoice.payment_action_required` (3D Secure / SCA). European students on Stripe will encounter this. Add a handler.  
-⚠️ No documented process for handling Stripe test → live key rotation.
+✅ Grace period (3 days) for `past_due` subscriptions is good UX.  
+✅ Entitlement cache invalidated on every subscription state change.  
+✅ `invoice.payment_action_required` now handled — SCA/3DS email dispatched to school admin with hosted invoice URL.  
+⚠️ No documented process for Stripe test → live key rotation.  
+⚠️ School-as-primary billing (ADR-001) removed individual student and private-teacher subscription paths. Verify that all legacy subscription webhook events (from the old `subscriptions` table) are either handled gracefully or that no live subscriptions remain on the old schema before launch.
 
 ---
 
@@ -211,18 +224,18 @@ This is not a feature-parity problem — it is intentional scope separation. The
 
 | Priority | Action | Area |
 |---|---|---|
-| P0 | Enforce content store on S3 before any multi-host deployment | Architecture |
-| P0 | Wrap Stripe SDK calls in `run_in_executor` | Code Quality |
-| P0 | Enforce JWKS TTL using `TTLCache` or Redis | Security |
-| P1 | Raise coverage threshold to 80%; require 90% for auth/subscription/progress | Testing |
-| P1 | Fix `upsert_student` to update `account_status` on conflict | Code Quality |
-| P1 | Add rate limiting to auth endpoints | Security |
-| P1 | Deduplicate `verify_auth0_token` / `verify_auth0_teacher_token` | Code Quality |
-| P2 | Document the mobile/web capability boundary and cross-client handoff patterns | Architecture |
+| ❌ P0 | Audit `DEV_ACCOUNTS.md` in public docs repo — redact or move immediately | Security |
+| P1 | Add startup assertion: `APP_ENV ∈ {"development", "staging", "production"}` | Security |
+| P1 | Draft COPPA compliance statement covering under-13 consent, data retention, third-party disclosures | Security/Legal |
+| P1 | Consolidate rate limiting: remove slowapi in-process limiter from auth routes; use Redis-backed `ip_auth_rate_limit` only | Security |
+| P1 | Expand E2E suite: teacher admin flows, subscription checkout, school admin flows | Testing |
+| P2 | Add load tests (k6 or Locust) for content fetch, auth exchange, and concurrent quiz submission | Testing |
+| P2 | Document the mobile/web capability boundary with cross-client handoff patterns | Architecture |
 | P2 | Add cross-client auth continuity tests (mobile + web same student session) | Testing |
-| P2 | Move Celery app definition out of `src.auth.tasks` | Code Quality |
-| P2 | Add E2E tests (Playwright) for core student flows | Testing |
-| P2 | Add `invoice.payment_action_required` Stripe webhook | Subscription |
+| P2 | Add a hard startup assertion when `DATABASE_POOL_MAX × WORKER_COUNT ≥ PGBOUNCER_POOL_SIZE` | Scalability |
+| P2 | Verify ADR-001 legacy Stripe webhook cleanup — no live subscriptions on old schema | Subscription |
 | P3 | Add a `Makefile` | DevEx |
-| P3 | Add runbooks for common failure scenarios | Operations |
+| P3 | Add runbooks: DB exhaustion, Redis OOM, Stripe webhook backlog, Beat lock expiry | Operations |
+| P3 | Document Alembic `downgrade` testing procedure | Operations |
 | P3 | Schedule Kivy platform assessment at App Store submission milestone | Architecture |
+| P3 | Write API deprecation policy for `/api/v1` → `/v2` migration | Architecture |
