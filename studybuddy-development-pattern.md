@@ -1,8 +1,10 @@
 # StudyBuddy OnDemand — Scoping, Design, Architecture & Development Pattern
 
-**Document type:** Development pattern analysis  
-**Scope:** Full lifecycle — from idea to mid-build production system  
-**Period:** 2025–2026  
+**Document type:** Development pattern analysis
+**Scope:** Full lifecycle — from idea to late-build production system
+**Period:** 2025–2026
+**Last refresh:** May 2026 (v1.3 — adds the visual-library wave cadence as a development pattern, Pivot 7 helpers-toolkit, and the resolver-eval feedback loop)
+**Prior:** v1.2 April 2026 (Epic 10 governance, Epic 11 content formatting, Streams registry, Playwright persona expansion)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
 
 ---
@@ -40,10 +42,10 @@ studybuddy_free (v1) — Device-side model
 └─────────────────────────────────────────┘
 ```
 
-The earliest scratch pad conversations reveal a very hands-on, UI-first iteration style:
+The earliest scratch-pad conversations reveal a hands-on, UI-first iteration style:
 
 - "The drop down does not show the 'title' to choose to learn"
-- "There are too many empty rows in the screen, can this be reduced?"
+- "Too many empty rows in the screen, can this be reduced?"
 - "When I load the application I see two icons for help on the right-hand bottom"
 - "Now for actual testing with my personal email id and a real API Key — how do I protect this from over usage?"
 
@@ -106,15 +108,31 @@ Layer 9 — Retention and lifecycle
   "1-year curriculum retention per school.
    School admin controls renewal or expiry.
    Storage cost model."
+        │
+        ▼
+Layer 10 — Curriculum governance (Epic 10, shipped 2026)
+  "Platform owns a canonical library; schools own their custom curricula.
+   Archive/unarchive with in-use gating. Audit every lifecycle action.
+   Retention sweeper paused — storage cost tail accepted for now."
+        │
+        ▼
+Layer 11 — Content presentation standard (Epic 11, shipped 2026)
+  "Every subject renders correctly: Commerce tables, Maths KaTeX,
+   Science reactions, attributed quotes. Format drift is detectable."
+        │
+        ▼
+Layer 12 — Content identity (Streams, shipped 2026)
+  "Curricula belong to streams (science, commerce, humanities, english, stem).
+   Soft registry — rename/merge as data, not schema."
 ```
 
 ### 2.2 The Scope Constraint Rule
 
 Each layer's scope was bounded by a practical question: *what is the smallest thing we can ship that validates this layer?*
 
-This manifested as the Phase model. Before any code was written for a new capability, the user articulated requirements in plain language and the scope was captured as a phase goal:
+This manifested as the Phase model, later extended by Epic numbering as the product matured past the initial phases:
 
-| Phase | Scope question answered |
+| Phase / Epic | Scope question answered |
 |---|---|
 | 1 | Can the backend stand up and serve authenticated content? |
 | 2 | Can the pipeline generate and serve English content? |
@@ -127,6 +145,10 @@ This manifested as the Phase model. Before any code was written for a new capabi
 | 9 | Can a school roster restrict student access? |
 | 10 | Can we measure learning quality? |
 | 11 | Can teachers see their class's performance? |
+| Epic 1 | Can multiple LLM providers back the pipeline? |
+| Epic 8 | Can curricula belong to streams? |
+| Epic 10 | Can platform and school content coexist with per-party governance? |
+| Epic 11 | Can every subject render its content with the correct formatting? |
 
 ### 2.3 Requirements Format
 
@@ -137,12 +159,13 @@ Requirements were never captured in a formal spec template. They emerged from co
 > 2) Students will need to register...
 > 3) Subscription service can be monthly or annual..."
 
-This conversational requirements style worked because each item was immediately challenged for scope clarity. The question "Is renewal free or paid?" was answered with a precise billing model:
+This conversational requirements style worked because each item was immediately challenged for scope clarity. The discipline was: no feature entered implementation without a clear answer to *who pays, who controls, and who sees it*.
 
-> "Renewal or extending the expiry date of content should cost only the storage space.
->  New version of same curriculum means cost of Anthropic usage + storage space of new content."
+For Epic 10, the scoping question was:
 
-The discipline was: no feature entered implementation without a clear answer to *who pays, who controls, and who sees it*.
+> "Platform admins own the default curricula. School admins own their own. What happens if a school admin archives a curriculum that has active students? What happens if a platform admin tries to modify a school curriculum? What happens when retention expires?"
+
+The archive-gating on `is_curriculum_in_use` and the RESTRICTIVE RLS on platform curricula fell directly out of those questions.
 
 ---
 
@@ -166,13 +189,11 @@ studybuddy-docs/
   GLOSSARY.md              ← Term definitions.
 ```
 
-The CLAUDE.md in the code repo served as a live operational reference — not documentation of what *should* be built, but documentation of what *is* built and how to work with it.
+The `CLAUDE.md` in the code repo served as a live operational reference — not documentation of what *should* be built, but documentation of what *is* built and how to work with it. Refreshed 2026-04-15 to cover Epic 8, Epic 10 L-1..L-5, Epic 11 C-1..C-9.
 
 ### 3.2 Architecture Decision Records
 
 Architectural pivots were captured as ADRs in the `docs/` directory of the code repo. ADR-001 is the canonical example — it resolved three foundational questions that had accumulated conflicting implementations:
-
-**ADR-001 structure:**
 
 ```
 Context  → Three foundational questions had conflicting code
@@ -192,12 +213,12 @@ The single most important design decision in StudyBuddy is the **separation of t
 ┌─────────────────────────────────────────────────────────────────────┐
 │  CONTEXT 1: Content Pipeline (offline, operator-run)                 │
 │                                                                       │
-│  build_grade.py ──▶ Anthropic API ──▶ Content Store                 │
+│  build_grade.py ──▶ Anthropic API ──▶ Content Store (S3/local)      │
 │                │         │                    │                      │
-│                │    TTS Provider         S3/filesystem               │
-│                │         │             (JSON + MP3 + meta.json)      │
+│                │    TTS Provider         JSON + MP3 + meta.json      │
+│                │         │                                            │
 │                └─── PostgreSQL                                        │
-│                  (curriculum units)                                   │
+│                  (curriculum units, streams, jobs)                   │
 └─────────────────────────────────────────────────────────────────────┘
             (no runtime connection to Context 2 or 3)
 
@@ -211,10 +232,8 @@ The single most important design decision in StudyBuddy is the **separation of t
 │   └─────────────────────────────────────────────┘                   │
 │       │             │                   │                             │
 │  PostgreSQL       Redis            Content Store                     │
-│  (subscriptions, (entitlement,     (serving JSON                     │
-│   progress,       rate limits,      via pre-signed                   │
-│   curricula,      session)          URL or API)                      │
-│   schools)                                                           │
+│  (subs, progress, (entitlement,     (reads via StorageBackend        │
+│   curricula, RLS) rate limits)       abstraction — Local/S3)        │
 └─────────────────────────────────────────────────────────────────────┘
             (never calls Anthropic; reads Content Store read-only)
 
@@ -233,7 +252,7 @@ The single most important design decision in StudyBuddy is the **separation of t
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-This separation answers the original problem permanently: no student device ever holds an Anthropic API key, and the API server never blocks on AI generation.
+This separation answers the original problem permanently: no student device holds an Anthropic API key, and the API server never blocks on AI generation.
 
 ### 3.4 Client Segmentation by Persona
 
@@ -261,6 +280,8 @@ The decision to have two distinct frontend clients was intentional from Phase 7 
 
 This is not a feature-parity gap — it is deliberate scope separation. Administrative complexity does not belong in a student's mobile interface.
 
+Epic 3 (Path B — Expo/React Native) is chosen as the future student mobile path. Kivy remains until Path B activates.
+
 ### 3.5 Caching Strategy Design
 
 The caching strategy was designed as a first principle, not retrofitted:
@@ -272,14 +293,14 @@ Request: GET /content/{unit_id}/lesson
 L1: cachetools TTLCache (per-worker, in-process)
     ├── JWT JWKS keys         TTL: 1h
     ├── curriculum tree        TTL: 5m
-    └── vertical config        TTL: 5m
+    └── stream registry        TTL: 5m   ← added for Epic 8 streams
          │ miss
          ▼
 L2: Redis (shared across workers)
-    ├── ent:{student_id}       TTL: 5m   (entitlement)
-    ├── cur:{student_id}       TTL: 5m   (curriculum resolver)
-    ├── school:{id}:ent:{sid}  TTL: 5m   (school-scoped entitlement)
-    └── content:{unit_id}:{v}  TTL: 60m  (content JSON)
+    ├── ent:{student_id}       TTL: 5m
+    ├── cur:{student_id}       TTL: 5m
+    ├── school:{id}:ent:{sid}  TTL: 5m
+    └── content:{unit_id}:{v}  TTL: 60m
          │ miss
          ▼
 L3: PostgreSQL
@@ -291,6 +312,33 @@ L4: CloudFront CDN (audio and large JSON)
 ```
 
 Invalidation rules were equally explicit: L2 Redis and CDN must be invalidated together on content version bump. TTL expiry alone is not sufficient for correctness-critical data.
+
+### 3.6 Content Presentation Standard (Epic 11)
+
+The Epic 11 design decision was that content presentation quality is a platform concern, not a per-lesson concern. The design moved in three pieces:
+
+```
+1. Universal + per-subject prompt guidelines  (pipeline/prompts.py)
+   │
+   │  Every prompt carries:
+   │  ├── Table formatting rules (GFM alignment markers)
+   │  ├── LaTeX delimiters ($...$ inline, $$...$$ display)
+   │  ├── Currency escape rules (\$ or ISO code)
+   │  ├── Attributed blockquote rules (em-dashed, verifiable only)
+   │  └── Subject-specific overrides (Commerce tables, Maths KaTeX, ...)
+   │
+2. Shared renderer (web/components/content/Markdown.tsx)
+   │
+   │  One SBMarkdown component; four inline <ReactMarkdown> copies
+   │  consolidated. Plugins: remark-gfm, remark-math, rehype-katex.
+   │
+3. Format-drift validator (pipeline/content_format_validator.py)
+   │
+   │  Emits a warning when a section title suggests tabular/formula
+   │  content but the output lacks tables or KaTeX.
+```
+
+The discipline: encoded rules in the prompt, enforced rules in the renderer, detected drift in the validator.
 
 ---
 
@@ -322,6 +370,8 @@ Internet
     │  /api/v1/auth/     /api/v1/content/  │
     │  /api/v1/progress/ /api/v1/school/   │
     │  /api/v1/admin/    /api/v1/demo/     │
+    │  /api/v1/admin/streams               │
+    │  /api/v1/admin/curricula/{id}/...    │
     └─────┬──────────────────┬─────────────┘
           │                  │
     ┌─────┴──┐          ┌────┴────┐
@@ -337,10 +387,11 @@ Internet
     │  celery-default  (subscription,     │
     │                   cache invalidate) │
     │  celery-pipeline (content build,    │
-    │                   TTS)              │
+    │                   TTS, --stream)    │
     │  celery-beat     (grade promotion,  │
     │                   retention alerts, │
-    │                   digests)          │
+    │                   digests) via      │
+    │                   RedBeat           │
     └─────┬───────────────────────────────┘
           │
     ┌─────┴──────────────────────────────┐
@@ -352,7 +403,7 @@ Internet
 
 ### 4.2 Database Schema Pattern
 
-The schema grew from a single-user model to a multi-tenant school model across 29 migrations. The pattern followed a clear sequence:
+The schema grew from a single-user model through 48 migrations. The pattern followed a clear sequence:
 
 ```
 Migrations 0001–0011  (Phase 1–11 schema)
@@ -385,6 +436,30 @@ Migration 0028  (PostgreSQL RLS — ADR-001 Decision 3)
 Migration 0029  (Lesson Retention Service)
   curricula ← adds retention_status, expires_at, grace_until
   school_storage_quotas · grade_curriculum_assignments
+
+Migrations 0030–0042  (Phase 10–11 dashboard + feedback + reports)
+
+Migration 0043  (Epic 1 — multi-provider pipeline)
+  provider column on content_subject_versions + pipeline_jobs
+
+Migration 0044  (Epic 8 — streams column)
+  nullable stream_code on curricula, students, teachers
+
+Migration 0045  (Epic 8 — streams registry)
+  streams table (5 system seeds, no FK from curricula)
+
+Migration 0046  (Epic 10 L-1 — platform write-guard)
+  3 RESTRICTIVE RLS policies on curricula
+  Block INSERT/UPDATE/DELETE on owner_type='platform' rows
+  unless app.current_school_id='bypass'
+
+Migration 0047  (Epic 10 L-3 — retention)
+  retention_status='archived' CHECK + partial index
+  (sweeper implementation L-6 paused)
+
+Migration 0048  (Hotfix)
+  Drop stale RLS policies from L-1 debug draft
+  on curriculum_units / content_subject_versions
 ```
 
 The pattern: **schema migrations are the commit history of architectural decisions**. Each migration corresponds to a design decision, not just a database change.
@@ -405,7 +480,7 @@ Incoming Request
          ▼                      ▼
   POST /auth/exchange    POST /admin/auth/login
   ├── JWKS verify        ├── bcrypt verify
-  │   (L1 cached)        │   (run_in_executor)
+  │   (L1 TTLCache)      │   (run_in_executor)
   ├── upsert_student()   └── issue JWT
   └── issue internal JWT     (ADMIN_JWT_SECRET)
          │
@@ -413,12 +488,13 @@ Incoming Request
   Internal JWT payload
   Student:  {student_id, grade, locale, role:"student", exp}
   Teacher:  {teacher_id, school_id, role:"teacher|school_admin", exp}
-  Admin:    {admin_id, role:"developer|product_admin|...", exp}
+  Admin:    {admin_id, role:"developer|product_admin|super_admin|...", exp}
          │
          ▼
   Middleware checks
   ├── signature verify (per-role secret)
   ├── suspended:{id} Redis check
+  ├── Redis-backed ip_auth_rate_limit (10 req/60s)
   └── RLS: SET LOCAL app.current_school_id (teacher requests)
          │
          ▼
@@ -431,32 +507,36 @@ Incoming Request
 Operator (offline)
       │
       ▼
-  build_grade.py --grade 8 --lang en,fr,es
+  build_grade.py --grade 8 --lang en,fr,es [--stream science] [--force] [--dry-run]
   build_unit.py  --curriculum-id UUID --unit G8-MATH-001
   OR
   POST /admin/pipeline/trigger → Celery job
       │
       ▼
-  prompts.py → _call_claude() [max_tokens=8192]
+  prompts.py — inject universal + per-subject formatting rules
+      │
+      ▼
+  _call_claude() [max_tokens=16384, optional streaming via --stream]
       │
       ├── JSON schema validation (3 retries on failure)
       ├── AlexJS content moderation scan
-      ├── TTS: lesson text → MP3 (via Polly/Google TTS)
+      ├── content_format_validator.py — emit format_drift warnings
+      ├── TTS: lesson text → MP3 (Polly/Google TTS)
       └── idempotency: check meta.json before generating
       │
       ▼
-  Content Store write
-  {CONTENT_STORE_PATH}/curricula/{curriculum_id}/{unit_id}/
+  Content Store write (via StorageBackend interface)
+  {path}/curricula/{curriculum_id}/{unit_id}/
     lesson_en.json    quiz_set_1_en.json    tutorial_en.json
     lesson_fr.json    quiz_set_2_en.json    experiment_en.json
     lesson_en.mp3     meta.json
       │
       ▼
-  DB write: content_subject_versions (status='pending')
+  DB write: content_subject_versions (status='pending', stream_code)
       │
       ▼
   Admin Content Review Queue
-  ├── Review → Version Detail → Unit Viewer
+  ├── Review → Version Detail → Unit Viewer (SBMarkdown renders)
   ├── Inline annotations (compound key: unit_id::type::section_id)
   ├── Version diff (word-level highlighting)
   └── Actions: Approve / Reject / Publish / Rollback / Block
@@ -464,7 +544,7 @@ Operator (offline)
 
 ### 4.5 Multi-Tenancy Model
 
-After ADR-001, the tenancy model is PostgreSQL Row-Level Security:
+After ADR-001, the tenancy model is PostgreSQL Row-Level Security. Epic 10 extended this to governance:
 
 ```
 School A Request                    School B Request
@@ -478,16 +558,48 @@ SET LOCAL app.current_school_id     SET LOCAL app.current_school_id
   = 'aaa...'                          = 'bbb...'
       │                                   │
       ▼                                   ▼
-PostgreSQL RLS policy               PostgreSQL RLS policy
-USING (school_id =                  USING (school_id =
-  current_setting(                    current_setting(
-    'app.current_school_id')            'app.current_school_id')
-  ::uuid)                             ::uuid)
+PostgreSQL RLS policy (0028)        Same policy enforces isolation
       │                                   │
       ▼                                   ▼
-Only School A rows visible          Only School B rows visible
+PostgreSQL RLS policy (0046)        Same policy:
+  Block writes on                   - School A and B can read platform
+  owner_type='platform' unless        curricula
+  session = 'bypass'                - Neither can modify platform rows
+      │                                   │
+      ▼                                   ▼
+Only permitted rows visible         Only permitted rows visible
 (DB-enforced, not app-enforced)     (DB-enforced, not app-enforced)
 ```
+
+### 4.6 Streams Governance Architecture
+
+Streams are a soft registry — identity for curricula without a schema-enforced FK:
+
+```
+streams table (migration 0045):
+  code         VARCHAR PK    ← stable identifier
+  display_name VARCHAR       ← editable
+  is_system    BOOLEAN       ← true for 5 seeds (science, commerce, …)
+  is_archived  BOOLEAN       ← soft-delete
+  curriculum_count INT       ← recomputed by service on change
+
+curricula table:
+  stream_code  VARCHAR       ← no FK; soft reference to streams.code
+
+Upsert on upload:
+  POST /admin/pipeline/trigger?stream_display_name=...
+    → streams_router._upsert_by_display_name()
+    → INSERT ... ON CONFLICT (display_name) DO UPDATE
+    → returns canonical code for curriculum assignment
+
+Merge endpoint (lifecycle cleanup):
+  POST /admin/streams/{code}/merge?target={other_code}
+    → UPDATE curricula SET stream_code = target WHERE stream_code = code
+    → archive the source stream
+    → audit: stream.merge event
+```
+
+Why soft? Renaming a stream would otherwise require a schema migration across every curriculum row and every attached student/teacher assignment. As a data operation, the change is bounded and reversible.
 
 ---
 
@@ -495,7 +607,7 @@ Only School A rows visible          Only School B rows visible
 
 ### 5.1 The Phase-Based Delivery Model
 
-Development was structured as 11 sequential phases, each phase gated by a working test suite. The test count grew monotonically:
+Development was structured as 11 sequential phases, each phase gated by a working test suite. The test count grew monotonically; after Phase 11, Epic-numbered delivery took over:
 
 ```
 Phase  1:  38 tests  ← Backend Foundation
@@ -509,7 +621,14 @@ Phase  8: 159 tests  ← School + Teacher + Curriculum Upload
 Phase  9: 176 tests  ← Student–School Association
 Phase 10: 197 tests  ← Extended Analytics + Feedback
 Phase 11: 215 tests  ← Teacher Reporting Dashboard
-Post-11: 215+ tests  ← ADR-001 + Demo Teacher + RLS
+Post-11:  215+      ← ADR-001 + Demo Teacher + RLS
+Epic 1:   ~450      ← multi-provider pipeline + fixtures
+Epic 8:   ~600      ← streams + governance groundwork
+Epic 10:  ~750      ← curriculum lifecycle governance + RLS test expansion
+Epic 11:  ~835      ← content formatting tests + renderer tests
+
+Current: 835 test functions across 59 files.
+E2E:     16 Playwright spec files, 2,620 LOC.
 ```
 
 The phase model enforced a discipline: **you do not start Phase N+1 until Phase N's tests pass**.
@@ -535,7 +654,7 @@ Seven performance rules were written into CLAUDE.md as constraints, not guidelin
 | Rule | Constraint |
 |---|---|
 | Hot read path | Zero DB queries on cache-warm requests |
-| Event loop | Never blocked — asyncpg, aioredis, httpx everywhere |
+| Event loop | Never blocked — asyncpg, aioredis, httpx, run_stripe(), run_in_executor everywhere |
 | Audio | Never proxied — return pre-signed CDN URL |
 | Progress writes | Fire-and-forget Celery — never await on request path |
 | Connection pools | Initialised once per worker in lifespan context |
@@ -547,32 +666,41 @@ Seven performance rules were written into CLAUDE.md as constraints, not guidelin
 ```
 Backend tests
 ├── pytest + httpx.AsyncClient (no live network)
-├── Mock PostgreSQL via pytest-asyncio fixture
+├── Mock PostgreSQL via pytest-asyncio fixture; real Postgres in CI via Alembic
 ├── fakeredis (no live Redis)
 ├── Mock Stripe SDK
 ├── Mock Auth0 (token factory in tests/helpers/token_factory.py)
 ├── Deterministic UUIDs in all fixtures
-└── CI threshold: --cov-fail-under=70 (identified as too low; target 80%)
+├── RLS isolation verified via test_rls.py
+└── Per-module coverage thresholds: auth/subscription 90%, content 85%, default 80%
 
 Mobile tests
 ├── Logic only: SyncManager, LocalCache, ProgressQueue, i18n loader
-└── No Kivy widget tests (gap)
+└── No Kivy widget tests (gap — pending Epic 3 Path B activation)
 
 Pipeline tests
 ├── Mocked Anthropic SDK
 ├── Mocked TTS provider
-└── Tests schema validation logic and idempotency
+├── Tests schema validation logic and idempotency
+└── format_drift validator has its own coverage
+
+E2E tests (Playwright)
+├── 16 spec files / 2,620 LOC
+├── Student critical path (293 LOC)
+├── Persona accessibility (student/teacher/admin/school-admin — 276+319+232+327 LOC)
+├── Auth, landing, pricing, admin portal
+└── School-admin-curriculum-flow has 6 fixme'd scenarios (issue #188)
 ```
 
 ### 5.5 The CLAUDE.md Operational Pattern
 
-The CLAUDE.md file in the code repo was maintained as a living document and read at the start of every session. It served as:
+The CLAUDE.md file in the code repo is maintained as a living document and read at the start of every session. It serves as:
 
-1. **Phase status dashboard** — which phases are complete, what's active
+1. **Phase / Epic status dashboard** — which phases are complete, what's active (refreshed 2026-04-15 for Epic 10 L-1..L-5 + Epic 11 C-1..C-9)
 2. **Repository layout map** — where every file lives and why
 3. **Layer rules** — dependency direction (enforced by convention)
 4. **Non-negotiable rules** — performance, security, content, compliance
-5. **Top pitfalls** — 22 known failure modes, written as they were discovered
+5. **Top pitfalls** — known failure modes, written as discovered
 6. **Running reference** — exactly how to start, test, build, and deploy
 
 This document is the most important artefact in the project. It replaced the need for onboarding sessions.
@@ -594,6 +722,7 @@ pydantic-settings (config.py)
 
 .env.example documents all required vars
 .secrets.baseline (detect-secrets) prevents git commits with secrets
+Git tag `dev-accounts-repair-2026-04-14` marks DEV_ACCOUNTS.md remediation.
 ```
 
 ### 5.7 CI Pipeline
@@ -611,6 +740,7 @@ Push to branch
 │  pip-audit           ← dependency CVEs     │
 │  snyk test           ← advanced vuln scan  │
 │  detect-secrets      ← secret scanning     │
+│  OpenAPI → TS drift  ← contract drift      │
 └─────────────────────────────────────────────┘
       │ all pass
       ▼
@@ -618,12 +748,61 @@ Push to branch
 │  Test suite                                  │
 │                                              │
 │  alembic upgrade head (studybuddy_test DB)  │
-│  pytest --cov --cov-fail-under=70           │
+│  pytest --cov                                │
+│  scripts/check_coverage_thresholds.py       │
+│    ← per-module 90/85/80 enforcement        │
+│  Syft SBOM generation (SPDX + CycloneDX)    │
+└─────────────────────────────────────────────┘
+      │ pass
+      ▼
+┌─────────────────────────────────────────────┐
+│  E2E (on every PR)                           │
+│                                              │
+│  Playwright — chromium-project (86 specs)    │
+│  Persona specs (35 specs)                    │
 └─────────────────────────────────────────────┘
       │ pass
       ▼
   PR mergeable
 ```
+
+---
+
+### 5.8 The Three-Phase Wave Cadence (Visual-Library Pattern, Epic #326)
+
+Epic #326 imposed a 3-phase pattern on every sub-issue, repeated 10 times in the May 2026 wave:
+
+```
+Phase 1 — Catalogue
+   ├── generate_<class>_visuals.ts (SVG primitives + assets)
+   ├── append SidecarSpec[] entries to seed_library_sidecars.ts
+   └── commit + push
+
+Phase 2 — Remotion clip (optional but routine)
+   ├── sample_content/<grade>/<unit>/Option3_Video/
+   │     package.json · tsconfig.json · remotion.config.ts
+   │     src/index.ts · src/Root.tsx · src/theme.ts
+   │     src/scenes/*.tsx (lift primitives from Phase 1)
+   ├── bunx remotion render → MP4
+   └── commit + push
+
+Phase 3 — Library promotion + eval
+   ├── seed_library_local.py → UPSERT 144 entries with embeddings
+   ├── append eval-NNN records to backend/tests/eval/visual_resolver_eval.jsonl
+   ├── run_resolver_eval.py → precision@1 / recall@k report
+   ├── MEMO.md (per-unit reflection for #320 lift)
+   └── close GH issue
+```
+
+**Why this works.** Each phase is shippable on its own. Phase 1 alone closes the issue if the unit doesn't warrant a clip. Phase 2 rides on Phase 1's primitives — `secantLine` from `generate_derivatives_visuals.ts` lifts verbatim into the Remotion `<SecantLine>` scene. Phase 3 measures whether the resolver actually surfaces the new entries — without it, you've authored content blind. Side-issues encountered during the wave (#338 resolver eval KeyError, #339 docker-cp dance) get filed and closed *inside* the wave, not queued.
+
+**The shared-theme pattern.** All 9 Remotion clips share `src/theme.ts` palette/typography conventions — title/body fonts, primary/accent/danger colours, AbsoluteFill spacing. The compositions are visually consistent without per-clip styling work.
+
+**The cumulative-phase integral pattern.** For time-evolving simulations (oscillations, optics, derivatives, waves) the React-Remotion convention is `useCurrentFrame()` → integrate the time-derivative explicitly per-frame, never re-derive from scratch. Used in 6 of the 9 clips.
+
+**Compression evidence.** First-of-class shipping (#327 oscillations) consumed ~3h. Same-class downstream (#328 G9 kinematics) landed in ~45 min. Estimated wave wall-time ~19 FTE-days; actual ~14h 56m — driven by ritual, not by primitive sharing (most SVGs are class-specific).
+
+**Sticky cross-class primitives ready for #320 component lift.** `<LeaderLabel />`, `<DotCluster />`, `<MotionStrip />`, `<Spring />`, `<RotatingPoint />`, `<EmittedParticle />`, `<SpinArrow />`, `<SecantLine />` — these recurred across ≥2 clips during the wave and are the natural first batch to factor into a shared Remotion component library.
 
 ---
 
@@ -635,11 +814,11 @@ Push to branch
 |---|---|
 | Student holds Anthropic API key | API key lives in pipeline/backend env only |
 | Content generated on demand (per request) | Content pre-generated offline by operator |
-| No cost control | Spend cap in pipeline ($50 default) |
+| No cost control | Spend cap in pipeline |
 | No version management | Versioned content with approve/publish/rollback |
 | studybuddy_free | StudyBuddy_OnDemand |
 
-**Driver:** "How do I protect from over usage?" — a single question that invalidated the entire model.
+**Driver:** "How do I protect from over usage?"
 
 ### Pivot 2 — Individual Subscriptions to School-as-Primary-Entity (ADR-001)
 
@@ -651,7 +830,7 @@ Push to branch
 | Individual `subscriptions` table | `school_subscriptions` table only |
 | App-layer tenant filtering | PostgreSQL RLS (database-enforced) |
 
-**Driver:** "The School/Institution is the primary entity. The teacher is a member of a single school." — a clarification from a requirements conversation that required removing 3 migrations worth of code.
+**Driver:** "The School/Institution is the primary entity. The teacher is a member of a single school."
 
 ### Pivot 3 — App-layer Tenant Isolation to PostgreSQL RLS
 
@@ -661,15 +840,61 @@ Push to branch
 | Shared instance, app-layer filtering | Rejected: isolation relies on bug-free code |
 | Shared instance, PostgreSQL RLS | Accepted |
 
-**Driver:** FERPA and COPPA compliance requirements. RLS provides a provable isolation guarantee to security auditors that app-layer filtering cannot.
+**Driver:** FERPA and COPPA compliance. RLS provides a provable isolation guarantee.
 
-### Decision Point — Filesystem to S3 (Deferred but Documented)
+### Pivot 4 — Filesystem to StorageBackend Abstraction (Completed)
 
-The content store began as `CONTENT_STORE_PATH=/data/content` (Docker volume). The decision to move to S3 was explicitly deferred but documented as a known scalability cliff:
+The content store began as `CONTENT_STORE_PATH=/data/content` (Docker volume). The transition to S3 was originally deferred but documented as a scalability cliff. In v1.2 this was resolved via the `StorageBackend` abstraction (`LocalStorage` for dev, `S3Storage` for production). Horizontal scaling is now a config flip, not an architectural change.
 
-> "The transition to S3 (already documented in SCALABILITY.md) must happen before the first real deployment, not after."
+### Pivot 5 — Ad-Hoc Curriculum Mutations to Platform-vs-School Governance (Epic 10)
 
-This is a good example of the pattern: **defer infrastructure decisions that can be changed without schema changes, but document them as explicit blockers before they become incidents**.
+| Before Epic 10 | After Epic 10 |
+|---|---|
+| Any admin could modify any curriculum | Platform write-guard via RESTRICTIVE RLS |
+| No distinction between platform-owned and school-owned content | `owner_type` column + RLS |
+| Archive was ad hoc | Archive/unarchive endpoints with in-use gating |
+| Retention was policy | Retention status modelled in DB (sweeper paused) |
+| Lifecycle events untracked | Audit events: `curriculum.archive`, `unarchive`, `archive_by_platform_admin` |
+
+**Driver:** "Platform admins own the default curricula. School admins own their own. What happens if a school archives a curriculum that has active students?"
+
+### Pivot 6 — Ad-Hoc Rendering to Content Presentation Standard (Epic 11)
+
+| Before Epic 11 | After Epic 11 |
+|---|---|
+| Four `<ReactMarkdown>` copies in different components | One shared `SBMarkdown` component |
+| Tables rendered inconsistently across subjects | GFM tables with alignment; numeric cells `tabular-nums` |
+| No LaTeX rendering; maths content broke | KaTeX via `remark-math` + `rehype-katex` |
+| Prompts were per-subject, no universal spine | Universal + per-subject block in `pipeline/prompts.py` |
+| No drift detection | `content_format_validator.py` warns on section/output mismatch |
+| Attributed quotes were ad hoc, sometimes fabricated | Strict prompt rule; em-dash format; verifiable sources only |
+
+**Driver:** Content presentation quality is a platform concern, not a per-lesson concern.
+
+### Pivot 7 — Ad-Hoc Visual Authoring to Helpers-Toolkit + Wave Cadence (Epic #326, May 2026)
+
+The first visual-library catalogue (`generate_oscillations_visuals.ts`) was written end-to-end on its own. By the second class (`generate_g9_kinematics_visuals.ts`) the script had factored a small shared toolkit — `svgWrap`, `write`, `makePlot`, `plotPolyline`, recursive `mkdirSync` — and a declarative `SidecarSpec[]` array consumed by `seed_library_sidecars.ts`. That toolkit lifted into every subsequent generator (chemistry, biology, electronics, periodic-table, organic-chem, derivatives, waves, optics) and the **same primitives lift verbatim into Remotion clips** — the `secantLine` helper in the derivatives generator becomes the Remotion `<SecantLine>` scene component without modification.
+
+| Before #326 wave | After |
+|---|---|
+| One-off SVG generator per topic, copy-paste-and-adjust | 10 generators sharing a 5-helper toolkit; primitives lift into Remotion |
+| Library sidecars hand-edited per asset | Declarative `SidecarSpec[]` → `seed_library_sidecars.ts` is the single source |
+| Promotion CI required for any dev evaluation | `seed_library_local.py` UPSERTs into dev DB with `local://` fake `s3_path`; resolver only surfaces this string |
+| Operator workflow: `docker cp scripts/* celery-pipeline:/tmp/` | `./scripts:/app/scripts-repo:ro` + `./sample_content:/app/sample_content:ro` bind mounts (#339) |
+| Eval harness crashed on Voyage rate-limits (#338 KeyError) | Error branch mirrors success-path schema; `n_errored` in summary |
+| Wall time per class | First-of-class ~3h; same-class downstream ~45 min |
+
+**Driver:** ten near-identical sub-issues invited a wave cadence. The compression result (estimated ~19 FTE-days → actual ~14h 56m) is **process maturity, not primitive reuse** — most SVGs and Remotion scenes are class-specific. What scaled was the Phase 1/2/3 ritual.
+
+### Decision Point — PAI 5.0 Removal (May 2026)
+
+PAI 5.0 (TOOLS, MEMORY, ALGORITHM, agents Forge/Cato/Anvil/Arthur, hooks, voice via localhost:31337) was integrated under `~/.claude/`. After a `Cannot find module '../PAI/TOOLS/TranscriptParser'` Stop-hook error proved unrecoverable, the integration was removed in full: ~/.claude/{PAI,hooks,agents,skills,MEMORY,commands,rules,debug,paste-cache,...}, ~/.config/PAI/, install.sh, voice.local.md. settings.json shrank from 52,688 to 1,908 bytes (kept: `$schema`, `permissions`, `enabledPlugins`, `plansDirectory`). Snapshot retained at `~/.claude.pre-pai-removal-20260508T123957Z`.
+
+**Driver:** PAI was speculative tooling layered on top of Claude Code. It produced no shipped value in the StudyBuddy or Thittam projects and broke the hook surface. Decisive removal beat partial recovery.
+
+### Decision Point — Epic 3 Path B (Deferred, Documented)
+
+Native student mobile app: Kivy/Buildozer has been replaced as the future path by Expo/React Native (Path B). Kivy remains until Path B activates. The decision is documented; implementation is parked behind hosting (Epic 2).
 
 ---
 
@@ -687,7 +912,7 @@ Scope questions (who controls? who pays? who sees it?)
 Written design (docs repo)
         │
         ▼
-Implementation phase (code repo)
+Implementation phase/epic (code repo)
         │
         ▼
 Tests (gate before next phase)
@@ -698,16 +923,16 @@ CLAUDE.md updated (pitfalls + conventions captured)
         ▼ (next feature request)
 ```
 
-The loop is tight. No phase starts without the previous phase's tests passing. No design starts without the scope questions being answered. No feature is assumed — every edge case (renewal model, who can assign students, what happens when a subscription lapses) is explicitly answered before coding begins.
+The loop is tight. No phase starts without the previous phase's tests passing. No design starts without the scope questions being answered. For Epic 10, the scope question "what happens when a school archives a curriculum with active students?" drove the `is_curriculum_in_use` gate directly into the design.
 
 ### 7.2 The Pitfall Register
 
-22 pitfalls are documented in CLAUDE.md. They are not hypothetical — each one was discovered, often in a debugging session:
+Pitfalls are documented in CLAUDE.md as they're discovered. Recent additions:
 
-- `max_tokens=4096` silently truncating Grade 12 tutorials
-- Reading `localStorage` during SSR in Next.js
-- Clearing Redis cache without invalidating the CDN
-- Rebuilding a Docker image without restarting the container
+- `max_tokens=8192` silently truncating Grade 12 tutorials under richer Epic 11 prompts → raised to 16384
+- Stale RLS policies from an L-1 debug draft left on `curriculum_units` → hotfix 0048
+- Four inline `<ReactMarkdown>` components drift in styling → consolidated into `SBMarkdown`
+- `_verify_auth0_token` and `_verify_auth0_teacher_token` diverged silently → deduplicated into one audience-parameterised function
 
 The discipline of writing pitfalls as they are found prevents the same mistake from occurring in a future session.
 
@@ -724,14 +949,28 @@ Any feature request that violates a context boundary is visible immediately and 
 
 ### 7.4 Migrations as Architecture History
 
-The 29 Alembic migrations in StudyBuddy are a readable history of architectural decisions. Each migration has a name that describes the business change, not the SQL operation:
+The 48 Alembic migrations are a readable history. Each migration has a name that describes the business change, not the SQL operation:
 
 - `0024_student_teacher_assignments` — not "add_columns"
 - `0026_remove_private_teacher_tier` — not "drop_tables"
 - `0028_rls` — not "alter_tables"
+- `0045_streams_registry` — not "add_lookup_table"
+- `0046_platform_readable_rls` — not "add_policy"
 
 This convention makes the migration history a document, not just a sequence of database changes.
 
+### 7.5 Governance as a Shippable Feature
+
+Epic 10 treats governance as a first-class feature, not an afterthought. Platform-vs-school ownership, archive/unarchive with in-use gating, audit events per lifecycle transition — these are not policy documents; they are code paths, migrations, and test cases.
+
+For SaaS products serving regulated customers (schools, healthcare, finance), governance as a shippable feature is the difference between "we can demo" and "we can pass procurement review". Epic 10 earned the latter posture.
+
+### 7.6 Presentation as a Platform Concern
+
+Epic 11 's insight: when content is generated by LLMs across many subjects, uneven presentation quality is indistinguishable from uneven generation quality to the student. A Maths lesson that renders as a wall of plain text next to a Science lesson that renders with proper tables and equations is not a "Maths content" problem — it is a platform problem.
+
+Codifying the rules in the prompt, enforcing them in the renderer, and detecting drift in the validator is the three-part discipline. Each piece alone is insufficient; together they are sufficient.
+
 ---
 
-*This document captures the development pattern as observed through code, documentation, ADRs, CLAUDE.md history, and scratch pad conversations from the StudyBuddy OnDemand project, April 2026.*
+*This document captures the development pattern as observed through code, documentation, ADRs, CLAUDE.md history, migrations 0001–0048, the Epic INDEX, and scratch-pad conversations from the StudyBuddy OnDemand project, as of April 2026 (v1.2 refresh).*
