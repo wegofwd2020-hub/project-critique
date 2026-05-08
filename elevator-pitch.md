@@ -2,7 +2,7 @@
 
 **Audience:** Employers & Consulting Clients  
 **Author:** Sivakumar (Siva) Mambakkam  
-**Date:** April 2026  
+**Date:** April 2026 (v1.1 — refreshed after StudyBuddy Epic 10/11 and Thittam proto completion)  
 **Contact:** siva.mambakkam@gmail.com | linkedin.com/in/sivamambakkam | +1 (734) 560-0202
 
 ---
@@ -50,9 +50,11 @@ model underneath is identical, only the vocabulary changes.
 
 Building those taught me something I couldn't have learned purely from enterprise
 engagements: what it costs to make the wrong architectural call early, and how to design
-standards that hold up when you're the one who has to live with them. I wrote 17
+standards that hold up when you're the one who has to live with them. I wrote 18
 non-negotiable engineering rules before writing a line of application code — and both
-platforms still conform to every one of them.
+platforms still conform to every one of them. When two of those rules turned out to
+contradict each other on secret handling, I resolved the contradiction by revising
+the rule and migrating both codebases to match — not by patching around it.
 
 That combination — enterprise-scale experience, domain breadth, and the founder's
 mindset of owning a problem end to end — is what I bring to a team or a client
@@ -141,5 +143,5 @@ Reference these when the conversation goes deeper.
 | AI-native product design | StudyBuddy OnDemand — three-context separation; Anthropic API key never reaches a student device |
 | Multi-tenant SaaS architecture | Thittam — tenant-per-schema PostgreSQL, gRPC microservices, NATS JetStream, Istio mTLS |
 | Compliance by design | COPPA, FERPA enforced at the database layer via PostgreSQL Row-Level Security |
-| Standards and governance | 17 codified engineering rules applied across both platforms; 9 Architecture Decision Records |
+| Standards and governance | 18 codified engineering rules applied across both platforms; 13+ Architecture Decision Records; doc-drift CI enforcement |
 | Cloud breadth | AWS Certified Solutions Architect; Google Cloud Infrastructure; Azure APIM governance at UWM |

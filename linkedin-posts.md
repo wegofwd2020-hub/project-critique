@@ -2,7 +2,7 @@
 
 **Purpose:** Professional visibility, consulting availability, thought leadership
 **Author:** Sivakumar (Siva) Mambakkam
-**Date:** April 2026
+**Date:** April 2026 (v1.1 — refreshed after StudyBuddy Epic 10/11 and Thittam proto completion)
 
 ---
 
@@ -128,7 +128,7 @@ Before I write a line of application code, I write the rules the code must follo
 
 Not guidelines. Not aspirational best practices. Rules that every component must conform to — and that are enforced by the type system, the database schema, or the CI pipeline, not by hoping engineers remember them under pressure.
 
-Across two production platforms built independently over the past two years, I codified 17 non-negotiable engineering rules and 9 Architecture Decision Records before implementation began. Both platforms still conform to every one of them. The rules covered things most teams settle informally and regret later: monetary precision (never a float, anywhere in the stack), secret management (fail at startup if a required variable is missing), idempotency (every write safe to retry), and audit trails (append-only by structural constraint, not policy).
+Across two production platforms built independently over the past two years, I codified 18 non-negotiable engineering rules and 13+ Architecture Decision Records before implementation began. Both platforms still conform to every one of them. The rules covered things most teams settle informally and regret later: monetary precision (never a float, anywhere in the stack), secret management (tiered by classification — T1 from Vault, T3 from env, never mixed), idempotency (every write safe to retry), compliance (enforced at the database layer), audit trails (append-only by structural constraint), and typography/accessibility (the same 3-font system plus dyslexia mode on every web surface).
 
 That discipline comes from 30 years of enterprise architecture — Ford autonomous vehicle platforms, GE Aerospace integration, United Wholesale Mortgage API governance — where the cost of a wrong foundational decision is measured in quarters, not sprints.
 
@@ -223,17 +223,18 @@ Built two platforms this year with that principle as a first-class constraint, n
 
 ---
 
-Before I wrote the first line of application code for either platform, I wrote 17 non-negotiable engineering rules.
+Before I wrote the first line of application code for either platform, I wrote 18 non-negotiable engineering rules.
 
 Not "guidelines." Not "best practices to aspire to." Rules that every component in both codebases must conform to.
 
 Things like:
 — Money is never a float. Ever. (Decimal type in code, NUMERIC(14,2) in the database, string in the API.)
-— Secrets come from environment only. Fail at startup if one is missing.
+— Secrets tiered by classification. T1 from Vault, held in memory only; never an env var, never a log line, never a file after load.
 — Every write operation must be safe to retry without side effects.
 — Compliance is enforced at the system boundary, not by hoping developers remember.
+— Typography and accessibility are platform concerns, not per-screen concerns. The same three-font system and OpenDyslexic toggle on every web surface.
 
-A year later, both platforms still conform to every one of them.
+A year later, both platforms still conform to every one of them. When two rules turned out to contradict each other on how T1 secrets flowed, the fix was to revise the rule and migrate both codebases — not to patch the gap.
 
 The rules didn't slow development down. They made the hard decisions automatic — which meant I spent my time on the problems that actually required judgment, not re-litigating settled questions under deadline pressure.
 

@@ -4,6 +4,9 @@
 **Evidence base:** StudyBuddy OnDemand, Thittam, scratch pads, ADRs, coding standards,
 and supporting documentation
 **Period reviewed:** 2025–2026
+**Refresh:** April 2026 (v1.1 — after observing closure of prior execution gaps:
+Thittam proto completion, T1 secret fix, schema injection fix, 3.75× test growth;
+StudyBuddy Epic 10/11 delivery, Playwright persona expansion, zero TODO/FIXME)
 **Tone:** Honest. Evidence-based. Forward-looking.
 
 ---
@@ -68,10 +71,13 @@ Your Architectural Signature
 │   3. STANDARDS ARCHITECT                                             │
 │   "Before I write code, I write the rules the code must follow"    │
 │                                                                       │
-│   ├── 17 non-negotiable engineering rules, written before           │
-│   │   the first line of application code                            │
-│   ├── 9 Architecture Decision Records across both projects          │
+│   ├── 18 non-negotiable engineering rules, written before           │
+│   │   the first line of application code — and refined when         │
+│   │   evidence showed two rules contradicted each other              │
+│   ├── 13+ Architecture Decision Records across both projects        │
 │   ├── Separate documentation repositories for both platforms        │
+│   ├── Doc-drift CI enforcement (the "CI should validate" that       │
+│   │   was aspirational now runs on every PR in both repos)          │
 │   └── Living operational references that travel with the code       │
 │                                                                       │
 └─────────────────────────────────────────────────────────────────────┘
@@ -248,44 +254,72 @@ first step to choosing when they serve you and when they do not.
 
 ---
 
-### 3.1 Ambition Consistently Outpaces Execution Capacity
+### 3.1 Ambition Consistently Outpaces Execution Capacity — But Closure Is Improving
 
-This is the most significant and most consistent pattern across both projects. In both
-StudyBuddy and Thittam, the designed state is substantially ahead of the built state
-at equivalent phases — not in vision or architecture, but in completion of what was
-already planned.
+This was the most significant pattern in the v1.0 review. The v1.1 refresh shows
+meaningful change: the previously identified execution gaps have largely been closed.
 
 ```
-The Ambition-Execution Gap
+The Ambition-Execution Gap — Then and Now
 
-  The pattern in both projects:
+  v1.0 observation (earlier April 2026):
   ┌──────────────────────────────┐     ┌──────────────────────────────┐
   │   DESIGNED                   │     │   BUILT                      │
-  │                              │     │                              │
-  │   Full service contracts     │ vs  │   Some contracts pending     │
-  │   Target test coverage       │     │   Below target coverage      │
-  │   E2E test suite             │     │   E2E tests not started      │
-  │   Fully implemented services │     │   Some services incomplete   │
+  │   Full service contracts     │ vs  │   4 of 9 protos pending      │
+  │   Target test coverage       │     │   ~306 tests total           │
+  │   E2E test suite             │     │   Nightly only               │
+  │   Fully implemented services │     │   Billing missing            │
+  │   T1 secrets from Vault      │     │   T1 in env vars             │
+  │   Safe schema routing        │     │   Injection risk open        │
   └──────────────────────────────┘     └──────────────────────────────┘
 
-  This pattern has a name in architecture: speculative generality.
-  It produces systems that are correctly designed for scale
-  but insufficiently complete at the current scale.
-  The cost is deferred execution of things that were planned
-  but not delivered.
+  v1.1 observation (April 2026 refresh):
+  ┌──────────────────────────────┐     ┌──────────────────────────────┐
+  │   INTENT                     │     │   DELIVERY                   │
+  │   All 10 protos defined      │ ==  │   10 of 10 defined (1,659 LOC)│
+  │   Test count growth          │ ==  │   3.75× growth (306 → 1,150) │
+  │   E2E scaffold               │ ==  │   budgets-journey + smoke    │
+  │   Billing service            │ ==  │   Shipped                    │
+  │   T1 secrets                 │ ==  │   Vault → memory (verified)  │
+  │   Schema injection           │ ==  │   Fixed at type boundary     │
+  │   StudyBuddy 0 TODO/FIXME    │ ==  │   Sweeps keep debt out       │
+  │   COPPA compliance           │ ==  │   Explicit in compliance.ts  │
+  └──────────────────────────────┘     └──────────────────────────────┘
+
+  The pattern has shifted from "design ahead, ship behind" toward
+  "design ahead, ship and close".
 ```
 
-This is not laziness — it is a consistent tendency to design for where you want to
-be rather than where you currently are. The design quality is high. The completion
-discipline needs reinforcement.
+What changed: the v1.0 review named specific gaps; the v1.1 cycle closed them. This
+is not evidence that the underlying tendency is gone — it is evidence that **naming
+gaps externally creates the structural pressure you needed**. When the v1.0 review
+said "4 protos pending, 306 tests low, schema injection critical, T1 secrets
+contradict the security doc", the items became actionable and got actioned.
+
+The residual pattern: there are still open gaps that your v1.0 review named and that
+remain open in v1.1 (the registration pipeline saga, the reporting read-model,
+impersonation lifecycle, load tests, CSP/HSTS, `APP_ENV` assertion, slowapi/Redis
+rate-limit consolidation). These are smaller and less critical than the v1.0 set,
+but they repeat the shape.
+
+The takeaway: **the external-accountability mechanism works on you**. The v1.0
+critique functioned as that accountability, and you responded. Whether you sustain
+closure without a further critique is the question to watch in v1.2.
 
 ---
 
-### 3.2 Identifying a Problem and Naming It Is Treated as Solving It
+### 3.2 Identifying a Problem and Naming It Is Treated as Solving It — Now With Counterexamples
 
-Across both projects, there is a recurring behaviour: you identify a problem clearly,
-document it accurately, and then move to the next feature without closing the gap.
-The documentation is precise. The resolution is absent.
+Across both projects in v1.0, this was a recurring pattern: you identified a problem
+clearly, documented it accurately, and then moved to the next feature without closing
+the gap. The v1.1 refresh shows counterexamples — schema injection named in v1.0 is
+closed; T1 secret contradiction named in v1.0 is resolved; proto backlog named in
+v1.0 is cleared.
+
+What remains: the pattern still applies to items that were *not* externally named.
+The registration-pipeline saga was documented as a risk in the original design;
+nobody externally required its closure, and it has remained open through two review
+cycles. Same for the reporting read-model and the impersonation lifecycle.
 
 ```
 The Document-and-Move-On Pattern
@@ -746,13 +780,13 @@ From Feature Momentum to Sprint Cadence
 │  Business model clarity             │  Strong       │  Consistent    │
 │  Clean pivoting under new evidence  │  Strong       │  Improving     │
 ├─────────────────────────────────────┼───────────────┼────────────────┤
-│  Completion discipline              │  Needs focus  │  Recurring gap │
-│  Architecture right-sizing          │  Needs focus  │  Recurring gap │
-│  Frontend engineering discipline    │  Needs focus  │  Stable gap    │
-│  Test coverage (actual vs target)   │  Needs focus  │  Below target  │
-│  Peer review (own work)             │  Needs focus  │  Not started   │
-│  Technical debt management          │  Needs focus  │  Not started   │
-│  Sprint cadence and closure         │  Needs focus  │  Not started   │
+│  Completion discipline              │  Improving    │  v1 gaps closed│
+│  Architecture right-sizing          │  Needs focus  │  Stable gap    │
+│  Frontend engineering discipline    │  Improving    │  shadcn + axe  │
+│  Test coverage (actual vs target)   │  Strong       │  3.75× growth  │
+│  Peer review (own work)             │  Improving    │  Critique-loop │
+│  Technical debt management          │  Improving    │  Zero TODO/FIXME│
+│  Sprint cadence and closure         │  Needs focus  │  Ad-hoc        │
 ├─────────────────────────────────────┼───────────────┼────────────────┤
 │  Overall practice maturity          │  Senior+      │  Improving     │
 └─────────────────────────────────────┴───────────────┴────────────────┘
@@ -762,6 +796,10 @@ Summary in one sentence:
   You are an architect who builds systems that enforce correct
   behaviour for others — the next level of your practice is
   applying that same structural accountability to yourself.
+  The v1.1 refresh shows this is starting to happen: external
+  critiques function as structural accountability for you, and
+  you close what they name. The question for v1.2 is whether
+  you sustain closure without an external prompt.
 ```
 
 ---
@@ -793,6 +831,8 @@ the rest.
 
 *This assessment is based entirely on observable evidence from the two projects and
 their supporting documentation. It reflects practice patterns, not personal character —
-and the practice is genuinely impressive.*
+and the practice is genuinely impressive. The v1.1 refresh observes meaningful
+closure of the execution gaps named in v1.0; the framework of strengths and
+residual blind spots remains valid as a lens for the next cycle.*
 
-*April 2026*
+*April 2026 (v1.1 refresh)*
