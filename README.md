@@ -2,8 +2,9 @@
 
 Code review and architectural critique for StudyBuddy OnDemand and Thittam.
 
-**Reviewed:** April 2026  
-**Reviewer:** Claude (Anthropic)  
+**Reviewed:** May 2026 (v2.1 — refresh after StudyBuddy visual-library wave 1+2, four bug close-outs, PAI removal; Thittam unchanged from April refresh)
+**Prior:** April 2026 (v2 — proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
+**Reviewer:** Claude (Anthropic)
 **Scope:** Architecture, code quality, test coverage, documentation, security, scalability
 
 ---
@@ -28,58 +29,80 @@ Code review and architectural critique for StudyBuddy OnDemand and Thittam.
 
 ### StudyBuddy OnDemand
 
-**Overall:** Strong foundations with a few critical gaps to close before launch.
+**Overall:** Late-build / pre-production. All prior P0/P1 items remediated. The May 2026 cycle is execution-throughput evidence: 13 GitHub issues closed in ~14h 56m wall-time (10 visual-library sub-issues + #295 + #297 + #338 + #339), with 144 visual-library entries seeded into the dev DB and 80 resolver-eval records. The 3-phase wave cadence (catalogue → Remotion → eval/seeder/MEMO) is now a documented development pattern (see `studybuddy-development-pattern.md` §5.8).
 
 | Area | Rating | Key Finding |
 |---|---|---|
-| Architecture | 🟡 Good | Two frontends (Kivy + Next.js) unresolved; filesystem content store blocks horizontal scale |
-| Code Quality | 🟡 Good | Stripe calls sync in async router; JWKS cache has no TTL enforcement |
-| Test Coverage | 🟠 Fair | 70% threshold too low for children's SaaS; no E2E tests |
-| Documentation | 🟢 Strong | Comprehensive docs repo; excellent module docstrings |
-| Security | 🟡 Good | No visible rate limiting; dev router gating could be bypassed |
-| Scalability | 🟡 Good | Content store must move to S3 before multi-host deployment |
+| Architecture | 🟢 Strong | StorageBackend abstraction, app factory, Epic 10 platform/school governance split, Streams soft-registry |
+| Code Quality | 🟢 Strong | `_verify_auth0_token` deduplicated, `upsert_student` fixed, zero TODO/FIXME, SBMarkdown consolidates rendering |
+| Test Coverage | 🟡 Good | 835 backend tests + 16 Playwright spec files (2,620 LOC); E2E weighted toward accessibility, 3 axe rules disabled (#189) |
+| Documentation | 🟢 Strong | 16+ docs files; CLAUDE.md refreshed 2026-04-15 for Epic 8/10/11; per-module coverage thresholds enforced |
+| Security | 🟢 Strong | RLS extended (0028 + 0046), COPPA compliance codified in `compliance.ts`, JWKS TTL enforced, Redis-backed auth limiter |
+| Scalability | 🟡 Good | S3/Local via StorageBackend, RedBeat resolves Beat SPOF, pipeline `--stream` flag for rich content; no load tests |
 
-**Top 3 actions:** (1) Move content store to S3, (2) Wrap Stripe calls in `run_in_executor`, (3) Enforce JWKS TTL.
+**Top 3 actions:** (1) Assert `APP_ENV` enum at startup, (2) Consolidate slowapi + Redis rate-limit on Redis only, (3) Turn pool-arithmetic warning into a hard startup assertion.
 
 ---
 
 ### Thittam
 
-**Overall:** Sophisticated architecture with ambition ahead of execution at mid-build stage.
+**Overall:** Late-build / pre-production on core services. Schema injection and T1 secret issues closed. All 10 protos defined (1,659 LOC, 230 messages). Tests grew 3.75× (306 → 1,150). Multi-tenant demo expanded with XYZ Construction.
 
 | Area | Rating | Key Finding |
 |---|---|---|
-| Architecture | 🟡 Good | 4 of 9 proto definitions pending; 9 microservices may be premature |
-| Code Quality | 🟢 Strong | 17 coding rules are excellent; T1 secret handling contradicts security docs |
-| Test Coverage | 🟠 Fair | ~306 tests is low for a financial platform; no chaos testing |
-| Documentation | 🟢 Strong | Best-in-class; 41+ files, 9 ADRs, 11 required diagrams |
-| Security | 🟡 Good | Schema injection risk in tenant routing; impersonation lifecycle undefined |
-| Scalability | 🟡 Good | Tenant-per-schema bottlenecks at 500+ tenants; reporting fan-out unresolved |
+| Architecture | 🟢 Strong | All 10 protos complete; grpc-gateway REST shadow for browser auth; shadcn/ui web tier; 13 ADRs |
+| Code Quality | 🟢 Strong | T1 secrets via Vault → memory; sentinel errors; sqlc + buf enforcement; doc-drift CI active |
+| Test Coverage | 🟡 Good | 1,150 tests / 80 files; Playwright scaffold + budgets-journey; load/chaos absent; vertical YAML validator lacks coverage |
+| Documentation | 🟢 Strong | 71 files; 11 standard diagrams; 13 ADRs (010/011 missing); docs fresh 2026-04-15 |
+| Security | 🟡 Good | Schema injection fixed; T1 via Vault; `audit_log` REVOKE still commented; impersonation lifecycle undef |
+| Scalability | 🟡 Good | Tenant-per-schema needs strategy past 500 tenants; reporting read-model undefined; no circuit-breaker policy |
 
-**Top 3 actions:** (1) Define pending protos for IAM/Ledger, (2) Validate tenant ID before `SET search_path`, (3) Design saga pattern for registration pipeline.
-
----
-
-## How to Create This as a GitHub Repository
-
-```bash
-# 1. Create a new private repo at github.com/wegofwd2020-hub/project-critique
-#    (via GitHub web UI or GitHub CLI)
-
-# 2. Clone and add files
-git clone https://github.com/wegofwd2020-hub/project-critique.git
-cd project-critique
-
-# Add the critique files (downloaded from this session)
-cp studybuddy-critique.md .
-cp thittam-critique.md .
-cp README.md .
-
-git add .
-git commit -m "docs: initial code review — StudyBuddy OnDemand + Thittam (April 2026)"
-git push origin main
-```
+**Top 3 actions:** (1) Design + implement the registration saga with compensating transactions, (2) Apply `audit_log` REVOKE UPDATE/DELETE in a post-deploy step, (3) Document + implement the reporting read-model strategy (event-sourced views preferred).
 
 ---
 
-*This critique is a point-in-time review based on publicly accessible code (StudyBuddy) and documentation (both projects) as of April 2026. The Thittam application code was not directly accessible (private repository); code-level observations are inferred from documentation and architectural descriptions.*
+## What Changed in v2.1 (May 2026)
+
+| Project | v2 (April 2026 refresh) | v2.1 (May 2026 refresh) |
+|---|---|---|
+| StudyBuddy — Visual library (dev DB) | 0 entries (promotion CI gated on AWS secrets) | 144 entries with embeddings via `seed_library_local.py` |
+| StudyBuddy — Resolver eval records | Empty harness | 80 records (eval-001..080) |
+| StudyBuddy — Remotion clips | 0 | 9 (Option-3 video catalogue) |
+| StudyBuddy — Issues closed in window | n/a | 13 — #327–#336, #295, #297, #338, #339 |
+| StudyBuddy — `/curriculum/{grade}` | STEM-only fallback | Stream-aware 3-step resolver (auth-optional) |
+| StudyBuddy — Operator dance for library seeding | `docker cp scripts/* celery-pipeline:/tmp/seed/` | Bind mounts permanent (#339) |
+| StudyBuddy — Resolver eval crash on rate-limit | KeyError | Schema-mirroring error branch + `n_errored` |
+| StudyBuddy — Backend tests | 835 | ~914 |
+| StudyBuddy — PAI 5.0 integration | Active in `~/.claude/` | Removed in full; settings.json 52,688 → 1,908 bytes |
+| Thittam | (April refresh content) | Unchanged in this cycle — refer to v2 entries below |
+
+---
+
+## What Changed in v2 (April 2026)
+
+| Project | v1 (earlier April 2026) | v2 (April 2026 refresh) |
+|---|---|---|
+| StudyBuddy — Epics | Phases 1–11 complete | Epic 1, Epic 8, Epic 10 L-1..L-5, Epic 11 C-1..C-4, C-6, C-9 delivered |
+| StudyBuddy — Tests | 215+ backend | 835 backend + 2,620 LOC Playwright |
+| StudyBuddy — Migrations | ≤45 | 48 (0046–0048 ship Epic 10 governance + hotfix) |
+| StudyBuddy — Content | Single rendering; ad-hoc prompts | Shared `SBMarkdown` + universal/per-subject prompt guidelines + format-drift validator |
+| Thittam — Protos | 4 of 9 pending | 10 of 10 defined |
+| Thittam — Tests | ~306 across 22 pkgs | 1,150 across 80 files |
+| Thittam — T1 secrets | ❌ Env-var contradiction | ✅ Vault → memory (cmd/iam/main.go) |
+| Thittam — Schema injection | ❌ Critical | ✅ Fixed (pkg/tenantdb UUID type) |
+| Thittam — Web tier | Theme unclear | shadcn/ui + Radix + Tailwind v4 + Rule #18 typography |
+| Thittam — Demos | XYZ_CBA only | XYZ_CBA (INR, movie) + XYZ Construction Phase A (USD, construction) |
+| Thittam — IAM | bare gRPC | grpc-gateway REST shadow (`/api/v1/auth/*`) + CORS + `/me` |
+
+---
+
+## How This Repository Is Organised
+
+- **`*-critique.md`** — point-in-time code review with priority-ordered actions.
+- **`*-development-pattern.md`** — how the project was scoped, designed, architected, and developed. Less about bugs, more about method.
+- **`*-practices.md`** — catalogue of good + bad practices with concrete fixes.
+- **`elevator-pitch.md` / `personality-review.md` / `linkedin-posts.md`** — founder-facing material derived from the technical review.
+
+---
+
+*This critique is a point-in-time review based on publicly accessible code (StudyBuddy) and documentation (both projects) as of April 2026. The Thittam application code was partially accessible for this refresh (schema-injection fix in `pkg/tenantdb`, T1 handling in `cmd/iam/main.go`, proto and test counts directly measurable); the remainder is inferred from documentation, commit history, and architectural descriptions.*

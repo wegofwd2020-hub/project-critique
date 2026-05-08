@@ -2,7 +2,8 @@
 
 **Document type:** Workflow improvements for AI-assisted development
 **Scope:** Claude Code CLI usage across StudyBuddy_OnDemand and Thittam
-**Period:** April 2026
+**Period:** May 2026 (v1.1 — refreshed after visual-library wave 1+2 evidence + bug close-outs)
+**Prior:** April 2026 (v1.0)
 **Audience:** Solo developer using Claude Code as primary collaborator
 **Rating key:** 🔥 High leverage · ⚙️ Medium · 📌 Nice-to-have
 
@@ -35,6 +36,48 @@ Before the gaps, the foundation is strong:
 - ✅ **Doc separation** (code repo + docs repo)
 
 The gaps below are workflow practices that would have made the build faster, safer, and more reproducible.
+
+---
+
+## What Changed Since v1.0 (May 2026)
+
+The visual-library expansion wave (Epic #326, 10 sub-issues, May 2026) was the first multi-week Claude-Code-driven workstream where the same operator–agent loop ran 10 times in close succession. Five concrete workflow lessons emerged:
+
+### 🔥 Lesson 1 — Process maturity beats primitive reuse for compression
+
+The wave's wall-time-vs-estimate ratio was ~1:30 (≈14h 56m actual vs ~19 FTE-days estimated). The dominant compression mechanism was **not** code reuse — most SVGs and Remotion scenes are class-specific. It was **process repetition**: the same Phase 1/2/3 cadence, the same SidecarSpec format, the same eval JSONL append, the same MEMO.md template. First-of-class shipping (#327) ≈3h; same-class downstream (#328) ≈45 min.
+
+**Implication for workflow.** When estimating Claude-Code work, separate "first of a class" from "downstream of class". The first-of-class establishes a tooling toolkit + prompt patterns; the downstream rides on it. A wave with one first-of-class and 9 downstream issues compresses dramatically; a wave with 10 different first-of-classes does not.
+
+### 🔥 Lesson 2 — File side-issues *inside* the wave, not after
+
+During #327 the operator hit two structural bugs unrelated to the issue at hand: the resolver-eval KeyError on Voyage rate-limit (#338) and the docker-cp dance for `seed_library_local.py` (#339). Both were filed, fixed, and closed inside the wave rather than queued. By #336 (the last issue) those gotchas had been absent for 9 issues. If they had been queued, every downstream issue would have re-encountered them.
+
+**Implication for workflow.** When Claude-Code work uncovers an infrastructure pain-point, file the issue immediately and resolve it before continuing the wave. Future selves of the same wave are the highest-leverage beneficiaries.
+
+### ⚙️ Lesson 3 — FastAPI `Annotated[T, Depends(...)]` quirk for optional auth
+
+**Gotcha.** Adding `student: Annotated[dict | None, Depends(get_current_student_optional)] = None` (closing #297) caused FastAPI to silently treat `student` as a query parameter and reject calls with 422 Validation. The Annotated form with a default value is recognised as a query param, not as a dependency.
+
+**Fix.** Use the bare-default form: `student: dict | None = Depends(get_current_student_optional)`.
+
+**Implication for workflow.** When a FastAPI endpoint suddenly returns 422 after a refactor, the first thing to check is whether you've put a default value on an `Annotated[..., Depends(...)]` parameter. The error message will not mention this — it will look like a missing required field.
+
+### ⚙️ Lesson 4 — Ruff strips "unused" imports between Edits
+
+**Gotcha.** When a sequence of Edit tool calls adds an import in one edit and uses it in a later edit, the PostToolUse Ruff hook runs between them and strips the "unused" import. The next edit then fails with NameError or pytest fails the import.
+
+**Fix.** Either land the import + use in a single edit, or re-add the import after each edit-pair. The `#297` test addition required the import to be re-added after the formatter ran.
+
+**Implication for workflow.** Single-shot edits are safer than multi-edit sequences when an autoformatter is in the loop. If a multi-edit is necessary, verify the formatter hasn't touched intermediate state by reading the file before the next edit.
+
+### 🔥 Lesson 5 — Bind-mount over docker-cp for repeatable dev workflows
+
+**Gotcha.** `seed_library_local.py` lives in the repo's `scripts/` and reads `sample_content/`. The `celery-pipeline` container only mounted `./backend:/app`, so every dev run required `docker cp scripts/* celery-pipeline:/tmp/seed/` followed by `docker compose exec celery-pipeline python /tmp/seed/seed_library_local.py`. This dance was both annoying and a source of stale-state bugs (a prior cp left behind unrelated files).
+
+**Fix (#339).** Add `./scripts:/app/scripts-repo:ro` and `./sample_content:/app/sample_content:ro` to `docker-compose.yml`. The seeder is now a single command: `docker compose exec -T celery-pipeline python3 /app/scripts-repo/seed_library_local.py`.
+
+**Implication for workflow.** When an operator workflow requires copying source files into a container, treat it as an infrastructure bug. Bind-mounting source dirs read-only is the canonical fix and removes a class of footguns.
 
 ---
 
