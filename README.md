@@ -2,7 +2,7 @@
 
 Code review and architectural critique for StudyBuddy OnDemand, Thittam, and dronePrjs.
 
-**Reviewed:** May 2026 (v2.2 — adds dronePrjs first-review; StudyBuddy at v1.4, Thittam unchanged from April refresh)
+**Reviewed:** May 2026 (v2.2 — adds dronePrjs first-review; StudyBuddy at v1.4; Thittam refreshed to v1.2 — proto completion, T1 fix, schema injection fix, demo expansion)
 **Prior:** May 2026 v2.1 (StudyBuddy visual-library wave 1+2) · April 2026 v2 (proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
 **Reviewer:** Claude (Anthropic)
 **Scope:** Architecture, code quality, test coverage, documentation, security, scalability
@@ -84,7 +84,8 @@ Code review and architectural critique for StudyBuddy OnDemand, Thittam, and dro
 ## What Changed in v2.2 (May 2026)
 
 - **Added dronePrjs** as a third project under critical analysis, with the full three-lens treatment: `dronePrjs-critique.md`, `dronePrjs-development-pattern.md`, `dronePrjs-practices.md`.
-- StudyBuddy and Thittam content unchanged from v2.1.
+- **Thittam docs refreshed to v1.2** — all three lenses (critique, development pattern, practices) updated to reflect proto completion (all 10 protos / 1,659 LOC / 230 messages), T1 secret handling via Vault → memory, `pkg/tenantdb` schema-injection fix, test growth 306 → 1,150, shadcn/ui web tier adoption, and XYZ Construction Phase A demo.
+- StudyBuddy content unchanged from v2.1.
 
 ---
 
