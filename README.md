@@ -1,9 +1,9 @@
 # Project Critique — WeGoFwd2020
 
-Code review and architectural critique for StudyBuddy OnDemand and Thittam.
+Code review and architectural critique for StudyBuddy OnDemand, Thittam, and dronePrjs.
 
-**Reviewed:** May 2026 (v2.1 — refresh after StudyBuddy visual-library wave 1+2, four bug close-outs, PAI removal; Thittam unchanged from April refresh)
-**Prior:** April 2026 (v2 — proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
+**Reviewed:** May 2026 (v2.2 — adds dronePrjs first-review; StudyBuddy at v1.4, Thittam unchanged from April refresh)
+**Prior:** May 2026 v2.1 (StudyBuddy visual-library wave 1+2) · April 2026 v2 (proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
 **Reviewer:** Claude (Anthropic)
 **Scope:** Architecture, code quality, test coverage, documentation, security, scalability
 
@@ -15,10 +15,13 @@ Code review and architectural critique for StudyBuddy OnDemand and Thittam.
 |---|---|---|
 | [studybuddy-critique.md](studybuddy-critique.md) | StudyBuddy OnDemand | Code review — architecture, quality, security, scalability |
 | [thittam-critique.md](thittam-critique.md) | Thittam | Code review — architecture, quality, security, scalability |
+| [dronePrjs-critique.md](dronePrjs-critique.md) | dronePrjs (closedSpace + openSpace) | Code review — architecture, quality, safety, sim-only fidelity caveats |
 | [studybuddy-development-pattern.md](studybuddy-development-pattern.md) | StudyBuddy OnDemand | Full lifecycle analysis — scoping, design, architecture, development |
 | [thittam-development-pattern.md](thittam-development-pattern.md) | Thittam | Full lifecycle analysis — scoping, design, architecture, development |
+| [dronePrjs-development-pattern.md](dronePrjs-development-pattern.md) | dronePrjs | Full lifecycle analysis — scoping by operating environment, ISA-as-SOR, phase-per-commit |
 | [studybuddy-practices.md](studybuddy-practices.md) | StudyBuddy OnDemand | Good practices, bad practices, and how to improve |
 | [thittam-practices.md](thittam-practices.md) | Thittam | Good practices, bad practices, and how to improve |
+| [dronePrjs-practices.md](dronePrjs-practices.md) | dronePrjs | Good practices, bad practices, and how to improve |
 | [elevator-pitch.md](elevator-pitch.md) | Siva Mambakkam | Elevator pitch for employers and consulting clients |
 | [personality-review.md](personality-review.md) | Siva Mambakkam | Practice personality review — strengths, blind spots, and improvement plan |
 | [linkedin-posts.md](linkedin-posts.md) | Siva Mambakkam | Five LinkedIn posts — thought leadership, compliance, standards, availability |
@@ -58,6 +61,30 @@ Code review and architectural critique for StudyBuddy OnDemand and Thittam.
 | Scalability | 🟡 Good | Tenant-per-schema needs strategy past 500 tenants; reporting read-model undefined; no circuit-breaker policy |
 
 **Top 3 actions:** (1) Design + implement the registration saga with compensating transactions, (2) Apply `audit_log` REVOKE UPDATE/DELETE in a post-deploy step, (3) Document + implement the reporting read-model strategy (event-sourced views preferred).
+
+---
+
+### dronePrjs
+
+**Overall:** Early-build / pre-simulator. Six commits on `main`, each a labelled phase delivery (Phase 0–5 of 8). 100 tests passing in 52 s, 97 % coverage, `mypy --strict` and `ruff check` clean. Umbrella for `closedSpace` (indoor GPS-denied warehouse inventory drone) and `openSpace` (outdoor — stub only) over a shared `engine/` Protocol layer. 29 of 44 ISCs marked complete; sim-only fidelity (Phase 3 simulator and Phase 8 pilot outstanding).
+
+| Area | Rating | Key Finding |
+|---|---|---|
+| Architecture | 🟢 Strong | Engine Protocols + in-process `engine.sim` reference impl; anti-bleed enforced by AST scan; ISA.md is the system-of-record (634 lines) |
+| Code Quality | 🟢 Strong | `mypy --strict` across 29 source files clean; ruff clean; frozen dataclasses with slots throughout; zero TODO/FIXME |
+| Test Coverage | 🟢 Strong | 100 tests, 97 % coverage, co-located by source path; e2e mission test against the sim; static-analysis tests for cross-cutting invariants |
+| Documentation | 🟢 Strong | ISA fuses PRD/criteria/test-strategy/decisions/changelog; 6 in-tree closedSpace docs; three-tier CLAUDE.md (umbrella + per-domain) |
+| Safety | 🟡 Good | Pre-arm gate gates; map staleness + provenance first-class; GPS forbidden in closedSpace by static probe; map-signature check not yet implemented; abort granularity per-waypoint only |
+| Scalability | 🟡 Good | Two-tier simulator strategy correct; MapBuilderFromWMS sketched not built; openSpace is a stub — engine contract is single-consumer until that changes |
+
+**Top 5 actions:** (1) Answer D1/D2/D3 (sim-vs-hardware, simulator choice, flight stack) before Phase 3 starts, (2) Write `openSpace/ISA.md` + a `GPSProvider` reference sim so the engine contract has a second consumer, (3) Add `.github/workflows/ci.yml` running `make all` on push, (4) Run the FirstPrinciples + RedTeam review the ISA's VERIFY entry committed to, (5) Build the perception→command latency soak harness alongside the Phase-3 simulator (not after pilot).
+
+---
+
+## What Changed in v2.2 (May 2026)
+
+- **Added dronePrjs** as a third project under critical analysis, with the full three-lens treatment: `dronePrjs-critique.md`, `dronePrjs-development-pattern.md`, `dronePrjs-practices.md`.
+- StudyBuddy and Thittam content unchanged from v2.1.
 
 ---
 
@@ -105,4 +132,4 @@ Code review and architectural critique for StudyBuddy OnDemand and Thittam.
 
 ---
 
-*This critique is a point-in-time review based on publicly accessible code (StudyBuddy) and documentation (both projects) as of April 2026. The Thittam application code was partially accessible for this refresh (schema-injection fix in `pkg/tenantdb`, T1 handling in `cmd/iam/main.go`, proto and test counts directly measurable); the remainder is inferred from documentation, commit history, and architectural descriptions.*
+*This critique is a point-in-time review based on publicly accessible code (StudyBuddy, dronePrjs) and documentation (Thittam). The Thittam application code was partially accessible for the April 2026 refresh (schema-injection fix in `pkg/tenantdb`, T1 handling in `cmd/iam/main.go`, proto and test counts directly measurable); the remainder is inferred from documentation, commit history, and architectural descriptions. dronePrjs (added May 2026) was reviewed against commit `5c45c9e` on `main` with quality probes (`make all`, coverage, test count) run locally.*
