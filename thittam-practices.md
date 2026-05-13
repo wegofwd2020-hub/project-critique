@@ -1,8 +1,8 @@
 # Thittam — Good Practices, Bad Practices & How to Improve
 
-**Document type:** Engineering practices analysis  
-**Scope:** Go microservices, gRPC, NATS JetStream, PostgreSQL, Istio, Kong, Vertical Plugin System  
-**Period:** April 2026  
+**Document type:** Engineering practices analysis
+**Scope:** Go microservices, gRPC, NATS JetStream, PostgreSQL, Istio, Kong, Vertical Plugin System, shadcn/ui web tier
+**Period:** April 2026 (v1.2 — refreshed after proto completion, T1 secret fix, schema injection fix, test expansion, multi-tenant demo expansion)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · ❌ Critical issue · 🔧 How to improve
 
 ---
@@ -16,7 +16,8 @@
 5. [Testing Practices](#5-testing-practices)
 6. [Observability Practices](#6-observability-practices)
 7. [Documentation Practices](#7-documentation-practices)
-8. [Summary Scorecard](#8-summary-scorecard)
+8. [Multi-Tenant & Demo Practices](#8-multi-tenant--demo-practices)
+9. [Summary Scorecard](#9-summary-scorecard)
 
 ---
 
@@ -24,113 +25,90 @@
 
 ### ✅ Good — Vertical Plugin System Makes the Platform Industry-Agnostic
 
-The vertical plugin system is the most valuable design decision in Thittam. It encodes the insight that four industries share the same financial model but speak different vocabularies.
-
 ```
-GOOD: Configuration-driven industry support
+GOOD: Configuration-driven industry support (ADR-007)
 
-  Without vertical plugins (rejected approach):
-  ┌──────────────────────────────────────────────────────────┐
-  │  thittam-film/        4 separate codebases               │
-  │  thittam-software/    4× security patches                │
-  │  thittam-construction 4× deployments                     │
-  │  thittam-events/      4× bug fixes to sync               │
-  │                       divergence guaranteed within 6mo   │
-  └──────────────────────────────────────────────────────────┘
+  Without vertical plugins (rejected):
+    thittam-film / thittam-software / thittam-construction / thittam-events
+    → 4× security patches, 4× deployments, divergence guaranteed within 6 months
 
-  With vertical plugins (current approach):
-  ┌──────────────────────────────────────────────────────────┐
-  │  thittam (one codebase)                                  │
-  │                                                           │
-  │  verticals/film-production.yaml    ← vocabulary + rules  │
-  │  verticals/software-dev.yaml       ← vocabulary + rules  │
-  │  verticals/construction.yaml       ← vocabulary + rules  │
-  │  verticals/events-mgmt.yaml        ← vocabulary + rules  │
-  │                                                           │
-  │  Adding vertical 5 (Healthcare):                         │
-  │  ├── Write verticals/healthcare.yaml  (~50 lines)        │
-  │  ├── Add test suite for new YAML      (~1 day)           │
-  │  └── No core service changes                             │
-  └──────────────────────────────────────────────────────────┘
+  With vertical plugins (current):
+    thittam (one codebase)
+    verticals/film-production.yaml    ← vocabulary + rules
+    verticals/software-dev.yaml
+    verticals/construction.yaml
+    verticals/events-mgmt.yaml
 
-  The vertical config flows through every vertical-aware service
-  via a gRPC interceptor — services never hardcode industry terms:
+    Adding vertical 5 (Healthcare):
+      Write verticals/healthcare.yaml (~50 lines)
+      Add test suite for new YAML (~1 day)
+      No core service changes
 
-  service receives: budget.CreateLineItem(ctx, item)
-       │
-       ▼
-  vertical.FromContext(ctx).BudgetCategories  ← from YAML, not code
-       │
-       ▼
-  validation against config's allowed categories
-       │
-       ▼
-  UI label from config: "Above the Line" (film) or "Labor" (construction)
+  The vertical config flows through every vertical-aware service via a gRPC
+  interceptor that injects it into the request context. Services never hardcode
+  industry-specific terms.
 ```
 
 ---
 
-### ✅ Good — Service Structure Is Identical Across All 9 Services
+### ✅ Good — Consistent 6-File Service Layout Across All 10 Services
 
 ```
-GOOD: Consistent 6-file layout per service (Rule #14)
+services/budget/        services/expense/        services/ledger/
+├── models.go           ├── models.go            ├── models.go
+├── errors.go           ├── errors.go            ├── errors.go
+├── repository.go       ├── repository.go       ├── repository.go
+├── service.go          ├── service.go          ├── service.go
+├── service_test.go     ├── service_test.go     ├── service_test.go
+└── handler.go          └── handler.go           └── handler.go
 
-  services/budget/          services/expense/         services/iam/
-  ├── models.go             ├── models.go             ├── models.go
-  ├── errors.go             ├── errors.go             ├── errors.go
-  ├── repository.go         ├── repository.go         ├── repository.go
-  ├── service.go            ├── service.go            ├── service.go
-  ├── service_test.go       ├── service_test.go       ├── service_test.go
-  └── handler.go            └── handler.go            └── handler.go
-
-  A developer who has worked in budget can navigate expense on day one.
-  Grep for any pattern → it appears in the same file in every service.
-  "Where is error handling?" → errors.go in every service.
-  "Where is the DB interface?" → repository.go in every service.
-
-  Dependency direction enforced by structure:
-  handler.go → service.go → repository.go (interface)
-                                  ↑
-                             DB implementation
-                          (injected at startup)
+A developer who has worked in budget navigates expense on day one.
+Dependency direction enforced by structure: handler → service → repository.
 ```
+
+Holds across all 10 services: iam, project, budget, expense, ledger, inventory, notifications, document, reporting, billing.
 
 ---
 
-### ✅ Good — gRPC for Internal, REST for External
+### ✅ Good — gRPC Internal / REST External With grpc-gateway Shadow for Auth
 
 ```
-GOOD: The right protocol at each boundary
+External boundary (client → Kong → services):
+  REST/JSON — clients are browsers and mobile apps; Kong handles auth, rate-limit, routing.
 
-  External boundary (client → Kong → services):
-  ┌──────────────────────────────────────────────────────────┐
-  │  REST/JSON                                               │
-  │  Reason: clients are browsers and mobile apps            │
-  │  Kong handles: auth, rate-limit, routing                 │
-  │  Human-readable, debuggable with curl                    │
-  └──────────────────────────────────────────────────────────┘
+Internal boundary (service → service):
+  gRPC/protobuf — type-safe contracts, binary efficiency, buf breaking detection.
 
-  Internal boundary (service → service):
-  ┌──────────────────────────────────────────────────────────┐
-  │  gRPC / protobuf                                         │
-  │  Reason: type-safe contracts, binary efficiency          │
-  │                                                           │
-  │  JSON REST comparison:                                   │
-  │    {"amount": 15000.00, "currency": "USD", ...}          │
-  │    → 35 bytes + parsing overhead                         │
-  │                                                           │
-  │  Protobuf comparison:                                    │
-  │    amount: 15000.00 currency: USD                        │
-  │    → ~8 bytes binary, generated parser                   │
-  │                                                           │
-  │  At 10,000 inter-service calls/second:                  │
-  │    JSON:    350 KB/s on the wire + CPU parse cost       │
-  │    Protobuf: ~80 KB/s + compiled deserialiser           │
-  │                                                           │
-  │  Breaking change detection (buf breaking):               │
-  │    Rename a proto field → CI fails before merge          │
-  │    Remove a required field → CI fails before merge       │
-  └──────────────────────────────────────────────────────────┘
+Browser-to-IAM boundary (new in v1.2):
+  grpc-gateway REST shadow at :9086 for /api/v1/auth/*
+  → Browser can call login, refresh, /me via JSON with CORS working.
+  → Backend remains gRPC-native; REST is generated.
+```
+
+Commits: `939b451` (grpc-gateway surface), `cc7f019` (CORS wrapper), `7e267f7` (snake_case JSON for TS types), `259d0fb` (web points at gateway, not bare gRPC).
+
+---
+
+### ✅ Good — All 10 Proto Definitions Are Complete
+
+The v1.1 "4 of 9 protos pending" gap is closed.
+
+```
+proto/ — 1,659 LOC total, ~230 messages across 10 files:
+
+  iam.proto              46 msgs   ← auth + OIDC
+  project.proto          24 msgs
+  budget.proto           24 msgs
+  expense.proto          23 msgs
+  ledger.proto           25 msgs
+  inventory.proto        14 msgs
+  notifications.proto    15 msgs
+  document.proto         23 msgs
+  reporting.proto        13 msgs
+  billing.proto          23 msgs
+
+Buf toolchain: buf lint + buf breaking + buf generate.
+make generate-proto regenerates Go stubs on demand.
 ```
 
 ---
@@ -138,198 +116,78 @@ GOOD: The right protocol at each boundary
 ### ✅ Good — Code Generation Enforces Correctness at Compile Time
 
 ```
-GOOD: sqlc makes SQL type-safe; buf makes protos enforceable
+sqlc (SQL → Go):
+  Input:  migrations/{service}/*.sql + queries/*.sql
+  Output: services/{name}/db/{db.go, models.go, querier.go, queries.sql.go}
 
-  sqlc (SQL → Go):
-  ┌──────────────────────────────────────────────────────────┐
-  │  Input: migrations/budget/001_create_tables.up.sql       │
-  │         queries/budget/get_budget.sql                    │
-  │                                                           │
-  │  Output: services/budget/db/                             │
-  │    queries.sql.go  ← type-safe functions                 │
-  │    models.go       ← Go structs matching schema          │
-  │                                                           │
-  │  Effect: The following is a compile error, not a runtime │
-  │  error:                                                   │
-  │    budget.Amount = "not a decimal"  ← type mismatch     │
-  │                                                           │
-  │  SQL injection: impossible (queries are parameterised    │
-  │  by design — sqlc does not support interpolation)        │
-  └──────────────────────────────────────────────────────────┘
+  Effect: SQL queries are type-checked at compile time.
+  Effect: SQL injection is impossible (sqlc does not support interpolation).
 
-  buf (protobuf → Go):
-  ┌──────────────────────────────────────────────────────────┐
-  │  buf lint       → validates proto style rules            │
-  │  buf breaking   → detects breaking changes vs main       │
-  │  buf generate   → emits type-safe gRPC client/server     │
-  │                                                           │
-  │  Effect: If expense-tracking renames an RPC method that  │
-  │  budget-planning calls, `buf breaking` fails in CI       │
-  │  before any code is merged.                              │
-  └──────────────────────────────────────────────────────────┘
+buf (protobuf → Go):
+  buf lint        → validates proto style rules
+  buf breaking    → detects breaking changes vs main
+  buf generate    → emits type-safe gRPC client/server
+
+  Effect: Renaming an RPC method breaks CI before merge.
 ```
 
 ---
 
-### ⚠️ Bad — Nine Microservices at Mid-Build Is Ahead of Execution Capacity
-
-```
-BAD: Service count exceeds current team throughput
-
-  Current state:
-  ┌──────────────────────────────────────────────────────────┐
-  │  9 services × (4 pending protos + tests + docs) =        │
-  │  a very large surface area to stabilise before launch    │
-  │                                                           │
-  │  Status:                                                  │
-  │  iam              ✅ proto defined    ← critical service  │
-  │  general-ledger   ✅ proto defined    ← critical service  │
-  │  budget-planning  ✅ proto defined                        │
-  │  expense-tracking ✅ proto defined                        │
-  │  project-mgmt     ✅ proto defined                        │
-  │  inventory-mgmt   ✅ proto defined                        │
-  │  reporting        ⚠️ proto pending   ← blocks cross-svc  │
-  │  notifications    ⚠️ proto pending   ← no typed contract │
-  │  document         ⚠️ proto pending   ← no typed contract │
-  │                                                           │
-  │  4 pending protos = 4 services with no formal contract   │
-  │  = no Pact contract tests = undetected breaking changes  │
-  └──────────────────────────────────────────────────────────┘
-```
-
-#### 🔧 How to Improve
-
-```
-GOOD: Define pending protos first; add a service-addition gate
-
-  Priority order for pending protos:
-
-  1. notifications.proto (IMMEDIATELY)
-     Required by: registration pipeline (step 9)
-     Required by: expense approval (email alert)
-     Without it: no typed contract for the most-called async service
-
-  2. document.proto (NEXT)
-     Required by: project-management (attach files to productions)
-     Required by: expense-tracking (receipts, POs)
-
-  3. reporting.proto (BEFORE GA)
-     Required by: dashboard consumers
-     Can be stubbed with REST endpoint in the interim
-
-  Structural gate (add to Makefile):
-  ┌──────────────────────────────────────────────────────────┐
-  │  .PHONY: check-protos                                    │
-  │  check-protos:                                           │
-  │      buf lint                                            │
-  │      buf build  ← fails if any .proto is syntactically  │
-  │                   incomplete or references undefined types│
-  │                                                           │
-  │  # CI pipeline adds check-protos before unit tests      │
-  └──────────────────────────────────────────────────────────┘
-
-  Alternative: keep notifications + document as REST-only
-  until the gRPC contract is fully designed. A REST endpoint
-  with a JSON schema is better than a pending proto.
-```
-
----
-
-### ⚠️ Bad — Registration Pipeline Has No Saga Pattern
+### ⚠️ Bad — Registration Pipeline Still Has No Saga Pattern
 
 ```
 BAD: Distributed transaction with no compensating logic
 
-  9-step registration pipeline:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Step 1: Validate tenant data              ← reversible  │
-  │  Step 2: INSERT INTO public.tenants        ← written     │
-  │  Step 3: CREATE SCHEMA tenant_<uuid>       ← written     │
-  │  Step 4: Run IAM migrations                ← written     │
-  │  Step 5: Seed IAM (admin user)             ← written     │
-  │  Step 6: Seed Ledger (chart of accounts)   ← written     │
-  │  Step 7: Bind vertical config              ← written     │
-  │  Step 8: Emit registration.complete (NATS) ← written     │
-  │  Step 9: Send welcome notification         ← async       │
-  └──────────────────────────────────────────────────────────┘
+  The 9-step registration pipeline:
+    Step 1: Validate tenant data              ← reversible
+    Step 2: INSERT INTO public.tenants        ← written
+    Step 3: CREATE SCHEMA tenant_<uuid>       ← written
+    Step 4: Run IAM migrations                ← written
+    Step 5: Seed IAM (admin user)             ← written
+    Step 6: Seed Ledger (chart of accounts)   ← written
+    Step 7: Bind vertical config              ← written
+    Step 8: Emit registration.complete (NATS) ← written
+    Step 9: Send welcome notification (async)
 
-  Failure scenario (step 6 panics):
-  ┌──────────────────────────────────────────────────────────┐
-  │  Steps 2-5 already committed to the DB                   │
-  │  Step 6 fails mid-way                                    │
-  │                                                           │
-  │  State left behind:                                      │
-  │  ├── tenant row in public.tenants (orphan)               │
-  │  ├── schema tenant_<uuid> exists (orphan)               │
-  │  ├── IAM tables populated with admin user               │
-  │  ├── Ledger half-seeded or empty                         │
-  │  └── No vertical config → every service errors          │
-  │                                                           │
-  │  Retrying registration for the same email:               │
-  │  ├── Step 2 fails with UNIQUE violation (tenant exists)  │
-  │  └── Tenant is permanently stuck in broken state         │
-  └──────────────────────────────────────────────────────────┘
+  Failure at step 6: steps 2–5 already committed to different DBs/schemas.
+  No compensating transaction; no documented rollback.
+  Retrying registration for the same email fails with UNIQUE violation (step 2).
+  Tenant stuck in broken state.
 ```
+
+This is the most critical remaining architectural gap.
 
 #### 🔧 How to Improve
 
+```go
+// pkg/registration/saga.go
+
+type Step struct {
+    Name       string
+    Execute    func(ctx context.Context) error
+    Compensate func(ctx context.Context) error
+}
+
+func (s *Saga) Run(ctx context.Context) error {
+    var completed []Step
+    for _, step := range s.steps {
+        if err := step.Execute(ctx); err != nil {
+            // Compensate in reverse order
+            for i := len(completed) - 1; i >= 0; i-- {
+                if compErr := completed[i].Compensate(ctx); compErr != nil {
+                    logger.Error("compensation failed",
+                        "step", completed[i].Name, "err", compErr)
+                }
+            }
+            return fmt.Errorf("pipeline failed at %s: %w", step.Name, err)
+        }
+        completed = append(completed, step)
+    }
+    return nil
+}
 ```
-GOOD: Explicit saga with compensating transactions
 
-  pkg/registration/pipeline.go refactor:
-
-  ┌─────────────────────────────────────────────────────────┐
-  │  type Step struct {                                      │
-  │      Name       string                                   │
-  │      Execute    func(ctx context.Context) error          │
-  │      Compensate func(ctx context.Context) error          │
-  │  }                                                       │
-  │                                                          │
-  │  steps := []Step{                                        │
-  │      {                                                   │
-  │          Name: "create_tenant_record",                   │
-  │          Execute: func(ctx context.Context) error {      │
-  │              return db.InsertTenant(ctx, tenant)         │
-  │          },                                              │
-  │          Compensate: func(ctx context.Context) error {   │
-  │              return db.DeleteTenant(ctx, tenant.ID)      │
-  │          },                                              │
-  │      },                                                  │
-  │      {                                                   │
-  │          Name: "create_schema",                          │
-  │          Execute: func(ctx context.Context) error {      │
-  │              return db.CreateTenantSchema(ctx, tenant.ID)│
-  │          },                                              │
-  │          Compensate: func(ctx context.Context) error {   │
-  │              return db.DropTenantSchema(ctx, tenant.ID)  │
-  │          },                                              │
-  │      },                                                  │
-  │      // ... remaining steps                              │
-  │  }                                                       │
-  └─────────────────────────────────────────────────────────┘
-
-  Execution with rollback:
-  ┌─────────────────────────────────────────────────────────┐
-  │  completed := []Step{}                                   │
-  │                                                          │
-  │  for _, step := range steps {                            │
-  │      if err := step.Execute(ctx); err != nil {          │
-  │          // Compensate in reverse order                  │
-  │          for i := len(completed) - 1; i >= 0; i-- {    │
-  │              _ = completed[i].Compensate(ctx)            │
-  │          }                                               │
-  │          return fmt.Errorf("pipeline failed at %s: %w", │
-  │                            step.Name, err)              │
-  │      }                                                   │
-  │      completed = append(completed, step)                │
-  │  }                                                       │
-  └─────────────────────────────────────────────────────────┘
-
-  Effect:
-  Step 6 fails → steps 5, 4, 3, 2 compensated in order
-  → DB is clean → retry is safe
-  → No orphan tenants or schemas
-```
+Add a dedicated test that injects a failure at each step index and asserts a clean rollback.
 
 ---
 
@@ -338,328 +196,175 @@ GOOD: Explicit saga with compensating transactions
 ```
 BAD: Cross-service aggregation is architecturally unresolved
 
-  The problem:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Reporting service needs data from all 8 other services  │
-  │                                                           │
-  │  Option A: Live gRPC fan-out (current implicit approach) │
-  │                                                           │
-  │  Report request → reporting-service                      │
-  │    → GetBudgets() to budget-planning                     │
-  │    → GetExpenses() to expense-tracking                   │
-  │    → GetJournalEntries() to general-ledger               │
-  │    → GetProjects() to project-management                 │
-  │    → ...8 serial or parallel gRPC calls                  │
-  │                                                           │
-  │  Problems:                                               │
-  │    ├── Tail latency: slowest service = slow report       │
-  │    ├── All 8 services must be healthy for any report     │
-  │    ├── No caching without complex invalidation logic     │
-  │    └── Reporting load stresses transactional services    │
-  │                                                           │
-  │  Option B: Shared DB (anti-pattern, not used — good)     │
-  │    reporting reads from budget's DB directly             │
-  │    Problems: tight coupling, breaks service isolation    │
-  └──────────────────────────────────────────────────────────┘
+  Reporting service needs data from all 9 other services.
+
+  Option A: Live gRPC fan-out (implicit)
+    → Tail latency bounded by slowest service
+    → All 9 services must be healthy for any report
+    → Reporting load stresses transactional services
+    → No caching without complex invalidation
+
+  Option B: Shared DB (not used — correctly rejected as anti-pattern)
+
+  Option C: Event-sourced read model (undocumented but hinted at by
+            migrations/reporting/002_create_dashboard_views.up.sql)
 ```
 
 #### 🔧 How to Improve
 
 ```
-GOOD: Event-sourced read model via NATS JetStream
+Every domain service publishes on state change:
+  budget.approved, expense.submitted, expense.approved, journal.posted,
+  project.phase.completed, ...
 
-  Architecture:
+  → NATS JetStream → reporting-analytics subscribes
+  → materialises its own read model (PostgreSQL views)
+  → report request hits a single DB query, <50 ms
+  → no cross-service calls at report time
 
-  ┌──────────────────────────────────────────────────────────┐
-  │  Every domain service publishes events on state change:  │
-  │                                                           │
-  │  budget-planning  → "budget.approved"                    │
-  │  expense-tracking → "expense.submitted"                  │
-  │  general-ledger   → "journal.posted"                     │
-  │  project-mgmt     → "project.phase.completed"            │
-  └──────────────────────────────────────────────────────────┘
-                 │ NATS JetStream
-                 ▼
-  ┌──────────────────────────────────────────────────────────┐
-  │  reporting-analytics subscribes to all events            │
-  │  → materialises its own read model (PostgreSQL views)    │
-  │                                                           │
-  │  migrations/reporting/002_create_dashboard_views.up.sql  │
-  │  (already exists! — just needs event consumers wired in) │
-  │                                                           │
-  │  Report request hits pre-materialised views:             │
-  │    SELECT * FROM reporting.budget_summary WHERE ...       │
-  │    → single DB query, no cross-service calls at query time│
-  │    → <50ms for any report                                │
-  └──────────────────────────────────────────────────────────┘
+Event envelope:
+  type DomainEvent struct {
+      EventID    uuid.UUID   // Rule #5 dedup key
+      EventType  string
+      TenantID   uuid.UUID
+      OccurredAt time.Time
+      Payload    []byte
+  }
 
-  Event envelope (standard across all services):
-  ┌──────────────────────────────────────────────────────────┐
-  │  type DomainEvent struct {                               │
-  │      EventID    uuid.UUID  `json:"event_id"`             │
-  │      EventType  string     `json:"event_type"`           │
-  │      TenantID   uuid.UUID  `json:"tenant_id"`            │
-  │      OccurredAt time.Time  `json:"occurred_at"`          │
-  │      Payload    []byte     `json:"payload"`              │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
+Deduplication:
+  INSERT INTO processed_events (event_id) VALUES ($1) ON CONFLICT DO NOTHING;
 
-  Deduplication: ON CONFLICT (event_id) DO NOTHING (Rule #5)
-  Replay: NATS JetStream replay → rebuild any view from scratch
+Replay:
+  NATS JetStream supports stream-level replay → any view can be rebuilt.
 ```
+
+Write this up as ADR-016 before the first reporting consumer ships.
 
 ---
 
 ## 2. Security Practices
 
-### ✅ Good — Tenant-Per-Schema Provides Database-Level Isolation
+### ✅ Good — Tenant-Per-Schema Is Safe From Injection (v1.1 ❌ Critical Resolved)
 
+The schema injection risk flagged in v1.1 is fixed.
+
+```go
+// pkg/tenantdb/tenantdb.go
+
+func Acquire(ctx context.Context, pool *pgxpool.Pool, tenantID uuid.UUID) (*pgxpool.Conn, error) {
+    // Accepts only uuid.UUID — compile-time type safety.
+    if tenantID == uuid.Nil {
+        return nil, ErrEmptyTenantID
+    }
+
+    conn, err := pool.Acquire(ctx)
+    if err != nil {
+        return nil, err
+    }
+
+    // uuid.UUID.String() is always canonical — 36 chars, hex + hyphens.
+    // No SQL metacharacters are possible in this format.
+    schema := "tenant_" + tenantID.String()
+    _, err = conn.Exec(ctx, "SET search_path = "+schema+", public")
+    if err != nil {
+        conn.Release()
+        return nil, err
+    }
+    return conn, nil
+}
 ```
-GOOD: Cross-tenant data access is impossible, not just unlikely
 
-  Standard row-level filtering (weaker approach):
-  ┌──────────────────────────────────────────────────────────┐
-  │  SELECT * FROM budgets WHERE tenant_id = $1              │
-  │  ↑ Developer forgets this → returns all tenants' data   │
-  │  ↑ Relies on 100% correct application code              │
-  └──────────────────────────────────────────────────────────┘
+Package comment documents why this is safe. Test `TestSetTenantSchemaRejectsInvalidInput` covers `uuid.Nil`, malformed strings, and `'; DROP SCHEMA ...; --` payloads (rejected at the type level).
 
-  Tenant-per-schema (Thittam's approach):
-  ┌──────────────────────────────────────────────────────────┐
-  │  BeforeAcquire hook:                                      │
-  │    SET search_path = tenant_<uuid>, public               │
-  │                                                           │
-  │  SELECT * FROM budgets                                   │
-  │  ↑ No WHERE needed → only this schema's budgets exist   │
-  │  ↑ Cross-tenant access requires wrong search_path        │
-  │  ↑ Kong validates X-Tenant-ID header before any service  │
-  │    sees the request                                       │
-  │                                                           │
-  │  Security audit statement:                               │
-  │  "Physical schema separation means cross-tenant query    │
-  │   is architecturally impossible from within a correctly  │
-  │   set connection context."                               │
-  └──────────────────────────────────────────────────────────┘
+---
+
+### ✅ Good — T1 Secrets Live in Memory, Never in Env Vars (v1.1 ❌ Critical Resolved)
+
+```go
+// cmd/iam/main.go — production path
+
+vaultCfg := secrets.VaultConfig{
+    Address:  os.Getenv("VAULT_ADDR"),
+    RoleID:   os.Getenv("VAULT_ROLE_ID"),
+    SecretID: os.Getenv("VAULT_SECRET_ID"),
+}
+// AppRole credentials are T3 — acceptable as env vars.
+
+src := secrets.NewVaultSource(vaultCfg)
+
+// T1 JWT signing key fetched from Vault, held in memory bytes only.
+jwtKey, err := src.GetSecret(ctx, "iam/jwt-private-key")
+// Never written to disk, never logged, never re-serialised.
+
+// Register the Vault source as a /readyz health checker.
+healthServer.Register("vault", src)
 ```
+
+Dev path: `VAULT_ADDR` unset → `FileSource` reads from gitignored `./keys/` directory → memory bytes. Same discipline: never re-serialised, never logged.
+
+Aligns Rule #2 with the security doc's T1 requirements.
 
 ---
 
 ### ✅ Good — Istio mTLS for All East-West Traffic
 
 ```
-GOOD: Service-to-service calls are authenticated and encrypted
+PeerAuthentication: STRICT mode (no plaintext)
+AuthorizationPolicy: per-service allowlist
 
-  Without mTLS:
-  ┌──────────────────────────────────────────────────────────┐
-  │  budget-planning ──HTTP──▶ general-ledger                │
-  │  If budget-planning is compromised:                      │
-  │    → attacker can call any service from inside the mesh  │
-  │    → general-ledger accepts the call (no auth check)     │
-  └──────────────────────────────────────────────────────────┘
-
-  With Istio mTLS (current):
-  ┌──────────────────────────────────────────────────────────┐
-  │  budget-planning ──mTLS──▶ general-ledger                │
-  │  If budget-planning is compromised:                      │
-  │    → attacker has budget-planning's certificate          │
-  │    → general-ledger sees: caller = budget-planning       │
-  │    → AuthorizationPolicy: allow only expected callers    │
-  │    → A rogue service calling general-ledger is rejected  │
-  └──────────────────────────────────────────────────────────┘
-
-  Enforcement:
-  PeerAuthentication: STRICT mode (no plaintext allowed)
-  AuthorizationPolicy: per-service allowlist
+A compromised service with its own cert cannot call unintended services.
 ```
 
 ---
 
-### ✅ Good — Append-Only Audit Logs Are Legally Defensible
+### ✅ Good — Append-Only Audit Log Schema Is Legally Defensible
 
-```
-GOOD: Financial audit trail cannot be tampered with
+```sql
+CREATE TABLE audit_log (
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    actor_id       UUID NOT NULL,
+    action         TEXT NOT NULL,
+    resource_type  TEXT NOT NULL,
+    resource_id    UUID NOT NULL,
+    tenant_id      UUID NOT NULL,
+    old_state      JSONB,
+    new_state      JSONB,
+    metadata       JSONB,
+    occurred_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
-  Audit log table design:
-  ┌──────────────────────────────────────────────────────────┐
-  │  CREATE TABLE audit_log (                                │
-  │    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),│
-  │    actor_id       UUID NOT NULL,                         │
-  │    action         TEXT NOT NULL,                         │
-  │    target_type    TEXT NOT NULL,                         │
-  │    target_id      UUID NOT NULL,                         │
-  │    tenant_id      UUID NOT NULL,                         │
-  │    old_state      JSONB,                                 │
-  │    new_state      JSONB,                                 │
-  │    ip_address     INET,                                  │
-  │    correlation_id TEXT,                                  │
-  │    occurred_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()     │
-  │  );                                                       │
-  │                                                           │
-  │  -- These constraints make the log append-only:          │
-  │  REVOKE UPDATE ON audit_log FROM thittam_app;            │
-  │  REVOKE DELETE ON audit_log FROM thittam_app;            │
-  └──────────────────────────────────────────────────────────┘
-
-  If a budget approval is disputed:
-    SELECT * FROM audit_log
-    WHERE target_type = 'budget'
-      AND target_id = '<disputed-budget-uuid>'
-    ORDER BY occurred_at;
-    
-  → Shows every action, who took it, old state, new state.
-  → Cannot be backdated or deleted.
-  → Admissible in financial dispute resolution.
+-- Indexes
+CREATE INDEX ... ON audit_log (tenant_id, resource_type, resource_id);
+CREATE INDEX ... ON audit_log (actor_id, occurred_at);
+CREATE INDEX ... ON audit_log (occurred_at);
+CREATE INDEX ... ON audit_log (action);
 ```
 
 ---
 
-### ❌ Critical — SQL Injection Risk in Tenant Schema Routing
+### ✅ Good — Schema Injection Test Coverage
 
+Test suite exercises malformed UUIDs, SQL metacharacter payloads, empty strings — all rejected at the `uuid.UUID` type boundary before ever reaching `SET search_path`.
+
+---
+
+### ⚠️ Bad — `audit_log` REVOKE UPDATE/DELETE Is Commented Out
+
+```sql
+-- migrations/audit/001_create_audit_log.up.sql, lines 27–29
+-- REVOKE UPDATE ON audit_log FROM thittam_app;
+-- REVOKE DELETE ON audit_log FROM thittam_app;
 ```
-CRITICAL: String interpolation in SET search_path
 
-  pkg/tenant/context.go (likely pattern):
-  ┌──────────────────────────────────────────────────────────┐
-  │  tenantID := r.Header.Get("X-Tenant-ID")                 │
-  │  query := fmt.Sprintf(                                    │
-  │      "SET search_path = tenant_%s, public",              │
-  │      tenantID    ← DANGER: user-controlled input         │
-  │  )                                                        │
-  │  db.Exec(query)                                          │
-  └──────────────────────────────────────────────────────────┘
-
-  Attack vector:
-  X-Tenant-ID: '; DROP SCHEMA tenant_legitimate; --
-
-  Executed SQL:
-  SET search_path = tenant_; DROP SCHEMA tenant_legitimate; --, public
-
-  Effect: An attacker with a valid JWT but a crafted tenant ID
-  can destroy any tenant's schema.
-
-  Note: Kong validates the X-Tenant-ID header, which reduces
-  but does not eliminate this risk (depends on Kong config).
-  Validation must also happen at the service layer.
-```
+Until a dedicated app role is created and the REVOKEs applied in deployment, the table is append-only by convention, not by database constraint. Rule #7 specifies append-only.
 
 #### 🔧 How to Improve
 
 ```
-GOOD: Validate UUID format before any interpolation
-
-  pkg/tenant/context.go:
-  ┌──────────────────────────────────────────────────────────┐
-  │  import "github.com/google/uuid"                         │
-  │                                                           │
-  │  func SetTenantSchema(ctx context.Context,               │
-  │                       db *pgxpool.Pool,                  │
-  │                       tenantID string) error {           │
-  │                                                           │
-  │      // MUST validate before any interpolation           │
-  │      parsed, err := uuid.Parse(tenantID)                 │
-  │      if err != nil {                                     │
-  │          return fmt.Errorf("invalid tenant ID: %w", err) │
-  │      }                                                    │
-  │                                                           │
-  │      // parsed.String() is always the canonical UUID form│
-  │      // Format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx     │
-  │      // No SQL metacharacters possible in this format     │
-  │      schema := "tenant_" + parsed.String()               │
-  │                                                           │
-  │      _, err = db.Exec(ctx,                               │
-  │          "SET search_path = "+schema+", public",         │
-  │      )                                                    │
-  │      return err                                          │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
-
-  Why parsed.String() is safe:
-    uuid.Parse() rejects anything that is not a valid UUID.
-    A valid UUID contains only hex digits and hyphens.
-    Hyphens in schema names are fine; no SQL metacharacters.
-
-  Add to test suite:
-  ┌──────────────────────────────────────────────────────────┐
-  │  func TestSetTenantSchemaRejectsInjection(t *testing.T) {│
-  │      cases := []string{                                  │
-  │          "'; DROP TABLE tenants; --",                    │
-  │          "../../etc/passwd",                             │
-  │          "not-a-uuid",                                   │
-  │          "",                                             │
-  │      }                                                    │
-  │      for _, tc := range cases {                          │
-  │          err := SetTenantSchema(ctx, db, tc)             │
-  │          require.Error(t, err)                           │
-  │      }                                                    │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
-```
-
----
-
-### ⚠️ Bad — Contradiction Between Rule #2 and Security Doc on T1 Secrets
-
-```
-BAD: Two conflicting rules for how JWT signing keys are stored
-
-  CODING_RULES.md — Rule #2:
-    "All secrets come from environment variables.
-     os.Getenv('JWT_SECRET')"
-
-  data-security-rbac.md (Security doc):
-    "T1 data never leaves Vault and never goes in env vars.
-     JWT signing keys are T1 data."
-
-  What actually happens:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Deployment → JWT_SECRET set as env var (Rule #2)        │
-  │                                                           │
-  │  Security risk:                                          │
-  │  ├── /proc/environ on any container exposes JWT_SECRET   │
-  │  ├── docker inspect exposes env vars                     │
-  │  ├── Log aggregation accidentally captures env dumps     │
-  │  └── Container orchestration (K8s) ConfigMaps leak       │
-  └──────────────────────────────────────────────────────────┘
-```
-
-#### 🔧 How to Improve
-
-```
-GOOD: Vault-sourced secrets held in memory only
-
-  Service startup pattern (consistent with ADR-009):
-  ┌──────────────────────────────────────────────────────────┐
-  │  func loadSecrets(ctx context.Context,                   │
-  │                   vault *vault.Client) (*Secrets, error) {│
-  │      // Fetch from Vault at startup — not from env       │
-  │      data, err := vault.Logical().Read(                  │
-  │          "secret/data/thittam/jwt",                      │
-  │      )                                                    │
-  │      if err != nil {                                     │
-  │          return nil, fmt.Errorf(                         │
-  │              "fetch jwt secret from vault: %w", err)     │
-  │      }                                                    │
-  │      return &Secrets{                                    │
-  │          JWTSigningKey: data.Data["signing_key"].(string)│
-  │      }, nil                                              │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
-
-  The secret lives in process memory only.
-  Never written to disk. Never in env var. Never in logs.
-
-  Update Rule #2 in CODING_RULES.md:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Rule #2 — Secrets From Environment Only (updated)       │
-  │                                                           │
-  │  T3/T4 config: environment variables (DATABASE_URL,      │
-  │                REDIS_URL, feature flags)                 │
-  │  T1/T2 secrets: Vault-sourced at startup (JWT signing    │
-  │                 keys, DB passwords, API keys)            │
-  │                                                           │
-  │  Never log any secret at any tier.                       │
-  │  Fail fast at startup if Vault is unreachable (T1/T2).  │
-  └──────────────────────────────────────────────────────────┘
+1. Create thittam_app role in ops setup (not via migration — role should outlive schemas).
+2. Uncomment the REVOKE statements; run as a post-deploy step.
+3. Add a test that attempts UPDATE/DELETE as thittam_app and asserts it fails.
+4. Document the role model in docs/security/roles.md.
 ```
 
 ---
@@ -667,74 +372,100 @@ GOOD: Vault-sourced secrets held in memory only
 ### ⚠️ Bad — Impersonation Session Lifecycle Is Undefined
 
 ```
-BAD: Platform admin impersonation has no time limit or revocation policy
-
-  pkg/platform/service.go — impersonation exists, but:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Questions with no documented answers:                   │
-  │                                                           │
-  │  Who can initiate impersonation?                         │
-  │    → Any platform admin? Only super-admin?               │
-  │                                                           │
-  │  How long can an impersonation session last?             │
-  │    → Indefinite? 1 hour? 15 minutes?                     │
-  │                                                           │
-  │  Is the impersonated session revoked when:               │
-  │    → Target user changes their password?                 │
-  │    → Target tenant is suspended?                         │
-  │    → Impersonating admin's session expires?              │
-  │                                                           │
-  │  What is audited?                                        │
-  │    → Start of impersonation?                             │
-  │    → Every action taken while impersonating?             │
-  │    → End of impersonation?                               │
-  │                                                           │
-  │  Risk: A platform admin impersonates a finance director, │
-  │  approves a fraudulent expense, and there is no audit    │
-  │  trail distinguishing the action from a legitimate one.  │
-  └──────────────────────────────────────────────────────────┘
+pkg/platform/ supports impersonation; web/components/audit-log-viewer.tsx exists.
+Missing end-to-end:
+  Who can initiate? (super_admin only?)
+  Session TTL? (30 min? indefinite?)
+  Revocation triggers? (target password change, tenant suspension)
+  Dual-actor audit entries? (actor_id AND impersonated_by)
+  Concurrent impersonations per admin? (max 1?)
 ```
 
 #### 🔧 How to Improve
 
+```go
+type ImpersonationSession struct {
+    ID              uuid.UUID
+    AdminID         uuid.UUID    // who is impersonating
+    TargetUserID    uuid.UUID    // who is being impersonated
+    TenantID        uuid.UUID
+    StartedAt       time.Time
+    ExpiresAt       time.Time    // StartedAt + 30 min
+    EndedAt         *time.Time   // nil if active
+    EndReason       string       // "timeout" | "manual" | "password_change" | ...
+}
+
+Rules:
+  1. Only super_admin role can initiate
+  2. Session expires after 30 min (Redis TTL enforced)
+  3. Impersonation JWT carries: is_impersonated=true, impersonating_admin_id=...
+  4. Every request in an impersonation session writes audit_log with
+     actor_id=<target> AND impersonated_by=<admin>
+  5. Target password change → immediate revocation
+  6. Max 1 active impersonation per admin at a time
 ```
-GOOD: Explicit impersonation session model
 
-  pkg/platform/types.go:
-  ┌──────────────────────────────────────────────────────────┐
-  │  type ImpersonationSession struct {                       │
-  │      ID              uuid.UUID                           │
-  │      AdminID         uuid.UUID   // who is impersonating │
-  │      TargetUserID    uuid.UUID   // who is being impersonated│
-  │      TenantID        uuid.UUID                           │
-  │      StartedAt       time.Time                           │
-  │      ExpiresAt       time.Time   // StartedAt + 30min    │
-  │      EndedAt         *time.Time  // nil if active        │
-  │      EndReason       string      // "timeout"|"manual"|..│
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
+File as ADR-016.
 
-  Rules to document and enforce:
-  ┌──────────────────────────────────────────────────────────┐
-  │  1. Only super_admin role can initiate impersonation     │
-  │  2. Session expires after 30 minutes (hard TTL in Redis) │
-  │  3. Impersonation tokens carry is_impersonated:true      │
-  │     and impersonating_admin_id in the JWT payload        │
-  │  4. Every request in an impersonation session writes to  │
-  │     audit_log with both actor_id AND impersonating_id    │
-  │  5. Target user password change → immediate revocation   │
-  │  6. Maximum 1 active impersonation per admin at a time   │
-  └──────────────────────────────────────────────────────────┘
+---
 
-  Audit log entry during impersonation:
-    actor_id:           <target_user_uuid>
-    impersonated_by:    <admin_uuid>
-    action:             APPROVE_EXPENSE
-    ...
+### ⚠️ Bad — bcrypt Cost 12 Is CPU-Exhaustion–Susceptible Under Concurrent Load
 
-  Any auditor can see: this action was taken by the admin
-  while impersonating the target user.
+~250 ms per hash. A 1000-request login storm from 1000 IPs (bypasses per-IP rate limit) saturates IAM CPU for minutes; JWT validation and user lookup queue behind bcrypt workers.
+
+#### 🔧 How to Improve
+
+```go
+// Option A: migrate to argon2id (better memory-hardness profile)
+hash := argon2.IDKey([]byte(password), salt,
+    1,      // time cost
+    64*1024,// memory cost (64 MB)
+    4,      // parallelism
+    32,     // key length
+)
+
+// Option B: keep bcrypt, bound concurrency
+var bcryptSem = make(chan struct{}, 8)
+
+func VerifyPassword(hash, password string) error {
+    bcryptSem <- struct{}{}
+    defer func() { <-bcryptSem }()
+    return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+}
 ```
+
+Combined with per-IP rate limiting at Kong.
+
+---
+
+### ⚠️ Bad — NATS Per-Subject Authorization Not Specified
+
+A compromised `notifications` service should not be able to publish to `ledger.journal.posted`.
+
+#### 🔧 How to Improve
+
+```
+NATS user accounts per service (TLS cert identity):
+  service-ledger    → pub: ledger.>, journal.>
+                      sub: expense.approved
+  service-expense   → pub: expense.>
+                      sub: (various)
+  service-notifications → pub: notifications.>
+                      sub: notifications.>, expense.approved, budget.approved, ...
+
+Document in docs/security/nats-subjects.md.
+Enforce via NATS account configuration.
+```
+
+---
+
+### ⚠️ Bad — MinIO Presigned URL TTL Is a Fixed 15 min
+
+For industries with large uploads (film dailies, construction blueprints, event AV assets), 15 minutes may be too short on slow connections.
+
+#### 🔧 How to Improve
+
+Dynamic TTL based on file size (e.g., `max(15min, file_size_mb × 30s)`), or a session-scoped server-side proxy that reads MinIO on behalf of the client using a short-lived session token.
 
 ---
 
@@ -743,841 +474,587 @@ GOOD: Explicit impersonation session model
 ### ✅ Good — Money Is Never a Float (Rule #1)
 
 ```
-GOOD: Decimal precision enforced at every layer
+Go:             github.com/shopspring/decimal
+PostgreSQL:     NUMERIC(14,2)
+API response:   string with 2 decimal places ("15000.00")
 
-  Layer 1: Go struct
-  ┌──────────────────────────────────────────────────────────┐
-  │  import "github.com/shopspring/decimal"                  │
-  │                                                           │
-  │  type BudgetLineItem struct {                            │
-  │      Amount   decimal.Decimal  ← never float64          │
-  │      Tax      decimal.Decimal  ← never float64          │
-  │      Total    decimal.Decimal  ← never float64          │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
+float64 arithmetic: 0.1 + 0.2 = 0.30000000000000004
+decimal arithmetic: 0.1 + 0.2 = 0.3 (exact)
 
-  Layer 2: PostgreSQL
-  ┌──────────────────────────────────────────────────────────┐
-  │  amount NUMERIC(14,2) NOT NULL   ← never FLOAT or REAL  │
-  └──────────────────────────────────────────────────────────┘
-
-  Layer 3: API response (Kong → client)
-  ┌──────────────────────────────────────────────────────────┐
-  │  {"amount": "15000.00"}  ← string, 2dp, never a number  │
-  └──────────────────────────────────────────────────────────┘
-
-  Why this matters:
-  ┌──────────────────────────────────────────────────────────┐
-  │  float64 arithmetic:                                     │
-  │    0.1 + 0.2 = 0.30000000000000004                      │
-  │                                                           │
-  │  On a film production with a $5,000,000 budget:          │
-  │    Daily rate calculations accumulate float errors       │
-  │    Budget vs. actual difference may be $0.01 or $100     │
-  │    Financial reports don't balance                       │
-  │    Auditors flag the discrepancy                         │
-  │                                                           │
-  │  decimal.Decimal arithmetic:                             │
-  │    0.1 + 0.2 = 0.3 (exact)                              │
-  │    Budget always balances to the cent                    │
-  └──────────────────────────────────────────────────────────┘
+On a $5,000,000 production budget, float accumulation produces pennies
+of mismatch at report time — auditors flag discrepancies.
 ```
 
 ---
 
-### ✅ Good — Double-Entry Ledger Is Correctly Modelled
+### ✅ Good — Double-Entry Ledger Correctly Modelled
 
+```sql
+CREATE TABLE journal_entries (
+    id                UUID PRIMARY KEY,
+    tenant_id         UUID NOT NULL,
+    period_id         UUID NOT NULL,
+    description       TEXT NOT NULL,
+    posted_at         TIMESTAMPTZ,
+    created_by        UUID NOT NULL,
+    idempotency_key   TEXT UNIQUE
+);
+
+CREATE TABLE journal_lines (
+    entry_id   UUID REFERENCES journal_entries(id),
+    account_id UUID REFERENCES accounts(id),
+    debit      NUMERIC(14,2) NOT NULL DEFAULT 0,
+    credit     NUMERIC(14,2) NOT NULL DEFAULT 0,
+    CHECK (debit >= 0 AND credit >= 0),
+    CHECK (debit = 0 OR credit = 0)  -- one side only
+);
+
+-- Enforced in service.go (DB constraint is backup):
+-- SUM(debit) = SUM(credit) per journal_entry
 ```
-GOOD: General ledger enforces accounting identity at the DB level
 
-  migrations/ledger/003_create_journal_entries.up.sql:
-  ┌──────────────────────────────────────────────────────────┐
-  │  CREATE TABLE journal_entries (                          │
-  │    id             UUID PRIMARY KEY,                      │
-  │    tenant_id      UUID NOT NULL,                         │
-  │    period_id      UUID NOT NULL,                         │
-  │    description    TEXT NOT NULL,                         │
-  │    posted_at      TIMESTAMPTZ,                           │
-  │    created_by     UUID NOT NULL,                         │
-  │    idempotency_key TEXT UNIQUE                           │
-  │  );                                                       │
-  │                                                           │
-  │  migrations/ledger/004_create_journal_lines.up.sql:      │
-  │  CREATE TABLE journal_lines (                            │
-  │    entry_id    UUID REFERENCES journal_entries(id),      │
-  │    account_id  UUID REFERENCES accounts(id),             │
-  │    debit       NUMERIC(14,2) NOT NULL DEFAULT 0,         │
-  │    credit      NUMERIC(14,2) NOT NULL DEFAULT 0,         │
-  │    CHECK (debit >= 0 AND credit >= 0),                   │
-  │    CHECK (debit = 0 OR credit = 0)  ← one side only     │
-  │  );                                                       │
-  │                                                           │
-  │  -- Enforced in service.go (DB constraint is backup):    │
-  │  -- SUM(debit) = SUM(credit) for any journal_entry       │
-  └──────────────────────────────────────────────────────────┘
-
-  Every expense approval produces a balanced journal entry:
-  Debit:  Production Expenses (above-the-line)  $5,000.00
-  Credit: Accounts Payable                      $5,000.00
-  → These always balance. A financial statement that does not
-    balance is a service bug, detected immediately.
-```
+Every expense approval produces a balanced entry. A financial statement that doesn't balance is a detectable service bug.
 
 ---
 
-### ⚠️ Bad — bcrypt Cost 12 Is Vulnerable Under Concurrent Auth Load
+### ✅ Good — Tenant-Level Primary Currency From Country
 
-```
-BAD: bcrypt at cost 12 creates a CPU exhaustion vector
+Commit `2d2091e` — tenant carries address + country-driven primary currency. XYZ_CBA (India) → INR; XYZ Construction (USA) → USD. No hardcoding; country → currency mapping drives display.
 
-  Measurement on modern hardware:
-    bcrypt cost 12 ≈ 250ms per hash
+---
 
-  Concurrent login storm (100 simultaneous users):
-  ┌──────────────────────────────────────────────────────────┐
-  │  goroutine 1: bcrypt.CompareHashAndPassword() ← 250ms   │
-  │  goroutine 2: bcrypt.CompareHashAndPassword() ← 250ms   │
-  │  ... (goroutines 3-100 same)                             │
-  │                                                           │
-  │  Go's goroutine scheduler uses GOMAXPROCS threads        │
-  │  If GOMAXPROCS=4: 4 bcrypt hashes run truly parallel    │
-  │  Remaining 96 goroutines queue                           │
-  │  Last goroutine waits: 96/4 × 250ms = 6,000ms (6 sec)  │
-  │                                                           │
-  │  Deliberate attack: attacker sends 1000 login requests  │
-  │  from 1000 IPs (bypasses per-IP rate limit)             │
-  │  → IAM service CPU saturated for minutes                │
-  │  → All other IAM operations (JWT validation, user       │
-  │    lookup) queued behind bcrypt workers                  │
-  └──────────────────────────────────────────────────────────┘
-```
+### ✅ Good — Column-Level Encryption for T1 Financial Fields
 
-#### 🔧 How to Improve
+`day_rate` (payroll), `vendor_gstin` (tax IDs) — encrypted at the application layer with AES-256-GCM before writing to PostgreSQL. Key from Vault.
 
-```
-GOOD: Replace bcrypt with argon2id + bounded worker pool
-
-  Option A: argon2id (better memory-hardness profile)
-  ┌──────────────────────────────────────────────────────────┐
-  │  import "golang.org/x/crypto/argon2"                     │
-  │                                                           │
-  │  func HashPassword(password string) (string, error) {    │
-  │      salt := make([]byte, 16)                            │
-  │      rand.Read(salt)                                     │
-  │      hash := argon2.IDKey(                               │
-  │          []byte(password),                               │
-  │          salt,                                           │
-  │          1,      // time cost (iterations)               │
-  │          64*1024,// memory cost (64 MB)                  │
-  │          4,      // parallelism                          │
-  │          32,     // key length                           │
-  │      )                                                    │
-  │      return encode(salt, hash), nil                      │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
-
-  Option B: Keep bcrypt, but bound the worker pool
-  ┌──────────────────────────────────────────────────────────┐
-  │  // Bounded semaphore: max 8 concurrent bcrypt operations│
-  │  var bcryptSem = make(chan struct{}, 8)                   │
-  │                                                           │
-  │  func VerifyPassword(hash, password string) error {      │
-  │      bcryptSem <- struct{}{}          // acquire         │
-  │      defer func() { <-bcryptSem }()  // release         │
-  │      return bcrypt.CompareHashAndPassword(               │
-  │          []byte(hash), []byte(password),                 │
-  │      )                                                    │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
-
-  The semaphore approach: 1001st login request gets a 503
-  (semaphore full) rather than queuing indefinitely.
-  Combined with per-IP rate limiting → attack is bounded.
-```
+A database breach exposes no plaintext T1 data.
 
 ---
 
 ## 4. Code Quality Practices
 
-### ✅ Good — Sentinel Errors with Package Prefixes
+### ✅ Good — Sentinel Errors With Package Prefixes
+
+```go
+// services/budget/errors.go
+var (
+    ErrNotFound         = errors.New("budget: not found")
+    ErrAlreadyApproved  = errors.New("budget: already approved")
+    ErrVersionConflict  = errors.New("budget: version conflict")
+)
+```
+
+Handler switches on `errors.Is()`, maps to gRPC status codes, logs once, never leaks internal details.
+
+---
+
+### ✅ Good — Idempotency Is Structural, Not Bolted On (Rule #5)
 
 ```
-GOOD: Errors are typed, not stringly-typed
+SQL (via sqlc):
+  INSERT INTO journal_entries (..., idempotency_key) VALUES (...)
+  ON CONFLICT (idempotency_key) DO NOTHING
 
-  services/budget/errors.go:
-  ┌──────────────────────────────────────────────────────────┐
-  │  var (                                                    │
-  │      ErrNotFound     = errors.New("budget: not found")   │
-  │      ErrAlreadyApproved = errors.New(                    │
-  │                           "budget: already approved")    │
-  │      ErrVersionConflict = errors.New(                    │
-  │                           "budget: version conflict")    │
-  │  )                                                        │
-  └──────────────────────────────────────────────────────────┘
+Event deduplication:
+  INSERT INTO processed_events (event_id) VALUES ($1)
+  ON CONFLICT (event_id) DO NOTHING
 
-  Handler converts errors to gRPC status codes:
-  ┌──────────────────────────────────────────────────────────┐
-  │  func (h *Handler) ApproveBudget(ctx context.Context,    │
-  │       req *budgetpb.ApproveBudgetRequest) (              │
-  │       *budgetpb.ApproveBudgetResponse, error) {          │
-  │                                                           │
-  │      err := h.svc.ApproveBudget(ctx, req.BudgetId)      │
-  │      if err != nil {                                     │
-  │          switch {                                        │
-  │          case errors.Is(err, budget.ErrNotFound):        │
-  │              return nil, status.Error(codes.NotFound,    │
-  │                  "budget not found")                     │
-  │          case errors.Is(err, budget.ErrAlreadyApproved): │
-  │              return nil, status.Error(codes.FailedPrecondition,│
-  │                  "budget already approved")              │
-  │          default:                                        │
-  │              return nil, status.Error(codes.Internal,    │
-  │                  "internal error")  ← never leak details │
-  │          }                                               │
-  │      }                                                    │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
-
-  Logged once at the handler. Not re-wrapped at every layer.
-  Internal details never reach the gRPC caller (Rule #11).
+gRPC client retries (Istio):
+  attempts: 3, perTryTimeout: 5s, retryOn: gateway-error,connect-failure
 ```
 
 ---
 
-### ✅ Good — Idempotency Is Structural, Not Bolted On
+### ✅ Good — Zero `TODO` / `FIXME` in Go Source
 
-```
-GOOD: Every write operation is safe to retry (Rule #5)
-
-  SQL (via sqlc):
-    INSERT INTO journal_entries (id, ..., idempotency_key)
-    VALUES ($1, ..., $N)
-    ON CONFLICT (idempotency_key) DO NOTHING
-
-  Event deduplication:
-    INSERT INTO processed_events (event_id, processed_at)
-    VALUES ($1, NOW())
-    ON CONFLICT (event_id) DO NOTHING
-
-  gRPC client retries (Istio):
-    retries:
-      attempts: 3
-      perTryTimeout: 5s
-      retryOn: gateway-error,connect-failure
-
-  Effect: Stripe sends a webhook twice → second is a no-op.
-  Network glitch causes retry → duplicate journal entry impossible.
-  NATS redelivers an event → second processing is a no-op.
-```
+Lint sweeps kept debt out. `2820dcc` fixed 49 findings; `1954fc8` wrapped remaining deferred `rdb.Close` calls. golangci-lint v2 clean.
 
 ---
 
-### ⚠️ Bad — No Input Validation Library Mentioned
+### ✅ Good — Doc-Drift CI Job
 
-```
-BAD: Boundary validation is likely handwritten and inconsistent
+`tools/check-doc-drift` runs on every PR. Compares Go identifiers inside ` ```go ` fenced blocks in `thittam_docs` against the application source. Graceful skip if `DOCS_REPO_TOKEN` not set; `d700e15` hoisted the secret check to job-level env.
 
-  Rule #11 requires: "Validate all external input at the service boundary"
+Closes the v1.1 aspirational "CI should validate" gap.
 
-  Go has no built-in validation framework. Without a library:
-  ┌──────────────────────────────────────────────────────────┐
-  │  handler.go (budget service):                            │
-  │    if req.Amount == "" {                                 │
-  │        return nil, status.Error(codes.InvalidArgument,  │
-  │            "amount required")                           │
-  │    }                                                      │
-  │    // No: min value check, max value check,              │
-  │    // currency code validation, date range validation   │
-  │                                                           │
-  │  handler.go (expense service):                           │
-  │    // Different developer, different validation style    │
-  │    if req.Amount <= 0 {                                  │
-  │        return error  // inconsistent with budget handler │
-  │    }                                                      │
-  │                                                           │
-  │  Without a standard: validation coverage is spotty,      │
-  │  inconsistent, and not systematically tested.            │
-  └──────────────────────────────────────────────────────────┘
-```
+---
+
+### ⚠️ Bad — No Data-Validation Library
+
+Rule #11 mandates boundary validation at every service handler. Without a library, validation is handwritten per handler — inconsistent and hard to audit.
 
 #### 🔧 How to Improve
 
+```proto
+// proto/budget/v1/budget.proto
+syntax = "proto3";
+import "buf/validate/validate.proto";
+
+message CreateBudgetRequest {
+    string name = 1 [(buf.validate.field).string = {
+        min_len: 1,
+        max_len: 200,
+    }];
+    string amount = 2 [(buf.validate.field).string = {
+        pattern: "^\\d+\\.\\d{2}$"
+    }];
+    string currency = 3 [(buf.validate.field).string = {
+        len: 3  // ISO 4217
+    }];
+}
 ```
-GOOD: protovalidate for protobuf-level validation
 
-  proto/budget/v1/budget.proto:
-  ┌──────────────────────────────────────────────────────────┐
-  │  syntax = "proto3";                                      │
-  │  import "buf/validate/validate.proto";                   │
-  │                                                           │
-  │  message CreateBudgetRequest {                           │
-  │      string name = 1 [(buf.validate.field).string = {    │
-  │          min_len: 1,                                     │
-  │          max_len: 200,                                   │
-  │      }];                                                  │
-  │                                                           │
-  │      string amount = 2 [(buf.validate.field).string = {  │
-  │          pattern: "^\\d+\\.\\d{2}$",  // "15000.00"    │
-  │      }];                                                  │
-  │                                                           │
-  │      string currency = 3 [(buf.validate.field).string = {│
-  │          len: 3,                                         │
-  │          // ISO 4217 currency code                       │
-  │      }];                                                  │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
-
-  gRPC interceptor validates every incoming request:
-  ┌──────────────────────────────────────────────────────────┐
-  │  import "github.com/bufbuild/protovalidate-go"           │
-  │                                                           │
-  │  func ValidationInterceptor() grpc.UnaryServerInterceptor│
-  │  {                                                        │
-  │      v, _ := protovalidate.New()                         │
-  │      return func(ctx context.Context,                    │
-  │                  req interface{},                        │
-  │                  _ *grpc.UnaryServerInfo,                │
-  │                  handler grpc.UnaryHandler) (            │
-  │                  interface{}, error) {                   │
-  │          if msg, ok := req.(proto.Message); ok {         │
-  │              if err := v.Validate(msg); err != nil {     │
-  │                  return nil, status.Error(               │
-  │                      codes.InvalidArgument, err.Error()) │
-  │              }                                           │
-  │          }                                               │
-  │          return handler(ctx, req)                        │
-  │      }                                                    │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
-
-  Result: Validation rules live in the proto file — the single
-  source of truth — and are enforced automatically for every
-  service that uses that proto. No handwritten validation.
+```go
+// gRPC interceptor validates every incoming request
+v, _ := protovalidate.New()
+if err := v.Validate(msg); err != nil {
+    return nil, status.Error(codes.InvalidArgument, err.Error())
+}
 ```
+
+Validation lives in the proto — the single source of truth — enforced automatically by the interceptor for every service.
+
+---
+
+### ⚠️ Bad — Production Status CHECK Is Movie-Production Specific
+
+The production status `CHECK` constraint on tenant status columns is hardcoded to movie-production lifecycle stages. XYZ Construction's seed maps construction stages onto allowed statuses as a workaround.
+
+#### 🔧 How to Improve
+
+Replace the table-level `CHECK` with vertical-aware validation:
+1. Remove the CHECK constraint from the migration.
+2. In service.go, validate incoming status against `vertical.FromContext(ctx).AllowedStatuses`.
+3. Test: XYZ_CBA accepts movie-production statuses, XYZ Construction accepts construction statuses, neither accepts the other.
+
+---
+
+### ⚠️ Bad — `Co-Authored-By: Claude …` in Commits
+
+Conflates tool-assistance with authorship. `Co-Authored-By` has specific meaning in open-source contribution workflows (GitHub Insights, attribution).
+
+#### 🔧 How to Improve
+
+Replace with a distinct tool-attribution trailer:
+
+```
+Tool: claude-opus-4-6
+```
+
+Or add to the commit body as a descriptive line:
+
+```
+Generated with assistance from Claude Opus 4.6.
+```
+
+Update Rule #8 in CODING_RULES.md to reflect the new convention.
 
 ---
 
 ## 5. Testing Practices
 
-### ✅ Good — Hand-Written Mocks Are Readable and Debuggable
+### ✅ Good — 1,150 Tests Across 80 Files (v1.1 gap resolved)
+
+3.75× growth from the v1.1 baseline of ~306. Coverage thresholds enforced in CI: `iam` and `ledger` ≥85%, `budget` and `expense` ≥80%, others ≥75%.
+
+---
+
+### ✅ Good — Hand-Written Mocks (Function Field Pattern)
+
+```go
+type mockBudgetRepo struct {
+    CreateBudgetFn  func(ctx, Budget) (*Budget, error)
+    ApproveBudgetFn func(ctx, uuid.UUID) error
+}
+
+func (m *mockBudgetRepo) CreateBudget(ctx context.Context, b Budget) (*Budget, error) {
+    return m.CreateBudgetFn(ctx, b)
+}
+
+// Test:
+repo := &mockBudgetRepo{
+    ApproveBudgetFn: func(ctx context.Context, id uuid.UUID) error {
+        return budget.ErrAlreadyApproved
+    },
+}
+svc := NewService(repo, verticalConfig)
+require.ErrorIs(t, svc.ApproveBudget(ctx, id), budget.ErrAlreadyApproved)
+```
+
+10 lines of mock, 15 lines of test. No framework. Readable call stack on failure.
+
+---
+
+### ✅ Good — `t.Parallel()` + Deterministic UUIDs
+
+Rule #9 compliance across the unit test corpus. Fixtures use `uuid.MustParse("d1000000-...")` for cross-suite consistency.
+
+---
+
+### ✅ Good — Integration Tests via Testcontainers
+
+Real Postgres + real migrations applied before each test run (`make db-test-bootstrap` + `THITTAM_TEST_DSN`). Transaction rollback per test.
+
+---
+
+### ✅ Good — Playwright E2E Scaffold (New in v1.2)
+
+`web/tests/e2e/` — `smoke.spec.ts`, `budgets-journey.spec.ts` (first business flow), `dashboard.spec.ts`. Playwright auto-boots the web server at `:3100`.
+
+First E2E in the codebase. Correct first journey choice — budgets are the authoring surface.
+
+---
+
+### ⚠️ Bad — E2E Coverage Is Narrow
+
+One business journey (budgets) + smoke. Not enough for GA.
+
+#### 🔧 How to Improve
+
+Before GA, add:
 
 ```
-GOOD: Function field mocks — no magic, no code generation
-
-  services/budget/service_test.go:
-  ┌──────────────────────────────────────────────────────────┐
-  │  type mockBudgetRepo struct {                            │
-  │      CreateBudgetFn  func(ctx, Budget) (*Budget, error)  │
-  │      ApproveBudgetFn func(ctx, uuid.UUID) error          │
-  │  }                                                        │
-  │                                                           │
-  │  func (m *mockBudgetRepo) CreateBudget(                  │
-  │      ctx context.Context, b Budget) (*Budget, error) {   │
-  │      return m.CreateBudgetFn(ctx, b)                     │
-  │  }                                                        │
-  │                                                           │
-  │  // Test:                                                │
-  │  func TestApproveBudget_AlreadyApproved(t *testing.T) { │
-  │      t.Parallel()                                        │
-  │      repo := &mockBudgetRepo{                            │
-  │          ApproveBudgetFn: func(ctx context.Context,      │
-  │                                id uuid.UUID) error {     │
-  │              return budget.ErrAlreadyApproved            │
-  │          },                                              │
-  │      }                                                    │
-  │      svc := NewService(repo, verticalConfig)             │
-  │      err := svc.ApproveBudget(ctx,                       │
-  │                 uuid.MustParse("d1000000-..."))          │
-  │      require.ErrorIs(t, err, budget.ErrAlreadyApproved) │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
-
-  The mock is 10 lines. The test is 15 lines.
-  No setup, no teardown, no framework to learn.
-  When the test fails, the call stack is obvious.
+web/tests/e2e/
+  registration-saga.spec.ts       ← tenant registration end-to-end, incl. failure injection
+  expense-approval-ledger.spec.ts ← expense → approval → journal entry visible
+  budget-vs-actual-report.spec.ts ← reporting consumer sees approved expenses
+  impersonation-audit.spec.ts     ← super_admin impersonates; audit shows dual-actor
+  multi-tenant-isolation.spec.ts  ← XYZ_CBA user cannot see XYZ Construction data
 ```
 
 ---
 
-### ⚠️ Bad — ~306 Tests Is Too Low for a Financial Platform
+### ⚠️ Bad — Vertical Plugin YAML Has No Dedicated Validator Tests
 
-```
-BAD: Test count does not match the financial risk surface
-
-  Expected vs. actual:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Service         Files  Expected tests  Approx. actual   │
-  │  ─────────────────────────────────────────────────────── │
-  │  iam             6      60+             ~40?             │
-  │  general-ledger  6      80+  ← critical ~35?             │
-  │  budget-planning 6      60+             ~35?             │
-  │  expense-track.  6      60+             ~30?             │
-  │  project-mgmt    6      40+             ~25?             │
-  │  inventory-mgmt  6      30+             ~20?             │
-  │  reporting       7      50+             ~30?             │
-  │  notifications   5      30+             ~20?             │
-  │  document        5      40+             ~20?             │
-  │  shared packages 8      80+             ~30?             │
-  │  ─────────────────────────────────────────────────────── │
-  │  Total expected: ~530+   Total actual: ~306              │
-  │                                                           │
-  │  Most undercovered area: general-ledger                  │
-  │  A single rounding error in journal line posting         │
-  │  on a $5M production budget = financial misstatement     │
-  └──────────────────────────────────────────────────────────┘
-
-  Coverage thresholds defined:
-    iam/general-ledger ≥ 85%  (enforced in CI)
-    budget/expense ≥ 80%
-    others ≥ 75%
-
-  These thresholds are correct. The question is whether they
-  are actually met with 306 total tests across 9 services.
-```
+The platform's core differentiator has a validator (`pkg/vertical/validator.go`) but no exhaustive test suite.
 
 #### 🔧 How to Improve
 
 ```
-GOOD: Explicit test targets per service, tracked in CI
+verticals/schema/vertical-schema.json:
+  JSON Schema defining required fields, types, patterns, min/max cardinality.
 
-  Set concrete targets and a CI gate:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Target: 800+ tests by GA                                │
-  │                                                           │
-  │  Priority order for new tests:                           │
-  │                                                           │
-  │  1. general-ledger — double-entry balance assertion       │
-  │     Test: every journal_entry has SUM(debit)=SUM(credit) │
-  │     Test: closed period rejects new entries              │
-  │     Test: posting idempotency (same idempotency_key)     │
-  │                                                           │
-  │  2. expense approval workflow                            │
-  │     Test: state machine (draft→submitted→approved→posted) │
-  │     Test: approver cannot self-approve                   │
-  │     Test: approval triggers ledger entry                 │
-  │                                                           │
-  │  3. budget version workflow                              │
-  │     Test: version conflict detection                     │
-  │     Test: line item budget does not exceed parent        │
-  │     Test: approved version cannot be edited              │
-  │                                                           │
-  │  4. registration pipeline                                │
-  │     Test: idempotency (same email, second attempt)       │
-  │     Test: saga rollback (inject failure at each step)    │
-  │     Test: vertical YAML loaded correctly                 │
-  └──────────────────────────────────────────────────────────┘
+pkg/vertical/validator_test.go:
+  TestValidateVertical table-driven:
+    - valid film          → ok
+    - missing phase_types → error
+    - empty budget_cats   → error
+    - unknown field       → warn (or error, by policy)
+    - load every YAML in verticals/ → all pass
 ```
+
+Run as a CI step before service tests. A malformed new vertical fails fast, not at runtime in production.
 
 ---
 
-### ⚠️ Bad — Vertical Plugin YAML Has No Schema and No Test Suite
+### ⚠️ Bad — No Load or Chaos Testing
 
-```
-BAD: The platform's core differentiator has no contract
+A platform handling financial operations for productions with multi-million-dollar budgets needs:
+- Load tests for double-entry ledger posting at concurrent volume
+- Load tests for concurrent expense approvals (bcrypt contention + DB contention)
+- Chaos/fault injection via Istio to verify circuit-breaker behaviour
+- Resilience tests for NATS consumer failure + DLQ replay
 
-  Current state:
-  ┌──────────────────────────────────────────────────────────┐
-  │  pkg/vertical/validator.go  exists                       │
-  │  (validates YAML at load time)                           │
-  │                                                           │
-  │  BUT:                                                    │
-  │  ├── No JSON Schema / proto schema for the YAML format   │
-  │  ├── No documentation of required vs. optional fields    │
-  │  ├── No test suite for the validator itself              │
-  │  └── No test cases for edge cases:                       │
-  │       - Empty phase_types list                           │
-  │       - Missing budget_categories                        │
-  │       - Unknown field (should it fail or warn?)          │
-  │       - Vertical with 0 workflow rules                   │
-  │                                                           │
-  │  A developer adding a new vertical has no authoritative  │
-  │  reference. They copy an existing YAML and guess.        │
-  └──────────────────────────────────────────────────────────┘
-```
+None exist.
 
 #### 🔧 How to Improve
 
-```
-GOOD: JSON Schema + comprehensive validator test suite
+Add a `tests/load/` directory with k6 scripts targeting ledger post-rate, expense-approval throughput, and reporting-service p99 under concurrent load. Run weekly in staging; fail if p99 exceeds documented SLAs.
 
-  verticals/schema/vertical-schema.json:
-  ┌──────────────────────────────────────────────────────────┐
-  │  {                                                        │
-  │    "$schema": "https://json-schema.org/draft/2020-12",  │
-  │    "type": "object",                                     │
-  │    "required": ["id", "name", "entity_labels",           │
-  │                 "phase_types", "budget_categories"],     │
-  │    "properties": {                                       │
-  │      "id": { "type": "string", "pattern": "^[a-z-]+$" },│
-  │      "phase_types": {                                    │
-  │        "type": "array",                                  │
-  │        "minItems": 1,                                    │
-  │        "items": { "type": "string" }                     │
-  │      },                                                   │
-  │      "budget_categories": {                              │
-  │        "type": "array",                                  │
-  │        "minItems": 1                                     │
-  │      }                                                    │
-  │    }                                                      │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
+---
 
-  pkg/vertical/validator_test.go:
-  ┌──────────────────────────────────────────────────────────┐
-  │  func TestValidateVertical(t *testing.T) {               │
-  │      cases := []struct {                                 │
-  │          name    string                                   │
-  │          yaml    string                                   │
-  │          wantErr bool                                     │
-  │      }{                                                   │
-  │          {"valid film", filmYAML, false},                │
-  │          {"missing phase_types", missingPhasesYAML, true},│
-  │          {"empty budget_categories", emptyCatsYAML, true},│
-  │          {"unknown field", unknownFieldYAML, true},      │
-  │          {"all verticals load cleanly", nil, false},     │
-  │          // last case: load every YAML in verticals/     │
-  │          // none should fail                             │
-  │      }                                                    │
-  │  }                                                        │
-  └──────────────────────────────────────────────────────────┘
+### ⚠️ Bad — Registration Pipeline Has No Saga Rollback Tests
 
-  CI step: test that every vertical YAML in the repository
-  loads without error before any service test runs.
-```
+See §1. Cannot test a saga until one is implemented.
 
 ---
 
 ## 6. Observability Practices
 
-### ✅ Good — Observability Is Enforced by the Shared gRPC Interceptor
+### ✅ Good — Shared gRPC Interceptor Chain
 
 ```
-GOOD: Every service gets metrics and correlation IDs for free
+pkg/observability/ + pkg/audit/ + pkg/auth/
 
-  pkg/observability/interceptor.go:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Every gRPC server uses this interceptor chain:          │
-  │                                                           │
-  │  1. CorrelationID interceptor                            │
-  │     → generates/propagates correlation_id               │
-  │     → adds to context + response metadata               │
-  │                                                           │
-  │  2. Metrics interceptor                                  │
-  │     → records request_duration_seconds{service, method} │
-  │     → records request_total{service, method, status}    │
-  │                                                           │
-  │  3. Audit interceptor (for mutation methods)             │
-  │     → writes audit_log row for every state change        │
-  │                                                           │
-  │  Effect:                                                 │
-  │  A new service added to the platform automatically gets  │
-  │  metrics, correlation IDs, and audit logging by wiring   │
-  │  in pkg/server/server.go (which applies the chain).     │
-  └──────────────────────────────────────────────────────────┘
+Every gRPC server uses:
+  1. CorrelationID interceptor (generates/propagates correlation_id)
+  2. Metrics interceptor (request_duration_seconds, request_total)
+  3. Audit interceptor (writes audit_log row for mutations)
+  4. Auth resolver (validates JWT, extracts tenant + user claims)
+
+A new service added to the platform gets metrics, correlation IDs, and audit
+logging by wiring in pkg/server/server.go.
 ```
+
+---
+
+### ✅ Good — `/healthz`, `/readyz`, `/metrics` on Every Service
+
+```
+/healthz   → liveness (process alive?)
+/readyz    → readiness (DB + Redis + NATS + Vault connected?)
+/metrics   → Prometheus scrape target
+
+Prometheus scrape target on :9300 (dev-start).
+Health/metrics HTTP server on configurable port per service (9090–9099).
+```
+
+---
+
+### ✅ Good — Vault Is a `/readyz` Health Checker
+
+`secrets.VaultSource` implements `observability.HealthChecker`. IAM refuses `/readyz` until Vault is reachable — no chance of serving requests without T1 secrets loaded.
 
 ---
 
 ### ⚠️ Bad — No Circuit Breaker Policy for gRPC Service Failures
 
 ```
-BAD: If general-ledger is down, what happens to expense-tracking?
-
-  Current: Istio retries configured (3 attempts, 5s timeout each)
-  Missing: Circuit breaker policy
-
-  Without a circuit breaker:
-  ┌──────────────────────────────────────────────────────────┐
-  │  general-ledger goes down (OOM, deploy, crash)           │
-  │       │                                                   │
-  │       ▼                                                   │
-  │  expense-tracking tries to post journal entry            │
-  │  → 3 retries × 5s timeout = 15 seconds per request      │
-  │       │                                                   │
-  │       ▼                                                   │
-  │  Expense approval queue backs up                         │
-  │  All approval requests now take 15+ seconds              │
-  │  expense-tracking goroutines pile up waiting on retries  │
-  │  expense-tracking runs out of goroutines                 │
-  │  expense-tracking itself becomes unavailable             │
-  │       │                                                   │
-  │  Cascading failure: one downed service takes down two    │
-  └──────────────────────────────────────────────────────────┘
+If general-ledger is down:
+  → expense-tracking retries (3 × 5s timeout = 15s per request)
+  → approval queue backs up
+  → expense-tracking goroutines pile up
+  → expense-tracking itself becomes unavailable
+  → Cascading failure: one service down → two services down
 ```
 
 #### 🔧 How to Improve
 
+```yaml
+# infra/k8s/general-ledger-destination-rule.yaml
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: general-ledger-circuit-breaker
+spec:
+  host: general-ledger.thittam.svc.cluster.local
+  trafficPolicy:
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 1000
 ```
-GOOD: Istio DestinationRule circuit breaker per service
 
-  infra/k8s/general-ledger-destination-rule.yaml:
-  ┌──────────────────────────────────────────────────────────┐
-  │  apiVersion: networking.istio.io/v1beta1                 │
-  │  kind: DestinationRule                                   │
-  │  metadata:                                               │
-  │    name: general-ledger-circuit-breaker                  │
-  │  spec:                                                    │
-  │    host: general-ledger.thittam.svc.cluster.local        │
-  │    trafficPolicy:                                        │
-  │      outlierDetection:                                   │
-  │        consecutive5xxErrors: 5     ← trip after 5 errors │
-  │        interval: 30s               ← evaluation window  │
-  │        baseEjectionTime: 30s       ← how long to open   │
-  │        maxEjectionPercent: 50      ← max pods ejected   │
-  │      connectionPool:               ← max concurrent conns│
-  │        http:                                             │
-  │          http1MaxPendingRequests: 100                    │
-  │          http2MaxRequests: 1000                          │
-  └──────────────────────────────────────────────────────────┘
-
-  With circuit breaker:
-  ┌──────────────────────────────────────────────────────────┐
-  │  general-ledger: 5 consecutive errors in 30s             │
-  │       │                                                   │
-  │       ▼ circuit opens                                    │
-  │  expense-tracking: immediate UNAVAILABLE from Istio      │
-  │  → no 15-second retry loop                               │
-  │  → expense-tracking can degrade gracefully:              │
-  │    - Queue journal entry for retry when circuit closes   │
-  │    - Return 202 Accepted to caller (async posting)       │
-  │    - Notify ops via NATS event                           │
-  │  → expense-tracking stays healthy                        │
-  └──────────────────────────────────────────────────────────┘
-
-  Document per service: "If X is unavailable, we do Y."
-  This is the circuit breaker policy — write it before launch.
-```
+For each service, document in `docs/operations/circuit-breakers.md`: "If X is unavailable, Y degrades by …". This is the circuit-breaker contract.
 
 ---
 
-### ⚠️ Bad — NATS Dead-Letter Strategy Is Undocumented
+### ⚠️ Bad — NATS Dead-Letter Strategy Undocumented
 
 ```
-BAD: Financial events can be silently lost after N retries
-
-  NATS JetStream delivery model:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Producer: expense.approved event published              │
-  │  Consumer: reporting-analytics subscribes                │
-  │                                                           │
-  │  reporting-analytics is down for maintenance             │
-  │  → NATS retries delivery (MaxDeliver: N times)           │
-  │  → After N attempts: what happens?                       │
-  │                                                           │
-  │  If MaxDeliver is hit with no dead-letter stream:        │
-  │  → Event is dropped                                      │
-  │  → reporting-analytics never processes the approval      │
-  │  → Budget vs. actual report shows wrong figures          │
-  │  → No alert, no log entry, no recovery path             │
-  └──────────────────────────────────────────────────────────┘
+NATS JetStream: MaxDeliver retries.
+After max delivery with no DLQ: event is dropped.
+Financial event loss → budget-vs-actual wrong → no alert, no log entry.
 ```
 
 #### 🔧 How to Improve
 
+```go
+js.AddStream(&nats.StreamConfig{
+    Name:     "FINANCIAL_DLQ",
+    Subjects: []string{"dlq.financial.>"},
+    MaxAge:   30 * 24 * time.Hour,
+})
+
+js.AddConsumer("FINANCIAL", &nats.ConsumerConfig{
+    Durable:    "reporting-analytics",
+    MaxDeliver: 5,
+    AckPolicy:  nats.AckExplicitPolicy,
+    // On MaxDeliver: republish to dlq.financial.<original-subject>
+})
 ```
-GOOD: Dead-letter stream per consumer group
 
-  NATS JetStream configuration:
-  ┌──────────────────────────────────────────────────────────┐
-  │  // Create dead-letter stream for financial events       │
-  │  js.AddStream(&nats.StreamConfig{                        │
-  │      Name:     "FINANCIAL_DLQ",                          │
-  │      Subjects: []string{"dlq.financial.>"},             │
-  │      MaxAge:   30 * 24 * time.Hour,  // 30-day retention│
-  │  })                                                       │
-  │                                                           │
-  │  // Consumer with DLQ on max delivery exceeded           │
-  │  js.AddConsumer("FINANCIAL", &nats.ConsumerConfig{      │
-  │      Durable:     "reporting-analytics",                 │
-  │      MaxDeliver:  5,                                     │
-  │      AckPolicy:   nats.AckExplicitPolicy,               │
-  │      // On MaxDeliver: republish to DLQ subject          │
-  │  })                                                       │
-  └──────────────────────────────────────────────────────────┘
+Prometheus alert: `nats_consumer_dlq_count{stream="FINANCIAL"} > 0` → PagerDuty. Runbook: `docs/operations/nats-dlq-replay.md` — how to inspect, fix, and replay.
 
-  Alert rule:
-  ┌──────────────────────────────────────────────────────────┐
-  │  Prometheus:                                             │
-  │    nats_consumer_dlq_count{stream="FINANCIAL"} > 0      │
-  │  → PagerDuty: "Financial event in dead letter queue"     │
-  │  → Runbook: how to replay from FINANCIAL_DLQ stream     │
-  └──────────────────────────────────────────────────────────┘
+---
 
-  Recovery (manual or automated):
-    nats stream sub FINANCIAL_DLQ
-    → inspect each dead-lettered event
-    → re-publish to original subject after fix
-    → idempotency key prevents duplicate processing
-```
+### ⚠️ Bad — Business-Specific Metrics Are Not Yet Standardised
+
+CODING_RULES.md mentions business-specific metrics "registered per service" but the actual metric names (approval_count, budget_utilization_ratio, etc.) are not documented or enforced.
+
+#### 🔧 How to Improve
+
+`docs/operations/business-metrics.md` lists, per service, the required business metrics with label conventions. Add a test that asserts each service registers its documented metrics.
 
 ---
 
 ## 7. Documentation Practices
 
-### ✅ Good — 9 ADRs Covering Every Major Decision
+### ✅ Good — 13 ADRs Covering Every Major Decision
 
-```
-GOOD: Decisions are documented with their rationale and trade-offs
+ADR-001 through ADR-015 (010/011 missing — see below). Each follows Context → Decision → Rationale with trade-off table → Consequences.
 
-  ADR format used:
-  ┌──────────────────────────────────────────────────────────┐
-  │  # ADR-NNN — [Decision Title]                            │
-  │                                                           │
-  │  ## Context                                              │
-  │  Why was this decision needed? What problem was it       │
-  │  solving? What options existed?                          │
-  │                                                           │
-  │  ## Decision                                             │
-  │  What was chosen?                                        │
-  │                                                           │
-  │  ## Rationale                                            │
-  │  Trade-off table comparing options.                      │
-  │                                                           │
-  │  ## Consequences                                         │
-  │  What does this decision make harder?                    │
-  │  What does it make easier?                               │
-  │  What must be done differently as a result?             │
-  └──────────────────────────────────────────────────────────┘
-
-  Effect:
-  A new team member asked "why gRPC and not REST for internal
-  services?" reads ADR-003 and gets: the question, the options
-  considered, the reasons for the choice, and the trade-offs
-  accepted. No tribal knowledge required.
-
-  When a decision turns out to be wrong:
-  Write ADR-010 that supersedes ADR-NNN. Never edit the
-  original — the history of wrong decisions is as valuable
-  as the correct ones.
-```
+A new team member asking "why gRPC over REST?" reads ADR-003 and gets: the options, the reasons, the trade-offs accepted. No tribal knowledge.
 
 ---
 
-### ⚠️ Bad — Documentation Drift Is Inevitable at 41+ Files
+### ✅ Good — 71 Markdown Files in `thittam_docs`
 
-```
-BAD: Rule #16 says CI "should" validate — but it does not yet
+Architecture, ADRs, services, verticals, data models, API conventions, deployment, operations, security, compliance, testing.
 
-  Documentation surface at risk:
-  ┌──────────────────────────────────────────────────────────┐
-  │  thittam_docs/ (41+ markdown files)                      │
-  │  ├── services/*.md        ← lists endpoints + fields     │
-  │  ├── adrs/*.md            ← references Go types          │
-  │  ├── architecture/*.md    ← references service names     │
-  │  └── api/*.md             ← references proto methods     │
-  │                                                           │
-  │  Risk timeline:                                          │
-  │  Week 1:  service renamed → docs not updated            │
-  │  Week 4:  API field changed → docs show old name        │
-  │  Month 3: docs describe a service that no longer exists  │
-  │  Month 6: new developers trust the docs → write wrong   │
-  │           code → debugging takes 2× longer              │
-  │                                                           │
-  │  "CI should validate" (Rule #16) remains aspirational.  │
-  └──────────────────────────────────────────────────────────┘
-```
+---
+
+### ✅ Good — 11 Standard Architecture Diagrams Present (Rule #17)
+
+system-design, package-architecture, service-dependency-graph, deployment-diagram, network-security-diagram, database-er-diagram, sequence-diagrams, logical-domain-diagram, ci-cd-pipeline-diagram, nats-event-schemas, proto-service-index.
+
+---
+
+### ✅ Good — Docs Are Fresh
+
+`multi-tenancy.md` updated 2026-04-15 (corrects the isolation model to tenant-per-schema); `demo-xyz-construction-plan.md` drafted 2026-04-15.
+
+---
+
+### ✅ Good — Doc-Drift CI Is Active
+
+`tools/check-doc-drift` runs on every PR in both repos. The v1.1 aspirational "CI should validate" is now real.
+
+---
+
+### ⚠️ Bad — ADRs 010 and 011 Are Missing From Numbering
+
+Readers wonder what the gap is. Either reserved + documented, or renumber.
+
+---
+
+### ⚠️ Bad — Vertical YAML Has No Authoritative Schema File
+
+High-level description exists in docs; no JSON Schema or proto-based schema for the YAML itself. Developers adding a vertical have no formal contract.
 
 #### 🔧 How to Improve
 
+See §5 — pair the schema with the validator test suite.
+
+---
+
+### ⚠️ Bad — Registration Pipeline Compensation Semantics Not Documented
+
+Even without implementation, document what each step's inverse is and what the failure-isolation expectations are. File under `docs/architecture/registration-saga.md` as a precursor to the implementation (ties to §1).
+
+---
+
+## 8. Multi-Tenant & Demo Practices
+
+### ✅ Good — XYZ_CBA Productions Fully Seeded
+
 ```
-GOOD: Automated doc validation script in CI
-
-  scripts/check_doc_drift.sh:
-  ┌──────────────────────────────────────────────────────────┐
-  │  #!/bin/bash                                             │
-  │  # Check that every service name mentioned in docs       │
-  │  # exists as a directory in services/ or cmd/           │
-  │                                                           │
-  │  FAIL=0                                                  │
-  │                                                           │
-  │  # Extract service names mentioned in docs               │
-  │  grep -rh "services/" docs/ | \                         │
-  │      grep -oE "services/[a-z-]+" | \                    │
-  │      sort -u | \                                         │
-  │  while read svc; do                                      │
-  │      dir="${svc#services/}"                              │
-  │      if [ ! -d "services/$dir" ]; then                  │
-  │          echo "DRIFT: docs mention services/$dir"        │
-  │          echo "       but directory does not exist"      │
-  │          FAIL=1                                          │
-  │      fi                                                   │
-  │  done                                                     │
-  │                                                           │
-  │  # Check proto method names exist in generated code      │
-  │  grep -rh "\.proto" docs/ | \                           │
-  │      grep -oE "Rpc[A-Z][a-zA-Z]+" | \                  │
-  │      sort -u | \                                         │
-  │  while read method; do                                   │
-  │      if ! grep -rq "$method" --include="*.go" .; then   │
-  │          echo "DRIFT: docs mention $method"              │
-  │          echo "       but not found in Go code"          │
-  │          FAIL=1                                          │
-  │      fi                                                   │
-  │  done                                                     │
-  │                                                           │
-  │  exit $FAIL                                              │
-  └──────────────────────────────────────────────────────────┘
-
-  Add to Makefile:
-    check-drift:
-        bash scripts/check_doc_drift.sh
-
-  Add to CI pipeline (after lint, before tests):
-    - run: make check-drift
+Tenant UUID:     d0000000-0000-0000-0000-000000000001
+Vertical:        movie-production
+Currency:        INR (India)
+Users:           Rajesh Kumar (Owner), Priya Sharma (Exec Producer),
+                 Arun Nair (Line Producer), Meena Iyer (Production Accountant),
+                 + 4 crew roles
+Credentials:     email + "demo1234" (bcrypt cost 12, fixed in 96be1fa)
 ```
 
 ---
 
-## 8. Summary Scorecard
+### ✅ Good — XYZ Construction LLC Phase A Scaffold (v1.2 new)
+
+```
+Tenant UUID:     d0000000-0000-0000-0000-000000000002
+Vertical:        construction
+Currency:        USD (USA)
+Status:          Phase A scaffold complete; UUIDs aligned cross-tenant (79e89c7)
+Users:           Miles Sullivan (Owner), Dana Reyes (Director), Ethan Choi (Estimator),
+                 Nora Patel (Supervisor), Raj Menon (Finance), Kim Alvarez (Procurement)
+Projects:        6 planned (Oakwood Medical Plaza, Riverbend Logistics Hub,
+                 Cedar Park Townhomes, Great Lakes Brewery, Huron Valley Water,
+                 Midtown Office Renovation) with budget states from draft to locked
+```
+
+Cross-tenant UUID alignment enables integration tests that verify isolation between INR and USD tenants on real data.
+
+---
+
+### ⚠️ Bad — XYZ Construction Phase B + C Pending
+
+Phase B (actuals/expenses) and Phase C (approval workflows) are deferred. Until they ship, the construction vertical has no live expense or approval coverage for demos.
+
+---
+
+### ⚠️ Bad — UI Tenant Switcher Absent
+
+Multi-tenant users must log out to switch. Planned post-v1 per `multi-tenancy.md §7`.
+
+---
+
+## 9. Summary Scorecard
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│  Thittam — Practices Scorecard                                        │
-├────────────────────────────────┬──────────┬───────────────────────── │
+│  Thittam — Practices Scorecard (v1.2)                                │
+├────────────────────────────────┬──────────┬──────────────────────────┤
 │  Practice                      │  Rating  │  Priority Fix            │
 ├────────────────────────────────┼──────────┼──────────────────────────┤
 │  Vertical plugin system        │  ✅ Good  │  —                       │
-│  Consistent 6-file service layout│ ✅ Good │  —                       │
+│  6-file service layout × 10    │  ✅ Good  │  —                       │
 │  gRPC internal / REST external │  ✅ Good  │  —                       │
+│  grpc-gateway shadow for auth  │  ✅ Good  │  —                       │
+│  All 10 protos defined         │  ✅ Good  │  —                       │
 │  sqlc type-safe SQL            │  ✅ Good  │  —                       │
 │  buf proto enforcement         │  ✅ Good  │  —                       │
-│  Tenant-per-schema isolation   │  ✅ Good  │  —                       │
+│  Tenant-per-schema safe        │  ✅ Good  │  —                       │
+│  T1 secrets Vault → memory     │  ✅ Good  │  —                       │
 │  Istio mTLS east-west          │  ✅ Good  │  —                       │
-│  Append-only audit log         │  ✅ Good  │  —                       │
+│  Append-only audit schema      │  ✅ Good  │  —                       │
+│  Schema injection test suite   │  ✅ Good  │  —                       │
 │  Money as decimal.Decimal      │  ✅ Good  │  —                       │
 │  Double-entry ledger model     │  ✅ Good  │  —                       │
+│  Tenant primary currency       │  ✅ Good  │  —                       │
+│  Column-level T1 encryption    │  ✅ Good  │  —                       │
 │  Sentinel errors + wrapping    │  ✅ Good  │  —                       │
-│  Idempotency structural (Rule#5)│ ✅ Good  │  —                       │
-│  17 non-negotiable coding rules│  ✅ Good  │  —                       │
-│  9 ADRs with trade-off tables  │  ✅ Good  │  —                       │
-│  Hand-written mock repos       │  ✅ Good  │  —                       │
-│  t.Parallel() + deterministic  │  ✅ Good  │  —                       │
+│  Idempotency structural        │  ✅ Good  │  —                       │
+│  Zero TODO/FIXME               │  ✅ Good  │  —                       │
+│  Doc-drift CI active           │  ✅ Good  │  —                       │
+│  1150 tests / coverage gates   │  ✅ Good  │  —                       │
+│  Hand-written mocks            │  ✅ Good  │  —                       │
+│  t.Parallel + deterministic    │  ✅ Good  │  —                       │
+│  Testcontainers integration    │  ✅ Good  │  —                       │
+│  Playwright E2E scaffold       │  ✅ Good  │  —                       │
 │  Shared observability interceptor│ ✅ Good │  —                       │
 │  /healthz /readyz /metrics     │  ✅ Good  │  —                       │
+│  Vault as readyz checker       │  ✅ Good  │  —                       │
+│  13 ADRs                       │  ✅ Good  │  —                       │
+│  71-file docs repo             │  ✅ Good  │  —                       │
+│  11 architecture diagrams      │  ✅ Good  │  —                       │
+│  Docs fresh (2026-04-15)       │  ✅ Good  │  —                       │
+│  XYZ_CBA fully seeded          │  ✅ Good  │  —                       │
+│  XYZ Construction Phase A      │  ✅ Good  │  —                       │
 ├────────────────────────────────┼──────────┼──────────────────────────┤
-│  SET search_path injection     │  ❌ Crit  │  P0 — validate UUID first │
-│  T1 secrets in env vars        │  ❌ Crit  │  P0 — resolve with Vault  │
-│  4 protos pending              │  ❌ Crit  │  P0 — define immediately  │
-│  No saga for registration      │  ⚠️  Bad  │  P0 — compensating txns   │
-│  No reporting read model       │  ⚠️  Bad  │  P1 — event-sourced views │
-│  bcrypt under concurrent load  │  ⚠️  Bad  │  P1 — argon2id or semaphore│
-│  No input validation library   │  ⚠️  Bad  │  P1 — protovalidate       │
-│  ~306 tests too low            │  ⚠️  Bad  │  P1 — target 800+         │
-│  Vertical YAML no schema/tests │  ⚠️  Bad  │  P1 — JSON Schema + tests │
+│  No registration saga          │  ⚠️  Bad  │  P0 — compensating txns  │
+│  audit_log REVOKE not applied  │  ⚠️  Bad  │  P0 — role + REVOKE step │
+│  No reporting read model       │  ⚠️  Bad  │  P1 — event-sourced views│
+│  Impersonation lifecycle undef │  ⚠️  Bad  │  P1 — TTL + ADR-016      │
+│  bcrypt concurrency unbounded  │  ⚠️  Bad  │  P1 — argon2id or semaphore│
+│  No protovalidate              │  ⚠️  Bad  │  P1 — proto-level rules  │
+│  Production status movie-only  │  ⚠️  Bad  │  P1 — vertical-aware     │
+│  NATS per-subject auth undoc   │  ⚠️  Bad  │  P1 — NATS account config│
+│  No NATS DLQ documented        │  ⚠️  Bad  │  P1 — DLQ + replay runbook│
+│  E2E narrow (1 journey)        │  ⚠️  Bad  │  P1 — 5 critical paths   │
+│  Vertical YAML no schema/tests │  ⚠️  Bad  │  P1 — JSON Schema + tests│
 │  No circuit breaker policy     │  ⚠️  Bad  │  P1 — Istio DestinationRule│
-│  NATS dead-letter undocumented │  ⚠️  Bad  │  P1 — DLQ per consumer    │
-│  Impersonation lifecycle undef │  ⚠️  Bad  │  P2 — 30min TTL + rules   │
-│  Documentation drift risk      │  ⚠️  Bad  │  P2 — CI drift check      │
-│  E2E tests nightly only        │  ⚠️  Bad  │  P2 — PR-level for critical│
-│  Billing service missing       │  ⚠️  Bad  │  P1 — ship before GA      │
-│  No gRPC load balancing config │  ⚠️  Bad  │  P2 — Istio DestinationRule│
+│  No load / chaos testing       │  ⚠️  Bad  │  P2 — k6 + Istio fault inj│
+│  MinIO URL TTL fixed 15min     │  ⚠️  Bad  │  P2 — dynamic TTL        │
+│  Business metrics unstandard.  │  ⚠️  Bad  │  P2 — catalogue + tests  │
+│  ADR 010/011 missing           │  ⚠️  Bad  │  P3 — fill or renumber   │
+│  `Co-Authored-By: Claude`      │  ⚠️  Bad  │  P3 — tool: trailer      │
+│  XYZ Construction Phase B/C    │  ⚠️  Bad  │  P3 — ship after core    │
+│  UI tenant switcher            │  ⚠️  Bad  │  P3 — post-v1            │
 └────────────────────────────────┴──────────┴──────────────────────────┘
 
-P0 = Fix immediately (security or data integrity risk)
+P0 = Fix immediately (architectural correctness or security constraint)
 P1 = Fix before first production tenants
-P2 = Fix before scale / after launch
+P2 = Fix before scale
+P3 = Fix after launch
 ```
 
 ---
 
-*Analysis based on Go source structure, migrations, CLAUDE.md, CODING_RULES.md, ADR records, and Thittam documentation. April 2026.*
+*Analysis based on Go source (thittam), docs (thittam_docs, 71 files, updated 2026-04-15), CLAUDE.md, CODING_RULES.md, 13 ADRs, proto definitions (1,659 LOC, 230 messages), and Playwright E2E scaffold. April 2026.*

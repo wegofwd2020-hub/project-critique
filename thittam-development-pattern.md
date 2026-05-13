@@ -1,10 +1,10 @@
 # Thittam — Scoping, Design, Architecture & Development Pattern
 
-**Document type:** Development pattern analysis  
-**Scope:** Full lifecycle — from concept to mid-build production system  
-**Period:** 2025–2026  
-**Author:** WeGoFwd2020 / Claude (Anthropic)  
-**Note:** Thittam application code is private. Analysis is based on documentation, migrations, Go source tree, CLAUDE.md, and coding standards.
+**Document type:** Development pattern analysis
+**Scope:** Full lifecycle — from concept to late-build production system
+**Period:** 2025–2026
+**Last refresh:** April 2026 (v1.2 — after proto completion, T1 secret fix, schema injection fix, shadcn/ui adoption, XYZ Construction demo)
+**Author:** WeGoFwd2020 / Claude (Anthropic)
 
 ---
 
@@ -78,7 +78,7 @@ The insight that shaped Thittam's architecture: **build the financial core once,
 
 ### 2.1 Scope Anchored by Industry Verticals
 
-Unlike StudyBuddy (which scoped by user persona), Thittam scoped by industry vertical. The first scoping question was: *which industries are in scope for GA, and what does each one need?*
+Thittam scoped by industry vertical. The first scoping question was: *which industries are in scope for GA, and what does each one need?*
 
 ```
 Vertical scoping matrix
@@ -94,6 +94,7 @@ Documents/sigs    ✅      ✅           ✅            ✅
 Industry labels   Custom  Custom      Custom        Custom
 Phase types       Custom  Custom      Custom        Custom
 Budget cats       Custom  Custom      Custom        Custom
+Currency          INR     USD/…       USD/…         USD/…
 ```
 
 The matrix revealed that the difference between verticals is entirely in the **configuration layer** — the services themselves are identical.
@@ -105,20 +106,21 @@ The scope of each service was defined by a single question: *what does this serv
 | Service | Owns | Never touches |
 |---|---|---|
 | IAM | Tenants, users, roles, invitations, auth | Budgets, expenses, documents |
-| Budget Planning | Budget versions, line items, approvals | Ledger journal entries |
-| Expense Tracking | POs, receipts, petty cash | Budget balances directly |
-| General Ledger | Chart of accounts, journal entries, periods | Budget line items |
-| Project Management | Projects, phases, crew, schedules | Financial transactions |
+| Budget | Budget versions, line items, approvals | Ledger journal entries |
+| Expense | POs, receipts, petty cash | Budget balances directly |
+| Ledger | Chart of accounts, journal entries, periods | Budget line items |
+| Project | Projects, phases, crew, schedules | Financial transactions |
 | Inventory | Equipment, props, locations, assets | Project schedules |
-| Reporting Analytics | Read-only aggregations | Any write operations |
+| Reporting | Read-only aggregations | Any write operations |
 | Notifications | Templates, delivery, log | Business domain data |
 | Document | Files, versions, e-signatures | Content of documents |
+| Billing | Subscriptions, invoicing, usage metering | Domain data |
 
-This scope matrix was defined before implementation and served as the authoritative boundary for where a given feature belonged.
+Ten services total. This matrix was defined before implementation and served as the authoritative boundary for where a given feature belonged.
 
 ### 2.3 Scoping the Multi-Tenancy Model
 
-The tenancy scope question was answered early and explicitly via ADR-008:
+The tenancy scope question was answered early and explicitly via ADR-008, then reaffirmed in April 2026 (docs commit `934bd58` "correct isolation model to tenant-per-schema"):
 
 > "Each tenant gets schema `tenant_<uuid>` in PostgreSQL. Tenant context is set via `X-Tenant-ID` header on every request. The `BeforeAcquire` hook on the pgx pool ensures every connection is scoped to the correct tenant schema."
 
@@ -130,7 +132,30 @@ Three options were evaluated:
 | Shared schema, row-level filtering | Application-layer isolation | Rejected |
 | Tenant-per-schema | Database-level isolation | Accepted |
 
-The tenant-per-schema decision locked in a set of operational constraints that shaped every subsequent decision: migrations must run across N schemas, connection pool routing must be tenant-aware, and reporting queries cannot join across schemas.
+The tenant-per-schema decision locked in a set of operational constraints: migrations must run across N schemas, connection pool routing must be tenant-aware, and reporting queries cannot join across schemas.
+
+### 2.4 Scoping Multi-Tenant Demos
+
+Two demo tenants were scoped to exercise the multi-industry, multi-currency posture:
+
+```
+XYZ_CBA Productions (fully seeded)
+  Tenant UUID:  d0000000-0000-0000-0000-000000000001
+  Vertical:     movie-production
+  Currency:     INR
+  Country:      India
+  Purpose:      Demonstrate film-production workflows end-to-end.
+
+XYZ Construction LLC (Phase A scaffold complete, Phase B/C pending)
+  Tenant UUID:  d0000000-0000-0000-0000-000000000002
+  Vertical:     construction
+  Currency:     USD
+  Country:      USA
+  Purpose:      Demonstrate construction workflows + cross-tenant isolation
+                tests with a different currency and country.
+```
+
+Cross-tenant UUID alignment (`79e89c7`) makes integration tests that assert isolation tractable.
 
 ---
 
@@ -138,7 +163,7 @@ The tenant-per-schema decision locked in a set of operational constraints that s
 
 ### 3.1 Rules Before Code
 
-The most distinctive aspect of Thittam's design pattern is that 17 non-negotiable coding rules were written and locked before significant implementation began. These rules are not style guidelines — they are constraints that cannot be violated:
+The most distinctive aspect of Thittam's design pattern is that 17 non-negotiable coding rules were written and locked before significant implementation began:
 
 ```
 Rule hierarchy
@@ -146,7 +171,7 @@ Rule hierarchy
   Non-negotiable (17 rules in CODING_RULES.md)
   │
   ├── Money is never a float (Rule #1)
-  ├── Secrets from environment only (Rule #2)
+  ├── Secrets tiered by classification — T1 from Vault, T3 from env (Rule #2)
   ├── Cache by default, not as optimisation (Rule #3)
   ├── Interfaces for all external dependencies (Rule #4)
   ├── Idempotency everywhere (Rule #5)
@@ -162,6 +187,8 @@ Rule hierarchy
   ├── Separate documentation repository (Rule #15)
   ├── Guard against documentation drift (Rule #16)
   └── Standard architecture diagrams (Rule #17)
+  ├── (v1.2 added) Typography & accessibility standards (Rule #18)
+  │     ← Inter + Merriweather + JetBrains Mono + OpenDyslexic
 
   Language-specific (go-conventions.md)
   │
@@ -172,16 +199,18 @@ Rule hierarchy
   └── Testing (table-driven, t.Parallel(), hand-written mocks)
 ```
 
-Writing the rules first had a specific effect: every design decision was evaluated against 17 explicit constraints before it was accepted. This reduced the cost of design review because the criteria were already written.
+Writing the rules first had a specific effect: every design decision was evaluated against explicit constraints before it was accepted. This reduced the cost of design review because the criteria were already written.
+
+When the security doc and Rule #2 contradicted on T1 secrets (v1.1 critique), the resolution was not to pick one — it was to rewrite Rule #2 in terms of data classification tiers (T1 → Vault, T3 → env), which is now how `cmd/iam/main.go` actually works.
 
 ### 3.2 The ADR Record
 
-Nine Architecture Decision Records were written before the implementation reached mid-build:
+Thirteen Architecture Decision Records are written (ADR-001 through ADR-015, with 010 and 011 missing from numbering — either reserved or to be renumbered):
 
 | ADR | Decision | Rationale |
 |---|---|---|
 | ADR-001 | Go 1.22+ for all services | Type safety, performance, standard library, gRPC support |
-| ADR-002 | PostgreSQL with tenant-per-schema | Strongest isolation, compliance-ready, supports complex queries |
+| ADR-002 | PostgreSQL with tenant-per-schema | Strongest isolation, compliance-ready, complex queries |
 | ADR-003 | gRPC for internal service communication | Type-safe contracts, binary protocol, bi-directional streaming |
 | ADR-004 | NATS JetStream for async messaging | At-least-once delivery, consumer ACK, replay, persistence |
 | ADR-005 | Kong API Gateway at edge | Rate limiting, JWT validation, routing without custom middleware |
@@ -189,8 +218,12 @@ Nine Architecture Decision Records were written before the implementation reache
 | ADR-007 | YAML-driven vertical plugin system | Industry-agnostic without multiple codebases |
 | ADR-008 | Tenant-per-schema multi-tenancy | DB-level isolation, compliance provability |
 | ADR-009 | Vault for T1 secret management | Audit trail, rotation, never in environment variables |
+| ADR-012 | shadcn/ui + Radix primitives for the web tier | Accessibility, theme-ability, component ergonomics |
+| ADR-013 | grpc-gateway REST shadow for IAM auth | Browser-friendly auth flow without building a separate HTTP server |
+| ADR-014 | RBAC role model (Phase 2 in rollout) | Role-permission-gated endpoints; project-scope in --with-project-rbac |
+| ADR-015 | Tenant address + country-driven primary currency | Multi-currency demos without user input |
 
-Each ADR follows the same structure: Context → Decision → Rationale with trade-off table → Consequences. This format forces the team to acknowledge trade-offs rather than treat decisions as obviously correct.
+Each ADR follows the same structure: Context → Decision → Rationale with trade-off table → Consequences.
 
 ### 3.3 The Vertical Plugin System Design
 
@@ -227,7 +260,7 @@ Vertical YAML (e.g. verticals/film-production.yaml)
   └── Serve via gRPC interceptor to all vertical-aware services
          │
          ▼
-  Vertical-aware service (e.g. budget-planning)
+  Vertical-aware service (e.g. budget)
   ├── Reads tenant's vertical config from context
   ├── Renders labels from config (not hardcoded)
   ├── Validates phase_type against config's phase_types
@@ -241,12 +274,12 @@ The vertical config flows through every vertical-aware service via a gRPC interc
 The security design was anchored by a data classification tier system:
 
 ```
-T1 — Highly Sensitive (Vault only, AES-256-GCM encrypted at rest)
+T1 — Highly Sensitive (Vault only, memory-bytes at runtime, AES-256-GCM column-encryption at rest for financial T1 fields)
   day_rate (payroll data)
   vendor_gstin (tax IDs)
   JWT signing keys
   Database passwords
-  API keys
+  API keys (third-party)
 
 T2 — Confidential (encrypted in transit, access-controlled)
   Budget line items
@@ -254,10 +287,12 @@ T2 — Confidential (encrypted in transit, access-controlled)
   Vendor names
   Salary information
 
-T3 — Internal (standard access controls)
+T3 — Internal (standard access controls, acceptable as env vars)
   Project names and descriptions
   Phase schedules
   Crew assignments
+  Vault AppRole credentials
+  Service endpoints
 
 T4 — Public (no restrictions)
   Vertical configuration labels
@@ -265,7 +300,34 @@ T4 — Public (no restrictions)
   Public-facing pricing
 ```
 
-The classification directly drove implementation: T1 data is encrypted at the column level before writing to PostgreSQL. T2 data uses standard field-level access control. The classification is referenced in code comments wherever T1 or T2 data is touched.
+The classification directly drives implementation:
+- T1 data is fetched from Vault at startup; held in process memory bytes; never env-vars, never logs, never re-serialised.
+- T1 financial columns (day_rate, vendor_gstin) are AES-256-GCM encrypted at the application layer before writing to PostgreSQL.
+- T3 config sits in env vars (`VAULT_ADDR`, `VAULT_ROLE_ID`).
+- `/readyz` gates on Vault reachability; IAM refuses requests without T1 loaded.
+
+### 3.5 Typography & Accessibility Design (Rule #18, v1.2)
+
+The web tier design includes a 3-font typography system plus dyslexia-friendly accessibility:
+
+```
+Font stack (all SIL Open Font License, self-hosted via @fontsource):
+
+  --font-heading   Inter          ← headings, labels, buttons, nav
+  --font-body      Merriweather   ← paragraphs, tooltips, form inputs
+  --font-mono      JetBrains Mono ← amounts, dates, IDs, account codes
+
+Per-vertical icon sets (lucide-react, curated 8–12 per vertical):
+
+  construction → hammer, ruler, hardhat, truck, …
+  film         → clapperboard, film-reel, megaphone, …
+
+OpenDyslexic toggle:
+
+  Switches all three font families to OpenDyslexic / OpenDyslexic Mono
+  letter-spacing +0.05em, line-height 1.8, word-spacing +0.1em
+  Persisted in user preferences (localStorage + API backup)
+```
 
 ---
 
@@ -285,14 +347,21 @@ Internet / Tenant Browser
                          │  REST/JSON (external)
                          ▼
 ┌───────────────────────────────────────────────────────────────────┐
+│  IAM grpc-gateway REST shadow (v1.2)                               │
+│  /api/v1/auth/login · /api/v1/auth/refresh · /api/v1/auth/me      │
+│  CORS wrapper for browser dev                                     │
+└────────────────────────┬──────────────────────────────────────────┘
+                         │  REST translated to gRPC calls
+                         ▼
+┌───────────────────────────────────────────────────────────────────┐
 │  Service Mesh (Istio)                                              │
 │  mTLS for all east-west traffic                                   │
 │  Circuit breakers · Retries · Canary deployments                  │
 │                                                                   │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐         │
 │  │   IAM    │  │ Project  │  │  Budget  │  │ Expense  │         │
-│  │  :8086   │  │  Mgmt    │  │ Planning │  │Tracking  │         │
-│  │          │  │  :8080   │  │  :8081   │  │  :8082   │         │
+│  │ gRPC:8086│  │  Mgmt    │  │ Planning │  │Tracking  │         │
+│  │ REST:9086│  │  :8080   │  │  :8081   │  │  :8082   │         │
 │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘         │
 │       │              │              │              │               │
 │  ┌────▼─────┐  ┌────▼─────┐  ┌────▼─────┐  ┌────▼─────┐         │
@@ -300,18 +369,22 @@ Internet / Tenant Browser
 │  │  Ledger  │  │  Mgmt    │  │Analytics │  │  tions   │         │
 │  │  :8083   │  │  :8084   │  │  :8085   │  │  :8087   │         │
 │  └──────────┘  └──────────┘  └──────────┘  └──────────┘         │
-│                                              ┌──────────┐         │
-│                                              │ Document │         │
-│                                              │  :8088   │         │
-│                                              └──────────┘         │
+│  ┌──────────┐  ┌──────────┐                                      │
+│  │ Document │  │ Billing  │                                      │
+│  │  :8088   │  │  :8089   │                                      │
+│  └──────────┘  └──────────┘                                      │
 └───────────────────────────────────────────────────────────────────┘
                          │  gRPC (sync internal)
                          │  NATS JetStream (async internal)
+                         ▼
+                   PostgreSQL (per-tenant schemas) · Redis · MinIO · Vault
 ```
+
+Ten services are deployed (iam, project, budget, expense, ledger, inventory, notifications, document, reporting, billing). All proto definitions are complete.
 
 ### 4.2 Service Communication Model
 
-Two communication patterns coexist, each chosen for its guarantees:
+Two communication patterns coexist:
 
 ```
 Synchronous (gRPC)
@@ -323,23 +396,22 @@ Synchronous (gRPC)
 
   Properties:
     Type-safe contracts (protobuf)
-    Binary protocol (3-5× smaller than JSON)
+    Binary protocol (3–5× smaller than JSON)
     Client-side load balancing via Istio DestinationRule
     Circuit breakers via Istio VirtualService
 
 Asynchronous (NATS JetStream)
   Used when: Caller does not need to wait
   Examples:
-    ├── Expense approved → Notifications (email alert)
-    ├── Budget threshold hit → Notifications (warning)
-    ├── Ledger posted → Reporting (materialise report)
-    └── Registration complete → all services (seed data)
+    ├── Expense approved → Notifications
+    ├── Budget threshold hit → Notifications
+    ├── Ledger posted → Reporting
+    └── Registration complete → all services (seed events)
 
   Properties:
-    At-least-once delivery (JetStream ACK)
-    Consumer-level acknowledgment (not message-level)
-    Replay capability (reprocess after downstream failure)
-    Dead-letter stream (after N retries)
+    At-least-once delivery
+    Consumer-level ACK
+    Replay capability
     Event deduplication via event_id (Rule #5)
 ```
 
@@ -348,7 +420,7 @@ Asynchronous (NATS JetStream)
 ```
 PostgreSQL Server
 │
-├── public schema (shared tables: tenants, platform config)
+├── public schema (shared tables: tenants, platform config, processed_events)
 │
 ├── tenant_<uuid-A> schema (Tenant A's isolated data)
 │   ├── projects
@@ -356,36 +428,22 @@ PostgreSQL Server
 │   ├── expenses
 │   ├── journal_entries
 │   ├── users
+│   ├── audit_log
 │   └── (all domain tables)
 │
 ├── tenant_<uuid-B> schema (Tenant B's isolated data)
-│   ├── projects
-│   ├── ... (identical table set)
-│   └── ...
+│   ├── (identical table set)
 │
 └── tenant_<uuid-N> schema
 
-Connection pool BeforeAcquire hook:
-  SET search_path = tenant_<uuid>, public
-  (validated as well-formed UUID before interpolation)
+Connection pool BeforeAcquire hook (pkg/tenantdb):
+  1. Accept uuid.UUID (type-safe; compile-time guarantee)
+  2. Validate != uuid.Nil
+  3. Interpolate uuid.UUID.String() — 36 chars, hex + hyphens, safe
+  4. SET search_path = tenant_<uuid>, public
 ```
 
-Migration pattern — every schema migration runs across all tenant schemas:
-
-```
-migrate-all target
-      │
-      ▼
-For each tenant schema in public.tenants:
-  ├── SET search_path = tenant_<uuid>
-  ├── Run migration SQL
-  └── Log result (success/failure per schema)
-
-Failure handling:
-  ├── Failed schemas logged with tenant_id + migration number
-  ├── Migration does NOT abort on first failure (partial progress is recoverable)
-  └── Alert sent to operations team
-```
+The schema injection risk flagged in v1.1 is closed at the type boundary.
 
 ### 4.4 Registration Pipeline (9-Step Process)
 
@@ -416,11 +474,12 @@ pkg/registration/pipeline.go — orchestrates all steps
       └── Step 9: Send welcome notification (async via NATS)
               │
               ▼
-        [Known gap: no saga pattern — partial failure in steps 2-8
-         has no compensating transaction strategy]
+        [Known architectural gap: no saga pattern —
+         partial failure in steps 2-8 has no compensating
+         transaction strategy. Identified in v1.1, still open.]
 ```
 
-The registration pipeline is one of the known architectural risks: it spans multiple services and schemas without a formal saga pattern. A failure at step 5 leaves a created schema with no users, and a failure at step 6 leaves a ledger-less tenant. The mitigating factor is that the `pkg/registration/` package tracks pipeline state, but compensating transactions are not yet documented.
+The `pkg/registration/` package tracks pipeline state, but compensating transactions are not yet documented or implemented. This remains the most critical architectural gap.
 
 ### 4.5 Observability Model
 
@@ -429,8 +488,8 @@ Every service implements Rule #13 identically:
 ```
 Service startup
       │
-      ├── /healthz  → liveness probe (is the process alive?)
-      ├── /readyz   → readiness probe (are dependencies connected?)
+      ├── /healthz  → liveness probe
+      ├── /readyz   → readiness (DB + Redis + NATS + Vault connected)
       └── /metrics  → Prometheus metrics endpoint
 
 gRPC interceptor chain (every service):
@@ -440,40 +499,48 @@ gRPC interceptor chain (every service):
   │   └── correlation_id injected into every log entry
   │
   ├── pkg/audit/interceptor.go
-  │   ├── Captures actor_id, action, target_type, target_id
+  │   ├── Captures actor_id, action, resource_type, resource_id
   │   ├── Captures old_state + new_state for mutations
-  │   └── Writes append-only audit log (never UPDATE or DELETE)
+  │   └── Writes append-only audit log
   │
   └── pkg/auth/resolver.go
       └── Validates JWT, extracts tenant_id + user claims
 
 Metrics flow:
-  Service /metrics → Prometheus scrape → Grafana dashboard
-  Alert rules: request_duration_percentile > SLA → PagerDuty
+  Service /metrics → Prometheus (:9300 scrape) → Grafana dashboard
+
+Health aggregation:
+  Vault health check plugged in via secrets.VaultSource
+  → /readyz blocks until Vault reachable
 ```
 
 ### 4.6 The Audit Log Design
 
-Rule #7 mandates audit logging for all authentication events, financial operations, administrative actions, and impersonation. The audit log schema captures the minimum required for legal defensibility:
-
 ```
-audit_log table (append-only, per-tenant schema)
+audit_log table (per-tenant schema, append-only)
 
-  actor_id       UUID     who performed the action
-  action         TEXT     what was done (CREATE_BUDGET, APPROVE_EXPENSE, ...)
-  target_type    TEXT     what entity type (budget, expense, journal_entry, ...)
-  target_id      UUID     which specific entity
-  tenant_id      UUID     which tenant (for cross-schema audit queries)
-  timestamp      TIMESTAMPTZ
-  old_state      JSONB    serialised state before mutation
-  new_state      JSONB    serialised state after mutation
-  ip_address     INET     originating IP
-  correlation_id TEXT     links to the request that generated this entry
+  id              UUID PK
+  actor_id        UUID     who performed the action
+  action          TEXT     what was done (CREATE_BUDGET, APPROVE_EXPENSE, …)
+  resource_type   TEXT     entity type
+  resource_id     UUID     specific entity
+  tenant_id       UUID     for cross-schema audit queries
+  occurred_at     TIMESTAMPTZ
+  old_state       JSONB    before mutation
+  new_state       JSONB    after mutation
+  metadata        JSONB    correlation_id, ip, user_agent
 
-Constraints:
-  No UPDATE on audit_log
-  No DELETE on audit_log
-  Partition by month for query performance at scale
+Indexes:
+  (tenant_id, resource_type, resource_id)
+  (actor_id, occurred_at)
+  (occurred_at)
+  (action)
+
+Constraints (pending deployment step — see practices doc):
+  REVOKE UPDATE ON audit_log FROM thittam_app
+  REVOKE DELETE ON audit_log FROM thittam_app
+
+Partition by month for query performance at scale (planned).
 ```
 
 ### 4.7 Service Internal Structure
@@ -500,9 +567,33 @@ Shared packages (pkg/):
   pkg/observability/ ← Metrics + health + gRPC interceptor
   pkg/platform/    ← Platform admin service + impersonation
   pkg/registration/ ← 9-step tenant registration pipeline
+  pkg/secrets/     ← Vault source + file source + health check
   pkg/tenant/      ← Tenant context helpers
+  pkg/tenantdb/    ← Safe tenant-schema routing
   pkg/vertical/    ← Vertical config loader + gRPC middleware
   pkg/server/      ← gRPC server builder (shared setup)
+```
+
+### 4.8 Web Tier Architecture (v1.2)
+
+```
+web/ — Next.js 16.2.2, React 19.2.4, Tailwind v4
+
+Component foundation: shadcn/ui + Radix primitives (dialog, dropdown, label,
+select, slot, switch, tabs).
+
+Typography (Rule #18):
+  @fontsource/inter           (--font-heading)
+  @fontsource/merriweather    (--font-body)
+  @fontsource/jetbrains-mono  (--font-mono)
+  @fontsource/opendyslexic    (accessibility toggle)
+
+Auth flow:
+  Browser → /api/v1/auth/login → grpc-gateway :9086 → IAM gRPC :8086
+  Response: {access_token, refresh_token} — no {data: …} envelope
+  /api/v1/auth/me → roles + permissions populated from JWT claims
+
+Default dev port: :3100 (to avoid StudyBuddy conflicts on :3000).
 ```
 
 ---
@@ -535,11 +626,10 @@ Protobuf — buf
 
   Effect: Inter-service contracts are validated in CI.
   A breaking change to a proto is caught before merge.
+  All 10 protos are now defined (1,659 LOC, 230 messages).
 ```
 
 ### 5.2 The Makefile as Developer Interface
-
-The Makefile is the single entry point for all development operations. It serves as the project's executable documentation:
 
 ```
 make help          → shows all available targets with descriptions
@@ -547,16 +637,21 @@ make infra-up      → start Redis, NATS, MinIO (no Postgres)
 make db-init       → create thittam role + database
 make db-reset      → fresh start (drop → init → migrate → seed)
 make migrate-all   → run all migrations in dependency order
-make seed          → load XYZ_CBA demo seed data
-make run-all       → start all 9 services via tmuxinator
+make seed          → load XYZ_CBA + XYZ Construction demo seed data
+make dev-start     → start all 10 services (IAM first, then core in parallel)
+make dev-start-fresh → db-reset && dev-start
 make test          → unit tests
 make test-race     → with Go race detector
 make test-cover    → coverage report (opens in browser)
-make lint          → golangci-lint
+make lint          → golangci-lint v2
 make build         → build all service binaries
+
+Flags:
+  --svc-only            skip infra checks
+  --with-project-rbac   ADR-014 Phase 2 enforcement
 ```
 
-The Makefile explicitly separates infrastructure concerns (Redis, NATS, MinIO) from the database, and both from the application. This allows running just infrastructure for development, or just the database for migration testing.
+`dev-start.sh` orchestrates: IAM (gRPC :8086, REST :9086) first; core services (:9090–:9099) in parallel; grpc-gateway for IAM; Prometheus on :9300. Ports shifted from defaults (commit `82d8338`) to avoid StudyBuddy conflicts.
 
 ### 5.3 Testing Strategy
 
@@ -568,25 +663,26 @@ Test pyramid
   ├── Hand-written mock repositories (function field pattern)
   ├── vertical.WithConfig(ctx, fixture) for vertical-aware tests
   ├── Deterministic UUIDs: uuid.MustParse("d1000000-...")
-  └── testify/assert + testify/require
+  ├── testify/assert + testify/require
+  └── Current: 1,150 test functions across 80 files (was ~306 in v1.1)
 
   Integration tests (go test ./... -tags=integration)
-  ├── testcontainers-go (real Postgres, real NATS)
-  ├── Transaction rollback per test (no state pollution)
-  └── Real migrations applied before each test run
+  ├── Testcontainers (real Postgres, real NATS)
+  ├── Transaction rollback per test
+  ├── Real migrations applied before each test run
+  └── THITTAM_TEST_DSN env var + make db-test-bootstrap
 
-  Contract tests (Pact)
+  Contract tests (Pact shape)
   ├── Consumer-driven contracts between services
-  ├── Budget → Ledger (expense approval triggers journal entry)
-  └── Expense → Notifications (approval triggers email)
+  └── Scaffolded; not yet exhaustive across 10-service matrix
 
-  E2E tests (Playwright)
-  ├── Run nightly
-  ├── Cover: registration → project create → budget → expense → report
-  └── [Gap: should run on every PR for critical paths]
+  E2E tests (Playwright, v1.2 new)
+  ├── web/tests/e2e/smoke.spec.ts
+  ├── web/tests/e2e/budgets-journey.spec.ts (first business flow)
+  └── web/tests/e2e/dashboard.spec.ts
 
 Coverage thresholds (enforced in CI):
-  iam + general-ledger  ≥ 85%
+  iam + ledger          ≥ 85%
   budget + expense      ≥ 80%
   all others            ≥ 75%
 ```
@@ -617,14 +713,11 @@ repo := &mockBudgetRepo{
 svc := NewService(repo, verticalConfig)
 ```
 
-This pattern gives the test full control over each function's behaviour without any framework. The mock is visible, readable, and debuggable.
-
 ### 5.5 Vertical-Aware Testing
 
 Every test that touches vertical-aware business logic must inject a vertical config:
 
 ```go
-// vertical.WithConfig injects the config into the test context
 ctx := vertical.WithConfig(context.Background(), vertical.Config{
     ID:   "film-production",
     Name: "Film Production",
@@ -651,12 +744,13 @@ Push to branch
 ┌──────────────────────────────────────────────────────┐
 │  Static analysis (run in parallel)                    │
 │                                                       │
-│  golangci-lint run ./...      ← linting              │
-│  buf lint                     ← proto validation     │
-│  buf breaking                 ← breaking change check│
-│  govulncheck ./...            ← CVE scanning         │
-│  gitleaks protect --staged    ← secret detection     │
-│  bandit (if any Python)       ← SAST                │
+│  golangci-lint v2 (action v8)   ← linting            │
+│  buf lint                       ← proto validation   │
+│  buf breaking                   ← breaking changes   │
+│  govulncheck ./...              ← CVE scanning       │
+│  gitleaks protect --staged      ← secret detection   │
+│  tools/check-doc-drift          ← docs/code parity   │
+│  Go pinned to 1.25.9 for stdlib CVE patches          │
 └──────────────────────────────────────────────────────┘
       │ all pass
       ▼
@@ -678,10 +772,9 @@ Push to branch
       │ pass
       ▼
 ┌──────────────────────────────────────────────────────┐
-│  Contract tests (Pact)                                │
+│  E2E tests (Playwright)                               │
 │                                                       │
-│  pact-provider verify        ← service consumers     │
-│  pact-broker publish         ← update contract store │
+│  web/tests/e2e/* (budgets-journey, smoke, dashboard)  │
 └──────────────────────────────────────────────────────┘
       │ pass
       ▼
@@ -705,33 +798,19 @@ migrations/
     007_create_roles.{up,down}.sql
     008_create_user_roles.{up,down}.sql
     009_create_invitations.{up,down}.sql
+    010_add_tenant_address_country.{up,down}.sql   ← v1.2 ADR-015
 
   ledger/       ← run after iam
-    001_create_accounts.{up,down}.sql
-    002_create_accounting_periods.{up,down}.sql
-    003_create_journal_entries.{up,down}.sql
-    004_create_journal_lines.{up,down}.sql
-
   budget/       ← run after ledger
-    001_create_tables.{up,down}.sql
-
   expense/      ← run after budget
-    001_create_tables.{up,down}.sql
-
   project/      ← run after iam
   inventory/
   notifications/
-    001_create_notification_templates.{up,down}.sql
-    002_create_notification_log.{up,down}.sql
   document/
-    001_create_folders.{up,down}.sql
-    002_create_documents.{up,down}.sql
-    003_create_document_versions.{up,down}.sql
   audit/
-    001_create_audit_log.{up,down}.sql
+    001_create_audit_log.{up,down}.sql   ← REVOKE UPDATE/DELETE pending
   reporting/
-    001_create_tables.{up,sql}
-    002_create_dashboard_views.{up,down}.sql
+  billing/      ← v1.2 new
 
 make migrate-all → runs all services in dependency order
 make migrate-down → rolls back all migrations in reverse order
@@ -756,9 +835,9 @@ Go was chosen over Python (the language used in StudyBuddy) for Thittam's specif
 | Financial precision | shopspring/decimal | Decimal stdlib |
 | Memory footprint | ~10-50 MB per service | ~150-400 MB per service |
 
-For 9 services running simultaneously in a shared-infra model, Go's memory footprint advantage compounds.
+For 10 services running simultaneously in a shared-infra model, Go's memory footprint advantage compounds.
 
-### Decision 2 — gRPC Over REST for Internal Communication
+### Decision 2 — gRPC Over REST for Internal Communication; grpc-gateway REST Shadow for Browser Auth
 
 ```
 REST (rejected for internal)          gRPC (accepted for internal)
@@ -772,7 +851,10 @@ REST (rejected for internal)          gRPC (accepted for internal)
 
 External API (Kong → clients) remains REST/JSON.
 Internal (service → service) uses gRPC.
+Browser-to-IAM auth uses grpc-gateway REST shadow (v1.2, ADR-013).
 ```
+
+Why the REST shadow? Browsers speak JSON naturally; bare gRPC requires gRPC-web plus buffer handling plus a manual envelope. The grpc-gateway generated REST surface costs nothing — it's emitted from the same protos — and eliminates friction.
 
 ### Decision 3 — NATS JetStream Over Kafka
 
@@ -788,8 +870,6 @@ Internal (service → service) uses gRPC.
 For Thittam's workload (not a high-throughput stream processing system), NATS JetStream provides the delivery guarantees needed at significantly lower operational cost.
 
 ### Decision 4 — Vertical Plugin System Over Multiple Codebases
-
-The alternative to the vertical plugin system was maintaining separate codebases per industry:
 
 ```
 Alternative (rejected)          Vertical Plugin (accepted)
@@ -809,7 +889,7 @@ Alternative (rejected)          Vertical Plugin (accepted)
                                 └────────────────────────────┘
 ```
 
-A YAML schema violation in a new vertical is caught at startup, not at runtime in production. This is enforced by the validator.
+A YAML schema violation in a new vertical is caught at startup by the validator.
 
 ### Decision 5 — Column-Level Encryption for T1 Data
 
@@ -820,7 +900,7 @@ Write path for T1 field:
   service.go receives day_rate (decimal.Decimal)
       │
       ▼
-  Encrypt with AES-256-GCM (key from Vault)
+  Encrypt with AES-256-GCM (key from Vault — held in memory)
       │
       ▼
   Store as encrypted blob in repository
@@ -828,17 +908,16 @@ Write path for T1 field:
       ▼
   PostgreSQL stores ciphertext only
 
-Read path for T1 field:
-  PostgreSQL returns ciphertext
-      │
-      ▼
-  Decrypt with AES-256-GCM (key from Vault)
-      │
-      ▼
-  service.go receives plaintext decimal.Decimal
+Read path symmetric.
 ```
 
-This means a database breach exposes no plaintext T1 data. The encryption key in Vault is separately audited and rotated.
+A database breach exposes no plaintext T1 data. The encryption key is audited and rotated separately.
+
+### Decision 6 — shadcn/ui + Radix for the Web Tier (ADR-012, v1.2)
+
+The web tier foundation moved to shadcn/ui (copy-in components, not a dep-on library) over Radix primitives in April 2026 (commit `4989191`).
+
+Rationale: shadcn gives theme-ability and accessibility; Radix primitives remove the need to reinvent dialog, dropdown, select, slot; Tailwind v4 is the styling substrate. The result: 60 `.tsx` components, Rule #18–compliant typography (Inter, Merriweather, JetBrains Mono, OpenDyslexic), and consistent keyboard/screen-reader behaviour.
 
 ---
 
@@ -846,33 +925,39 @@ This means a database breach exposes no plaintext T1 data. The encryption key in
 
 ### 7.1 Rules as Architecture
 
-The most important pattern in Thittam is the 17-rule coding standards document. These rules do not describe how Thittam works — they describe how *any* WeGoFwd2020 service works. They are shared across Thittam and StudyBuddy via `~/coding-standards/`.
+The most important pattern in Thittam is the 17-rule coding standards document (now 18 with typography). These rules describe how *any* WeGoFwd2020 service works. They are shared across Thittam and StudyBuddy via `~/coding-standards/`.
 
-The effect is that two projects built at the same time, in different languages, by the same team have:
+The effect: two projects built at the same time, in different languages, by the same team have:
 - Identical audit log structure
 - Identical caching strategy (L1 → L2 → L3)
 - Identical idempotency approach (`ON CONFLICT DO NOTHING`)
-- Identical secret management (environment variables / Vault)
+- Identical secret management (T1 Vault, T3 env)
 - Identical observability endpoints (`/healthz`, `/readyz`, `/metrics`)
 
-Rules written at the organisation level save architectural design time at the project level.
+Rules written at the organisation level save architectural design time at the project level. When the rules themselves needed refinement (Rule #2's Vault-vs-env contradiction), the fix propagated to both projects consistently.
 
 ### 7.2 The ADR as a Contract
 
-ADRs in Thittam are not retrospective documentation — they are the boundary between "we are exploring" and "this decision is made". Once an ADR is written and accepted, implementation follows the decision. If the decision turns out to be wrong, a new ADR supersedes it.
+ADRs in Thittam are not retrospective documentation — they are the boundary between "we are exploring" and "this decision is made". Once an ADR is written and accepted, implementation follows the decision.
 
-The nine ADRs cover:
-- Language choice (ADR-001) — affects hiring, tooling, ecosystem
-- Database model (ADR-002) — affects scalability ceiling
-- Internal communication (ADR-003) — affects developer experience
-- Async messaging (ADR-004) — affects operational complexity
-- API gateway (ADR-005) — affects security perimeter
-- Infrastructure (ADR-006) — affects deployment model
-- Vertical plugin (ADR-007) — affects extensibility
-- Multi-tenancy (ADR-008) — affects compliance story
-- Secret management (ADR-009) — affects security posture
+Thirteen ADRs now cover:
+- Language choice (ADR-001)
+- Database model (ADR-002)
+- Internal communication (ADR-003)
+- Async messaging (ADR-004)
+- API gateway (ADR-005)
+- Infrastructure (ADR-006)
+- Vertical plugin (ADR-007)
+- Multi-tenancy (ADR-008)
+- Secret management (ADR-009)
+- UI foundation (ADR-012)
+- grpc-gateway for browser auth (ADR-013)
+- RBAC role model (ADR-014)
+- Tenant address + currency (ADR-015)
 
-Each ADR addresses a decision that, once made, is expensive to reverse. This is the correct selection criterion for what deserves an ADR.
+(ADRs 010 and 011 missing from numbering — fill or renumber.)
+
+Each ADR addresses a decision that is expensive to reverse. This is the correct selection criterion.
 
 ### 7.3 The Vertical Plugin as a Market Decision
 
@@ -888,34 +973,46 @@ No code changes are required in the core services. This makes the cost of enteri
 Market expansion cost with vertical plugin system:
 
   First vertical (Film Production)   ← High cost (build entire core)
-  Second vertical (Construction)     ← Low cost (write YAML + test)
+  Second vertical (Construction)     ← Low cost (write YAML + Phase A seed)
   Third vertical (Software Dev)      ← Very low cost (YAML pattern known)
   Fourth vertical (Events Mgmt)      ← Very low cost
   Fifth vertical (Healthcare?)       ← Very low cost (if financial model fits)
 ```
 
-### 7.4 The Hidden Cost of Microservices at Mid-Build
+XYZ Construction's Phase A scaffold is the first validation of this hypothesis: adding a second vertical tenant was a weekend of work, not a month.
 
-The most instructive tension in Thittam is the gap between the architectural ambition (9 microservices, gRPC, NATS, Istio) and the mid-build reality (4 proto definitions still pending, ~306 tests for a financial platform, billing service not yet in `cmd/`).
+### 7.4 Closing the Gap Between Ambition and Execution
 
-The pattern here is not wrong — it is ahead of its execution capacity. The identification of this gap at mid-build, rather than at launch, is valuable. The resolution is prioritisation:
+The v1.1 critique identified a tension: architectural ambition (9 microservices, gRPC, NATS, Istio, tenant-per-schema) outpaced mid-build execution (4 pending protos, ~306 tests, billing service missing).
+
+v1.2 closes most of that gap:
 
 ```
-Current state (mid-build)                 Target state (pre-launch)
-─────────────────────────                 ──────────────────────────
-4 pending protos                    →     All 9 protos defined
-~306 tests                          →     800+ tests
-No saga for registration            →     Saga pattern documented
-Billing in docs but not in cmd/     →     Billing service implemented
-E2E nightly only                    →     Critical path E2E on every PR
-No NATS dead-letter documented      →     DLQ strategy for financial events
+v1.1 state                              v1.2 state
+─────────────────────                   ──────────────────────────
+4 pending protos                  →     All 10 protos defined
+~306 tests                        →     1,150 tests (3.75×)
+Billing in docs but not in cmd/   →     services/billing/ + proto
+Schema injection risk ❌ Critical  →    Fixed via pkg/tenantdb UUID type
+T1 secrets in env vars ❌ Critical →    Fixed via Vault → memory
+E2E tests absent                  →     Playwright scaffold + budgets-journey
+doc-drift aspirational            →     CI job active in both repos
 ```
 
-The microservices boundary decisions (which service owns which domain) are correct. The physical separation can be phased: start as a modular monolith with service-package boundaries, then extract to separate binaries when load or team size justifies it. The gRPC contracts are already defined — the extraction would be mechanical.
+Remaining:
+```
+No saga for registration          ?     Still open — highest architectural priority
+No reporting read model           ?     Still open — highest performance priority
+Impersonation lifecycle undef     ?     Still open — highest security hygiene priority
+~1,150 tests                      →     Target: 2,000+ before GA (especially ledger)
+E2E narrow (1 journey)            →     Target: 5 critical paths before GA
+```
+
+The pattern here: identify gaps at mid-build, prioritise them, and systematically close them. v1.2 demonstrates the method works. The remaining open items are scoped, understood, and have documented fix paths.
 
 ### 7.5 The Documentation Flywheel
 
-Thittam's documentation is its strongest asset. The 41+ markdown files in `thittam_docs`, the 9 ADRs, and the 17 coding rules create a flywheel:
+Thittam's documentation is its strongest asset. The 71 markdown files in `thittam_docs`, the 13 ADRs, and the 18 coding rules create a flywheel:
 
 ```
 Clear rules
@@ -924,7 +1021,7 @@ Clear rules
 Consistent implementation
     │
     ▼
-Consistent documentation (rules enforced)
+Consistent documentation (rules enforced via doc-drift CI)
     │
     ▼
 Faster onboarding
@@ -933,13 +1030,15 @@ Faster onboarding
 More consistent implementation
     │
     ▼
-(rules refined from experience)
+(rules refined from experience — Rule #2 secrets tiering, Rule #18 typography)
     │
     └──▶ Clearer rules
 ```
 
 New team members (and AI coding agents) can derive the project's expectations from written artefacts rather than from tribal knowledge. The CLAUDE.md file in the code repo and the CODING_RULES.md in the shared standards repo make this explicit for AI-assisted development.
 
+The v1.2 typography rule (Rule #18) is a worked example: it started as a design decision in StudyBuddy, got codified into the shared standards repo, and was then applied in Thittam's shadcn/ui adoption. The standards repo is the mechanism by which a pattern proven in one project becomes the default in the next.
+
 ---
 
-*This document captures the development pattern as observed through Go source structure, migrations, CLAUDE.md, CODING_RULES.md, ADR records, and Thittam documentation as of April 2026.*
+*This document captures the development pattern as observed through Go source structure (10 services), migrations, CLAUDE.md, CODING_RULES.md (17+1 rules), 13 ADRs, 71 documentation files, Playwright scaffold, and multi-tenant demo seed data. April 2026 (v1.2 refresh).*
