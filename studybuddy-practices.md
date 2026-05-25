@@ -2,9 +2,21 @@
 
 **Document type:** Engineering practices analysis
 **Scope:** Backend (FastAPI/Python), Web (Next.js), Mobile (Kivy), Pipeline, Infrastructure
-**Period:** May 2026 (v1.4 — refreshed after visual-library wave 1+2, four bug close-outs, PAI removal)
-**Prior:** v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
+**Period:** 2026-05-24 (v1.5 — alignment with critique v1.5: numbers re-measured; new practices surfaced — additive-RBAC via capabilities table, CONTESTED-status discipline for speculative epics)
+**Prior:** v1.4 May 2026 (visual-library wave 1+2, four bug close-outs, PAI removal) · v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
+**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-development-pattern.md](studybuddy-development-pattern.md) · [studybuddy-cost.md](studybuddy-cost.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
+
+> **Note (2026-05-24):** the body below is the v1.4 record, preserved. No documented practice has been overturned. New since v1.4, worth adding to the catalogue:
+>
+> - **✅ New good practice — additive-RBAC via a dedicated capabilities table.** `teacher_capabilities` (#358, migration 0059, RLS) extends RBAC by *adding* an authoritative table with a two-gate read/act model rather than mutating existing role-grant logic. Same PR also fixed school uploads to write `owner_type='school'` (was defaulting to platform). Pattern reusable for future capability classes.
+> - **✅ New good practice — CONTESTED status stamp on speculative epics.** Epic 17 (corporate-L&D fork) was stamped `CONTESTED` after advisor pushback rather than silently dropped or deleted. Healthy discipline — keeps the speculative-epic visible-but-on-hold rather than invisible-but-lurking. Recommend extending the formal epic-status vocabulary alongside DELIVERED / IN-PROGRESS / DEFERRED.
+> - **✅ Carried forward — zero TODO/FIXME/XXX in `backend/src` + `pipeline`.** Holds at 1,030 backend tests / 73 files. The "no TODO debt" practice scales — this is no longer just a small-codebase artefact.
+> - **✅ Carried forward — operational-gotcha retirement before launch.** The `seed_library_local.py` docker-cp dance was retired by `./scripts:/app/scripts-repo:ro` + `./sample_content:/app/sample_content:ro` bind mounts; the resolver-eval Voyage-rate-limit KeyError was retired by mirroring the success-path schema in the error branch. Practice: each operational gotcha is closed with code, not with a runbook entry.
+> - **⚠️ Carried forward — visual-library promotion CI still gated on AWS secrets.** Library content is seeded locally via `seed_library_local.py` rather than the production path. Fine for resolver evaluation; a divergence to retire before launch.
+> - **⚠️ Carried forward — `APP_ENV` not asserted against a valid enum at startup, slowapi/Redis limiter coexistence, pool-arithmetic warn-not-assert, absent load/perf tests, a11y-weighted E2E.** None touched in the v1.4 → v1.5 window.
+>
+> Re-measured: 1,030 backend tests / 73 files, 17 Playwright specs / 2,781 LOC, 59 migrations (latest 0059). See [studybuddy-cost.md](studybuddy-cost.md) for the real-world cost-of-time-and-money analysis of the practices catalogued below.
 
 ---
 

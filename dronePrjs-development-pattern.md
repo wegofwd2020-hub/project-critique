@@ -2,9 +2,22 @@
 
 **Document type:** Development pattern analysis
 **Scope:** Full lifecycle — from concept to early-build, pre-simulator
-**Period:** May 2026 (six commits, six weeks of work)
+**Period:** May 2026 (8 commits on 2026-05-13 within ~1h 45m wall-time; ~2 weeks of work including pre-commit scoping + ISA drafting)
+**Last refresh:** 2026-05-24 (v1.1 — alignment with critique v1.1: Phase 6 CI added, Phase 3 partial scaffolded, ISC-28 done, D1/D2 ratified)
+**Prior:** v1.0 May 2026 (first review at commit `5c45c9e`, 6 commits, Phase 0–5)
+**Related:** [dronePrjs-critique.md](dronePrjs-critique.md) · [dronePrjs-practices.md](dronePrjs-practices.md) · [dronePrjs-cost.md](dronePrjs-cost.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
-**Note:** This is a first review. The repo is six commits old; everything below is from a single window of activity rather than a multi-year arc like the other two projects.
+**Note:** The repo is now 8 commits old, all landed on 2026-05-13 within ~1h 45m. Everything below documents a single concentrated window of activity rather than a multi-year arc.
+
+> **Note (2026-05-24):** the body below is the v1.0 record, preserved. The documented pattern (ISA-as-system-of-record, phase-per-commit, engine-Protocol contract surface, anti-bleed enforced by AST scan, three-tier CLAUDE.md) holds and has been *validated* by the v1.1 cycle — Phase 6 landed as a labelled phase delivery the same way Phases 0–5 did, and the ISA's DECIDE entries (D1, D2) materialised at the expected boundary. New since v1.0, worth noting:
+>
+> - **Phase-per-commit cadence holds across 8 commits, not 6.** `4ec2c92` (Phase 6 CI quality gates) and `5e38a44` (Phase 3 partial: NS-3.1 Gazebo scaffold + NS-3.2 world generator) both follow the established labelled-phase-delivery convention. The pattern scales.
+> - **ISA DECIDE entries as a ratification mechanism.** D1 (sim-leads / hardware-follows) and D2 (two-tier sim: in-process kinematic + Gazebo/PX4-SITL) were ratified in the 2026-05-13 ISA update. **The decision-as-doc pattern (ISA carries the decision-record next to the criteria they constrain) was demonstrated to work end-to-end** — the v1.0 critique flagged these as "unratified," v1.1 closed them with an ISA entry. Reusable for D3 (flight stack) when Phase 8 approaches.
+> - **"Declared but not implemented" can be closed by a single commit.** ISC-28 (map-signature check) was the v1.0 example of the declared-not-implemented anti-pattern. It now lives in `closedSpace/operator/preflight.py` as part of the pre-arm checklist. Pattern note: the ISC vocabulary surfaced the gap precisely enough that closing it was a targeted edit, not a hunt.
+> - **The Gazebo/SITL tier is deliberately deferred from `make all`.** Phase 3 partial scaffolded `engine/sim_gazebo/` with the heavy Docker build kept out of the default quality gate (NS-3.1b is a manual task). This is a pattern worth documenting: **fidelity tiers each have their own quality-gate window**; the cheap tier runs every commit, the expensive tier runs on demand.
+> - **The 8-commits-in-1h-45m datum is itself a development-pattern observation.** When the system-of-record (ISA) is written first and well, the commit burst is small. Commits are checkpoints on already-thought work, not the thinking itself.
+>
+> Re-measured: 114 test functions / ~133 collected (was 100), coverage 95.3% (was 97%), source LOC corrected to 3,548 (v1.0 over-counted at ~5,010 by including tests), 35 of 44 ISCs complete (was 29/44). Still open + load-bearing: ISC-15 (link-loss RTH) and openSpace becoming a real second engine consumer. See [dronePrjs-cost.md](dronePrjs-cost.md) for the real-world cost-of-time-and-money analysis of the patterns documented below.
 
 ---
 

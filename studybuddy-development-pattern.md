@@ -3,9 +3,19 @@
 **Document type:** Development pattern analysis
 **Scope:** Full lifecycle — from idea to late-build production system
 **Period:** 2025–2026
-**Last refresh:** May 2026 (v1.3 — adds the visual-library wave cadence as a development pattern, Pivot 7 helpers-toolkit, and the resolver-eval feedback loop)
-**Prior:** v1.2 April 2026 (Epic 10 governance, Epic 11 content formatting, Streams registry, Playwright persona expansion)
+**Last refresh:** 2026-05-24 (v1.4 — alignment with critique v1.5: numbers re-measured, `teacher_capabilities` capability surfaced, corporate-L&D epics surfaced as a CONTESTED-status discipline)
+**Prior:** v1.3 May 2026 (visual-library wave cadence + Pivot 7 helpers-toolkit + resolver-eval feedback loop) · v1.2 April 2026 (Epic 10 governance, Epic 11 content formatting, Streams registry, Playwright persona expansion)
+**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-practices.md](studybuddy-practices.md) · [studybuddy-cost.md](studybuddy-cost.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
+
+> **Note (2026-05-24):** the body below is the v1.3 record, preserved. No methodological pattern has been overturned in the v1.4 cycle. New since v1.3, worth noting as additions to the documented pattern:
+>
+> - **Launch/demo hardening as its own lifecycle stage.** The window since v1.3 was almost entirely launch-readiness work — `vm-localhost-bootstrap.sh` + JSON deploy log, demo unit pre-import (`preimport_demo_units.py`), nginx/DNS fixes, demo JWT TTL extension to 4h, domain rename `studybuddy.app` → `usestudybuddy.com`. This sits between "feature-complete" and "first paying customer" and deserves a named phase in the lifecycle taxonomy.
+> - **Additive-RBAC via a capabilities table.** `teacher_capabilities` (#358, migration 0059, RLS) extends RBAC by adding an authoritative table with a two-gate read/act model rather than mutating existing role-grant logic. Reusable pattern for future capability classes.
+> - **CONTESTED epics as a discipline.** Epic 17 (corporate-L&D fork) was stamped `CONTESTED` after advisor pushback rather than silently dropped. Healthy pattern — speculative epics get a status stamp instead of disappearing. Recommend adding `CONTESTED` to the formal epic-status vocabulary alongside DELIVERED / IN-PROGRESS / DEFERRED.
+> - **Backlog correction as a first-class operation.** Epic 10 L-7/L-8 were listed open in v1.3 but were already shipped per current `CLAUDE.md`. The v1.4 cycle treated this as a real correction (not a footnote) — sign that the engineering log is the source of truth, not the critique doc.
+>
+> Re-measured: 1,030 backend tests / 73 files (was 914), 59 migrations (latest 0059), 17 Playwright specs / 2,781 LOC. Zero TODO/FIXME holds. See [studybuddy-cost.md](studybuddy-cost.md) for the real-world cost-of-time-and-money analysis of the patterns documented below.
 
 ---
 
