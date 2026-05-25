@@ -2,8 +2,23 @@
 
 **Document type:** Engineering practices analysis
 **Scope:** Go microservices, gRPC, NATS JetStream, PostgreSQL, Istio, Kong, Vertical Plugin System, shadcn/ui web tier
-**Period:** April 2026 (v1.2 — refreshed after proto completion, T1 secret fix, schema injection fix, test expansion, multi-tenant demo expansion)
+**Period:** 2026-05-24 (v1.3 — alignment with critique v1.3: first refresh measured against on-disk code; saga / reporting / impersonation practices verified real in source)
+**Prior:** v1.2 April 2026 (proto completion, T1 secret fix, schema injection fix, test expansion, multi-tenant demo expansion)
+**Related:** [thittam-critique.md](thittam-critique.md) · [thittam-development-pattern.md](thittam-development-pattern.md) · [thittam-cost.md](thittam-cost.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · ❌ Critical issue · 🔧 How to improve
+
+> **Note (2026-05-24):** the body below is the v1.2 record, preserved. The v1.3 refresh measured against on-disk source for the first time and revealed that several practices the v1.2 catalogue flagged as **aspirational or absent are now real**. Updates to the catalogue:
+>
+> - **✅ Now real (was aspirational) — saga with compensation for the registration pipeline.** `pkg/registration/saga.go` (497 LOC) implements `RegistrationSaga` with a `SagaStatus` state machine (`compensating` / `compensated` / `compensation_failed`), a `Compensator` interface, documented reverse-order compensation 3→2→1, and idempotent step tracking. Plus `errors.go` + `db/models.go`. **The "9-step pipeline lacks a saga" v1.2 gap is closed.**
+> - **✅ Now real (was undefined) — event-sourced read-model for reporting.** `services/reporting/consumer.go` — `ProjectionConsumer` subscribes to domain events and maintains the read-model projection. **The "reporting aggregates cross-service data without a documented read-model strategy" v1.2 gap is closed** with the event-sourced option the critique preferred.
+> - **✅ Now real (was undefined) — bounded impersonation lifecycle.** `services/iam/service.go` + `models.go` — `StartImpersonation` / `EndImpersonation`, `ImpersonationSession`, 4h `maxImpersonationDuration`, background expiry ticker, `impersonation.start` / `.end` audit actions. **The "impersonation lifecycle is not yet formalised" v1.2 gap is closed.**
+> - **✅ Verified-true-against-code (was inferred from docs) — schema-injection-resistant tenant routing.** `pkg/tenantdb.Acquire` accepts only `uuid.UUID`, rejects `uuid.Nil` before interpolation, uses `uuid.UUID.String()` (36 hex/hyphen characters, no SQL metacharacters) in `SET search_path`. The package comment documents why this is safe.
+> - **✅ Verified-true-against-code — T1 secret handling.** `cmd/iam/main.go` loads JWT signing keys from Vault (production) or `FileSource` (dev, gitignored); keys held in process memory bytes only; Vault health gates `/readyz`.
+> - **❌ Still open (P0, unchanged) — `audit_log` REVOKE UPDATE/DELETE is commented out.** `migrations/audit/001_create_audit_log.up.sql:29` with a "run after role creation" note. Append-only is still enforced by convention, not by DB grant. **The only open P0.**
+> - **⚠️ Still open — circuit-breaker policy across service boundaries; tenant-per-schema scalability past 500 tenants.**
+> - **🔧 New methodological practice — "verify against on-disk source" as part of review cadence.** The v1.2 → v1.3 delta is mostly *practices that already existed but were not documented*, not new practices. Future reviews should not skip the on-disk verification pass.
+>
+> Re-measured: 1,715 proto LOC (was 1,659), 1,203 Go test functions / 86 files (was 1,150 / 80), 80 SQL migration files / 2,076 LOC. The "71 docs / 13 ADRs (010/011 gap)" claim is **unverifiable** from the code repo — the sibling `thittam_docs` repo is not checked out locally. See [thittam-cost.md](thittam-cost.md) for the real-world cost-of-time-and-money analysis of the practices catalogued below.
 
 ---
 
