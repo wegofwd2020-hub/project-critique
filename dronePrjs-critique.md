@@ -1,6 +1,6 @@
 # dronePrjs — Code Review & Critique
 
-**Reviewed:** May 2026 (v1.0 — first review)
+**Reviewed:** 2026-05-24 (v1.1 — refresh against HEAD `5e38a44`: Phase 6 CI + Phase 3 partial; ISC-28 done, D1/D2 ratified) · May 2026 (v1.0 — first review, commit `5c45c9e`)
 **Repo:** `dronePrjs` (local, `main`)
 **Phase:** Early-build / pre-simulator. Phases 0–5 of an 8-phase roadmap complete; the in-process kinematic sim drives the test suite end-to-end. No higher-fidelity simulator (Gazebo/PX4 SITL) and no hardware yet.
 **Scope:** Umbrella for two domain apps — `closedSpace` (indoor GPS-denied warehouse inventory) and `openSpace` (outdoor, stub only) — over a shared `engine/` Protocol layer.
@@ -34,6 +34,44 @@ No P0/P1 issues. The pre-simulator window is the right time to address the open-
 | ISCs marked complete | 29 (66 %) |
 | Open decisions blocking Phase 3 | 3 (D1 sim mode, D2 simulator, D3 flight stack) |
 | Domains with code | 1 of 2 (closedSpace; openSpace is `CLAUDE.md` only) |
+
+> **Note (2026-05-24):** the Snapshot above is the v1.0 record at commit `5c45c9e`. Current values are in **What Changed Since v1.0** immediately below.
+
+---
+
+## What Changed Since v1.0 (2026-05-24 refresh)
+
+HEAD has moved from `5c45c9e` to **`5e38a44`** (2026-05-13) — **8 commits** on `main`, up from 6. The structural read holds (umbrella with built closedSpace + stub openSpace; `engine/` Protocol layer; ISA.md as system-of-record). Two flagged gaps closed; the two genuinely load-bearing ones remain.
+
+**Two new phase deliveries:**
+- **`4ec2c92` — Phase 6: quality gates in CI.** `.github/workflows/ci.yml` now exists (single `quality-gate` job: Python 3.12, `pip install -e ".[dev]"`, `make all`, coverage ≥80%). This **flips the v1.0 "no CI" finding** (ISC-37..41 + ISC-44 complete).
+- **`5e38a44` — Phase 3 partial: NS-3.1 + NS-3.2.** `engine/sim_gazebo/` peer of `engine/sim/` (Docker scaffold — PX4 v1.15.4 + Gazebo Harmonic + Ubuntu 22.04, host-networked for MAVLink; the heavy build is deferred to manual task NS-3.1b, deliberately kept out of `make all`); `closedSpace/sim/world_builder.py` (pure `Map`→SDF 1.10) with a checked-in `reference_warehouse.sdf`; new tier-2 `make sim-*` targets.
+
+**Status of the specific gaps v1.0 flagged:**
+
+| v1.0 finding | Status now |
+|---|---|
+| ISC-28 map-signature check declared, not implemented | ✅ **Now implemented** — `closedSpace/operator/preflight.py` runs the map-signature check in the pre-arm checklist (ISA line 212) |
+| No `.github/workflows/ci.yml` | ✅ **Now exists** (Phase 6) |
+| D1/D2/D3 all unratified | ✅ **D1 + D2 ratified** (2026-05-13 ISA DECIDE entries: D1 = sim-leads/hardware-follows; D2 = two-tier sim — in-process kinematic + Gazebo/PX4-SITL). **D3 (flight stack) still deferred** to Phase 8 |
+| ISC-15 link-loss RTH not implemented | ⚠️ **Still open `[ ]`** — no movement |
+| openSpace is a bare stub | ⚠️ **Still a stub** — only `openSpace/CLAUDE.md`; no `openSpace/ISA.md`, no source, no `GPSProvider`/`SimGPS` reference impl |
+
+**Corrected numbers (re-measured):**
+
+| Metric | v1.0 stated | Now (2026-05-24) |
+|---|---|---|
+| Commits on `main` | 6 | **8** (HEAD `5e38a44`) |
+| Phases delivered | 0–5 of 8 | 0–6 complete + **Phase 3 partial** |
+| Test functions (`def test_`) | 100 | **114** (~133 collected with parametrize, per ISA NS-3.2) |
+| Coverage | 97 % | **95.3 %** (per ISA NS-3.2; not re-run live this pass) |
+| Source LOC (non-test) | ~5,010 across 52 files | **3,548 across 32 non-test files** (the v1.0 figure counted tests / all `.py`) |
+| ISCs complete | 29 of 44 | **35 of 44** (9 open: ISC-12, 13, 14, 15, 19, 20, 31, 33, 42) |
+| `.github/workflows/ci.yml` | absent | **present** |
+| ISA.md length | 634 lines | **687 lines** |
+| TODO/FIXME/XXX | zero | **zero (holds)** |
+
+The **two open items v1.0 called load-bearing — ISC-15 (link-loss RTH) and openSpace becoming a real second engine consumer — remain accurate and unaddressed.** Priority Actions #1 (ratify decisions) and #3 (add CI) are now substantially done; #2 (write `openSpace/ISA.md` + a `GPSProvider` reference sim) and the sim-only fidelity ISCs (ISC-12/13/14/31/33, blocked on the Phase-3 Gazebo tier that is now scaffolded) remain the priorities.
 
 ---
 

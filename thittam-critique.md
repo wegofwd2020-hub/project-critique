@@ -1,6 +1,6 @@
 # Thittam — Code Review & Critique
 
-**Reviewed:** April 2026 (v1.2 — refreshed after proto completion, IAM Phase A REST surface, tenant address + multi-tenant demo expansion)
+**Reviewed:** 2026-05-24 (v1.3 — refresh against on-disk code: registration saga / reporting read-model / impersonation lifecycle now implemented; numbers re-measured) · April 2026 (v1.2 — proto completion, IAM Phase A REST surface, tenant address + multi-tenant demo expansion)
 **Repos:** `wegofwd2020-hub/thittam` · `wegofwd2020-hub/thittam_docs`
 **Phase:** Late-build / pre-production on core services
 **Rating key:** ✅ Strong · ⚠️ Gap / Risk · ❌ Critical Issue
@@ -8,6 +8,8 @@
 ---
 
 ## Executive Summary
+
+> **Note (2026-05-24):** the summary below is the v1.2 record (April 2026), preserved verbatim. Three of the operational concerns it lists as open — registration saga, impersonation lifecycle, reporting read-model — are **now implemented** on disk. See **What Changed Since v1.2 (2026-05-24 refresh)** immediately after this summary for the current state, evidence paths, and re-measured numbers (proto LOC 1,659 → 1,715; tests 1,150/80 → 1,203/86). The `audit_log` REVOKE remains the one open P0.
 
 The two most critical findings from v1.1 are now closed:
 
@@ -19,6 +21,35 @@ The proto backlog is cleared. All 10 services (iam, project, budget, expense, le
 Multi-tenancy is reaffirmed as **tenant-per-schema** (commit 934bd58 corrected the docs to rule out the RLS-hybrid speculation). The XYZ_CBA movie-production demo is fully seeded; an XYZ Construction (USD/USA, construction vertical) Phase A seed scaffold is complete with cross-tenant UUID alignment for testing. The web tier moved to shadcn/ui with theme presets; auth now flows through an IAM grpc-gateway REST shadow (`/api/v1/auth/*`) rather than bare gRPC. Typography is compliant with Rule #18 (Inter, Merriweather, JetBrains Mono, OpenDyslexic).
 
 Remaining concerns are mostly operational: the 9-step registration pipeline still lacks an explicit saga with compensating transactions; the impersonation lifecycle is not yet formalised (audit schema exists, UI exists, end-to-end lifecycle does not); the reporting service aggregates cross-service data without a documented read-model strategy; the `audit_log` `REVOKE UPDATE/DELETE` is still commented out in migration 001; ADRs 010 and 011 are missing from the numbering.
+
+---
+
+## What Changed Since v1.2 (2026-05-24 refresh)
+
+This refresh was measured against the **actual Thittam code on disk** — prior reviews were largely inferred from docs + commit history (see the README caveat). It is a verification pass, not a new-feature window: no substantive code landed after 2026-05-13 (the last real commit is a Go 1.25.10 security bump; everything dated later is an automated `chore(progress)` nightly bot). Three gaps the v1.2 critique flagged as open are now **implemented**; the one remaining P0 is unchanged.
+
+**Now built (were flagged open in v1.2):**
+
+| v1.2 finding | Status now | Evidence on disk |
+|---|---|---|
+| 9-step registration pipeline lacks a saga (**highest-priority gap**) | ✅ **Implemented** | `pkg/registration/saga.go` (497 LOC) — `RegistrationSaga`, `SagaStatus` state machine (`compensating`/`compensated`/`compensation_failed`), `Compensator` interface, documented reverse-order compensation 3→2→1, idempotent step tracking; plus `errors.go` + `db/models.go` |
+| Reporting-analytics read-model undefined | ✅ **Defined** | `services/reporting/consumer.go` — `ProjectionConsumer` subscribes to domain events and maintains a read-model projection (the event-sourced option the critique preferred) |
+| Impersonation lifecycle undefined | ✅ **Defined** | `services/iam/service.go` + `models.go` — `StartImpersonation`/`EndImpersonation`, `ImpersonationSession`, 4h `maxImpersonationDuration`, background expiry ticker, `impersonation.start`/`.end` audit actions |
+
+**Still open — P0 (unchanged):** the `audit_log` `REVOKE UPDATE/DELETE` remains commented out (`migrations/audit/001_create_audit_log.up.sql:29`, with a "run after role creation" note). Append-only is still enforced by convention, not by DB grant.
+
+**Previously-inferred claims now verified true against code:** the schema-injection fix (`pkg/tenantdb.Acquire` accepts only `uuid.UUID`, derives the schema from `.String()`, then `SET search_path`) and T1 secret handling (`cmd/iam/main.go` — Vault `iam/jwt-private-key` held in memory only, `/readyz` gated on Vault health, `FileSource` for local dev only).
+
+**Corrected numbers (re-measured):**
+
+| Metric | v1.2 stated | Now (measured) |
+|---|---|---|
+| Proto LOC | 1,659 | **1,715** |
+| Go test functions | 1,150 across 80 files | **1,203 across 86 files** |
+| Proto messages (top-level) | ~230 | **221** (v1.2 per-service counts ran ~1 high each; iam exact at 46) |
+| Protos / services | 10 / 10 | 10 / 10 (unchanged) |
+
+**Caveat on docs claims.** The "71 docs files / 13 ADRs (010/011 missing)" claim is **not verifiable from the code repo** — documentation lives in the sibling `thittam_docs` repo, which is not checked out here (only 8 files exist under `docs/`). Treat the ADR count and the 010/011 gap as unverified pending a direct `thittam_docs` review.
 
 ---
 
