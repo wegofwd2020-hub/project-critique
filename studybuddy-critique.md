@@ -1,6 +1,6 @@
 # StudyBuddy OnDemand — Code Review & Critique
 
-**Reviewed:** May 2026 (v1.4 — refreshed after visual-library wave 1+2, four bug close-outs, and PAI removal)
+**Reviewed:** 2026-05-24 (v1.5 — refresh: numbers re-measured; `teacher_capabilities` #358; corporate-L&D epics 17/18 surfaced) · May 2026 (v1.4 — visual-library wave 1+2, four bug close-outs, PAI removal)
 **Prior reviews:** v1.3 April 2026 (Epic 10 / Epic 11 / Streams) · v1.2 March 2026 · v1.1 Feb 2026
 **Repos:** `wegofwd2020-hub/StudyBuddy_OnDemand` · `wegofwd2020-hub/studybuddy-docs`
 **Phase:** Late-build / pre-production
@@ -9,6 +9,8 @@
 ---
 
 ## Executive Summary
+
+> **Note (2026-05-24):** the summary below is the v1.4 record (May 2026), preserved verbatim. The architectural read still holds. Numbers it cites in current tense (~914 backend tests, 16 Playwright specs / 2,620 LOC, 835 across 59 files) have moved — current is **1,030 tests across 73 files**, **17 specs / 2,781 LOC**, **59 migrations (latest 0059)**. New since v1.4: the `teacher_capabilities` capability (#358, migration 0059) and two speculative corporate-L&D epics (17/18; Epic 17 marked CONTESTED). See **What Changed Since v1.4 (2026-05-24 refresh)** immediately after this summary for the full delta.
 
 The v1.4 cycle is dominated by **execution-throughput evidence rather than new architecture**. Between 2026-04-26 and 2026-05-08 the project closed 10 visual-library expansion sub-issues (#327–#336 under Epic #326) plus four standalone bugs (#295, #297, #338, #339), shipping 144 SVG library entries with non-NULL embeddings, 80 resolver-eval records, and 9 Remotion Option-3 video clips — at roughly 14h 56m wall time against an estimated ~19 FTE-days, an order-of-magnitude compression. The compression source is **process maturity, not primitive reuse**: the helpers-toolkit + declarative SidecarSpec pattern from #327 lifted into every downstream class, the Phase 1/2/3 wave cadence (catalogue → Remotion → eval/seeder/MEMO) became routine, and side-issues were filed and closed inside the same wave rather than queued.
 
@@ -25,6 +27,32 @@ The platform continues to mature along the trajectory set by v1.2. All prior P0/
 The Playwright suite has grown from 3 student-path specs to 16 spec files totalling 2,620 LOC across persona-accessibility, auth, admin, and public flows (35/35 persona + 86/86 chromium-project specs passing). The backend test count has grown to 835 test functions across 59 files; per-module coverage thresholds (auth/subscription 90%, content 85%, default 80%) are still enforced by `scripts/check_coverage_thresholds.py`.
 
 The remaining risks are second-tier: `APP_ENV` is still not asserted against a valid enum at startup; the Redis-backed auth rate-limiter and the slowapi in-process limiter still coexist; pool arithmetic is logged but not a hard assertion; load/performance tests are still absent; and the E2E suite, while much broader, remains weighted toward accessibility coverage rather than functional teacher/admin flows. L-6 (retention sweeper) was paused deliberately; a handful of Epic 10 tickets (L-7..L-10) and Epic 11 tickets (C-5 regen in flight, C-7 PDF smoke, C-8 mobile parity) remain open.
+
+---
+
+## What Changed Since v1.4 (2026-05-24 refresh)
+
+No architectural change — the v1.4 posture holds in full. The window since the v1.4 cut (46 commits; HEAD `d5c75ad` on branch `fix/frontend-unit-tests-363`, dated 2026-05-22) is **launch/demo hardening plus one new capability**, not new platform architecture. Re-measured current numbers:
+
+| Metric | v1.4 stated | Now (2026-05-24) |
+|---|---|---|
+| Backend test functions | ~914 across 59+ files | **1,030 across 73 files** |
+| Alembic migrations | 48 (latest 0048) | **59 (latest 0059)** |
+| Playwright specs | 16 files / 2,620 LOC | **17 files / 2,781 LOC** |
+| TODO/FIXME/XXX in `backend/src` + `pipeline` | zero | **zero (holds)** |
+| Visual library entries / resolver eval records | 144 / 80 | 144 / 80 (unchanged) |
+
+**New migrations above 0048:** 0049 (fix `class_summary` unique index), 0050–0051 (Epic 12 adopted-curricula + content overrides), 0052 (Epic 13 `school_theme`), 0053–0055 (Epic 15 backup/restore), 0056–0057 (visual library `visual_library_entries` + pgvector embedding), 0058 (`name` on demo leads), **0059 (`teacher_capabilities`, RLS — issue #358)**.
+
+**New capability — `teacher_capabilities` (#358 / PR #359).** Additive RBAC table (migration 0059, RLS) with a two-gate read/act model granting `curriculum.commission` / `curriculum.review` / `curriculum_mgmt`. The same PR fixed school uploads to write `owner_type='school'` (was defaulting to platform). Covered by `test_curriculum_mgmt_capability.py`.
+
+**Launch/demo hardening (bulk of the window).** `vm-localhost-bootstrap.sh` + JSON deploy log; demo unit pre-import (`preimport_demo_units.py` — G11 Science pre-imported as approved+published and auto-adopted into the sandbox school); nginx upstream/DNS fixes; demo JWT TTL extended to 4h. **Domain rename `studybuddy.app` → `usestudybuddy.com`** swept across the codebase (`b544029`). asyncpg jsonb codec fix (`7dec328`) — dropped manual `json.dumps()` and registered json/jsonb codecs so `json_agg` decodes to lists.
+
+**New product direction not seen in v1.4 — corporate L&D.** Two new epic specs appeared: `EPIC_17_corporate_ld_fork.md` (status **CONTESTED** — an advisor recommended against forking the codebase) and `EPIC_18_corporate_scenario_catalog.md` (corporate-compliance scenario catalogue, two scenarios shipped). These signal a possible extension toward corporate training that the K-12 critique does not evaluate — worth a dedicated scoping review before it accretes architecture.
+
+**Backlog correction.** Per the current `CLAUDE.md`, Epic 10 **L-7 and L-8 are shipped** (the v1.4 summary listed L-7..L-10 as open); remaining open are L-6 (sweeper, paused), L-9, L-10. Epic 11 C-5..C-8 and Epic 15 BR-DOC-1/2 are unchanged-open.
+
+**Unchanged residual risks (no commits touched them).** `APP_ENV` enum assertion, slowapi/Redis limiter coexistence, pool-arithmetic warn-not-assert, absent load/perf tests, a11y-weighted E2E (the 6 `fixme`'d `school-admin-curriculum-flow.spec.ts` scenarios, #188). Visual-library promotion CI still gated on AWS secrets; local-seed divergence still to retire before launch.
 
 ---
 
