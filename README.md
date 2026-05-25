@@ -22,6 +22,9 @@ Code review and architectural critique for StudyBuddy OnDemand, Thittam, and dro
 | [studybuddy-practices.md](studybuddy-practices.md) | StudyBuddy OnDemand | Good practices, bad practices, and how to improve |
 | [thittam-practices.md](thittam-practices.md) | Thittam | Good practices, bad practices, and how to improve |
 | [dronePrjs-practices.md](dronePrjs-practices.md) | dronePrjs | Good practices, bad practices, and how to improve |
+| [studybuddy-cost.md](studybuddy-cost.md) | StudyBuddy OnDemand | Real-world cost analysis — what a conventional team would have spent (~$1.4M US / $467k blended) |
+| [thittam-cost.md](thittam-cost.md) | Thittam | Real-world cost analysis — what a conventional team would have spent (~$2.2M US / $711k blended) |
+| [dronePrjs-cost.md](dronePrjs-cost.md) | dronePrjs | Real-world cost analysis — what a conventional robotics team would have spent (~$522k US / $179k blended) |
 | [elevator-pitch.md](elevator-pitch.md) | Siva Mambakkam | Elevator pitch for employers and consulting clients |
 | [personality-review.md](personality-review.md) | Siva Mambakkam | Practice personality review — strengths, blind spots, and improvement plan |
 | [linkedin-posts.md](linkedin-posts.md) | Siva Mambakkam | Five LinkedIn posts — thought leadership, compliance, standards, availability |
@@ -45,6 +48,8 @@ Code review and architectural critique for StudyBuddy OnDemand, Thittam, and dro
 
 **Top 3 actions:** (1) Assert `APP_ENV` enum at startup, (2) Consolidate slowapi + Redis rate-limit on Redis only, (3) Turn pool-arithmetic warning into a hard startup assertion.
 
+💰 **Real-world cost** — conventional 4.5-FTE team would have spent **~$1.41M (US) / $467k (blended)** over ~9–11 months to reach HEAD `d5c75ad`. Actual: **~$52k all-in / ~$2k cash, 60 days, one founder.** Headline: **27× cheaper US / 9× blended, 5× faster, 4.5× smaller team.** See [studybuddy-cost.md](studybuddy-cost.md).
+
 ---
 
 ### Thittam
@@ -62,6 +67,8 @@ Code review and architectural critique for StudyBuddy OnDemand, Thittam, and dro
 
 **Top 3 actions (post-refresh):** (1) Apply `audit_log` REVOKE UPDATE/DELETE in a post-deploy step — the last open P0, (2) Stress the now-implemented registration saga's compensation paths under partial-failure tests, (3) Review `thittam_docs` directly to verify the 13-ADR / 71-file / 010-011-gap claims (unverifiable from the code repo). *Prior #1 (saga) and #3 (reporting read-model) are now implemented.*
 
+💰 **Real-world cost** — conventional 5.5-FTE team (architect + 2 senior Go + senior FE + full-time SRE + design/PM/QA) would have spent **~$2.20M (US) / $711k (blended)** over ~10–12 months to reach HEAD `ce64378`. Actual: **~$36k all-in / ~$2k cash, 41 days, one founder.** Headline: **61× cheaper US / 20× blended, 7.5× faster, 5.5× smaller team.** See [thittam-cost.md](thittam-cost.md).
+
 ---
 
 ### dronePrjs
@@ -78,6 +85,8 @@ Code review and architectural critique for StudyBuddy OnDemand, Thittam, and dro
 | Scalability | 🟡 Good | Two-tier simulator strategy correct, Gazebo/PX4 tier now scaffolded (NS-3.1/3.2); MapBuilderFromWMS sketched not built; openSpace is still a stub — engine contract is single-consumer until that changes |
 
 **Top 5 actions (post-refresh):** (1) Write `openSpace/ISA.md` + a `GPSProvider` reference sim so the engine contract has a second consumer — now the top item, (2) Implement ISC-15 link-loss RTH, (3) Build the perception→command latency soak harness alongside the now-scaffolded Phase-3 Gazebo tier, (4) Run the FirstPrinciples + RedTeam review the ISA's VERIFY entry committed to, (5) Ratify D3 (flight stack) before Phase 8. *Prior #1 (ratify D1/D2) and #3 (add CI) are now done.*
+
+💰 **Real-world cost** — conventional 3.75-FTE robotics team (staff/principal + senior autonomy + senior sim + QA + tech-writer) would have spent **~$522k (US) / $179k (blended)** over ~3–5 months to reach HEAD `5e38a44`. Actual: **~$12k all-in / ~$0.2k cash, ~2 weeks (8 commits in 1h 45m on a single day), one founder.** Headline: **44× cheaper US / 15× blended, 8× faster, 3.75× smaller team.** *Hardware costs (Phase 8) excluded in both columns.* See [dronePrjs-cost.md](dronePrjs-cost.md).
 
 ---
 
@@ -139,6 +148,7 @@ This cycle re-measured all three projects against the **code on disk** (prior cy
 - **`*-critique.md`** — point-in-time code review with priority-ordered actions.
 - **`*-development-pattern.md`** — how the project was scoped, designed, architected, and developed. Less about bugs, more about method.
 - **`*-practices.md`** — catalogue of good + bad practices with concrete fixes.
+- **`*-cost.md`** — real-world cost analysis: what a conventional team would have spent in money and calendar time to reach the same artifact, triangulated three ways (industry-velocity benchmark, COCOMO-II modernized, feature-counting). Triangulated against the actual cash + founder-opportunity-cost outlay to produce defensible cheaper-and-faster multipliers.
 - **`elevator-pitch.md` / `personality-review.md` / `linkedin-posts.md`** — founder-facing material derived from the technical review.
 
 ---
