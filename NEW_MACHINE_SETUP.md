@@ -82,9 +82,12 @@ echo "$MAP" | while IFS='|' read -r proj repo sym; do
     git clone "$GH/$repo.git" "$M"
     echo "cloned: $repo -> $M"
   fi
+  mkdir -p "$(dirname "$sym")"          # ensure workspace parent exists (may precede project clone)
   [ -e "$sym" ] || ln -s "$M" "$sym"
 done
 ```
+
+> Verified end-to-end in a temp dir on 2026-06-01: all 8 repos clone with auth, and the symlinks resolve. The `mkdir -p` above is required — without it `ln` fails if the workspace parent dir isn't present yet.
 
 ## Verify
 
