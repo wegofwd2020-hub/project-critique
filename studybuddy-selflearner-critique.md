@@ -1,51 +1,80 @@
 # StudyBuddy SelfLearner (Mentible) — Code Review & Critique
 
-**Reviewed:** 2026-06-02 (v1.0 — first review, measured on disk at branch `feat/authoring-regenerate-export-fixes` @ `e1c66f7`)
+**Reviewed:** 2026-06-09 (v2.0 — major refresh; measured on disk at branch `main` @ `40166ee`. **97 commits since v1.0**; headline shifts: LLM provider seam extracted into the installable `wegofwd-llm` package (ADR-012), Pramana in-process generation integration (ADR-011/013), multi-provider BYOK with free providers, BYOK 422-scrub security fix (ADR-001).)
+**Prior review:** 2026-06-02 (v1.0 — first review, branch `feat/authoring-regenerate-export-fixes` @ `e1c66f7`)
 **Repo:** `wegofwd2020-hub/StudyBuddy_SelfLearner` · **Public brand:** **Mentible** (tagline *"Author Yourself"*; ADR-006, name pending trademark/domain clearance — formerly "StudyBuddy Q")
-**Phase:** Pre-deploy MVP — feature-complete in code for its MVP slice, **not yet verified against live Anthropic or a deployed backend**
+**Phase:** Pre-deploy MVP — feature-complete in code for a now-larger MVP slice (multi-provider, books-only), **still not yet verified against a deployed backend**; some provider paths *are* now self-reported as live-verified (Groq/Anthropic) per commit messages
 **Rating key:** ✅ Strong · ⚠️ Gap / Risk · ❌ Critical Issue
+
+---
+
+## What changed since v1.0 (the 97-commit window)
+
+Between `e1c66f7` (2026-06-02) and `40166ee` (2026-06-09), the project landed 97 commits (228 total; first commit 2026-04-25) and grew from 6 ADRs to **13**. Four architectural shifts dominate, all on `main` now:
+
+1. **The LLM provider seam was extracted into an installable package — `wegofwd-llm` (ADR-012).** What was an inlined, per-provider provider layer is now a standalone repo (`/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy/wegofwd-llm`, **773 LOC src / 48 tests**, tags `v0.1.0`/`v0.1.1`). SelfLearner now consumes it as a dependency: `backend/requirements.txt` pulls `wegofwd-llm[anthropic] @ git+https://github.com/.../wegofwd-llm@v0.1.0`, and the backend imports `wegofwd_llm.{conformance,contract,errors,registry}` directly (`tasks.py`, `anthropic_caller.py`, `schemas.py`). ADR-012 frames the package as serving the *whole product family* (Mentible + Pramana), but **on disk the only consumer is Mentible** — a definitive grep across all three repos shows zero `wegofwd_llm` imports in the Pramana checkout (HEAD `e2958ef`, 2026-06-07). So this is real DRY-by-design with one realized consumer today; the cross-repo coupling risk (git-pin versioning, no registry) is real now, the multi-consumer DRY payoff is still pending Pramana actually wiring the seam.
+
+2. **Multi-provider BYOK with free providers (ADR-005 → built).** ADR-005 was "accepted but unbuilt" in v1.0; it is now implemented across 5 phases. The seam ships Anthropic (native tool-use), OpenAI-compatible, and **free providers** Groq / OpenRouter / Gemini. Provider + model are a per-book `GenerationParam`; the mobile keystore is now **multi-provider** (`mobile/src/secure/keyStore.ts` — per-provider namespaced SecureStore keys); generation provenance (provider/model/fingerprint) is persisted on the saved unit. The blind-retry loop was replaced with a **validate→repair conformance loop** (`generate_validated`).
+
+3. **Pramana compliance/generation integration (ADR-011 *Proposed*, ADR-013 *Accepted* — both Mentible-side ADRs).** Pramana (`.../STEM_studybuddy/pramana`, HEAD `e2958ef`, branch `feat/ai-drafted-approved-content`) is a separate compliance/publication system. The on-disk integration is an **HTTP artifact-exchange seam**, *not* a shared code dependency: `pramana/services/mentible_client.py` pushes a "Package Request" outbound to Mentible and `consumer_library.py` ingests the signed Consumable Package inbound (ADR-011's "consumable handoff"; the module is explicitly a thin port — payload fixed, URL/auth not yet specified, default `NullMentibleClient` for dev). ADR-013 ("Pramana in-process generation") is a decision document **in Mentible's `docs/adr/`** (Mentible commit `78df7f4`) drawing the boundary — the **artifact** is the line, not the act of calling an LLM — but Pramana's checked-out code has **not** wired in-process generation against the seam (zero `wegofwd_llm` imports). The boundary ADR-013 draws is sound; treat it as accepted *intent*, with Pramana's side still to be built.
+
+4. **The BYOK 422-scrub security fix (ADR-001).** A real leak class was found and closed: FastAPI's default 422 handler echoes the offending request `input` back to the caller, and on a *missing required field* the `input` is the whole request body — **including the api_key**. A custom `RequestValidationError` handler now runs every error through `scrub_validation_errors()` (loc-based wholesale redaction for sensitive fields + value-pattern scrubbing) before returning. **Confirmed closed** (see §5).
+
+Other notable changes: **Books-only pivot** — the standalone Query single-lesson surface was removed (ADR-009); per-provider **output-token clamping** (Groq free tier returned HTTP 413 on the fixed 16384 budget — `min()`, never a floor); book-template/theme system (ADR-007); release lifecycle & watermarking (ADR-008); opt-in **narrative/animated-character lesson mode** (ADR-010, *Proposed* — prompt-level animated-SVG path prototyped); a much-expanded compiler (house-style parity, branded diagram themes, accessibility metadata); a Mentible brand-asset rollout; and `docs/PROFESSIONAL_PUBLISHING.md` + manus.ai comparison docs.
+
+### Re-measured numbers (v1.0 → v2.0, all from `wc -l` / `grep` on disk at `40166ee`)
+
+| Metric | v1.0 (`e1c66f7`) | v2.0 (`40166ee`) |
+|---|---|---|
+| Commits (total / since prior) | 131 / — | **228 / +97** |
+| ADRs | 6 | **13** |
+| Backend src LOC / test LOC | 1,843 / 1,428 | **1,953 / 1,771** |
+| Backend `def test_` (files) | 75 (11) | **96 (11)** |
+| Pipeline LOC | 1,007 | **1,246** |
+| Compiler src / test LOC | 1,631 / 927 | **2,223 / 1,048** |
+| Compiler `it/test` blocks (files) | ~60 (9) | **71 (11)** |
+| Mobile src / test LOC | 6,511 / 2,048 | **7,696 / 2,212** |
+| Mobile `it/test` blocks (files) | ~111 (22) | **132 (23)** |
+| In-repo production LOC (excl. tests) | ~10,992 | **~13,118** (mobile 7,696 / compiler 2,223 / backend 1,953 / pipeline 1,246) |
+| New external seam package | — | **`wegofwd-llm` 773 LOC / 48 tests** |
+| `tests/llm/` (top level) | orphan `.pyc` only | **`test_config.py` now real (15 funcs)** + residual `.pyc` |
 
 ---
 
 ## Executive Summary
 
-Mentible is the **direct-to-learner answer to a GTM problem**. After the first StudyBuddy_OnDemand demo, an advisor flagged that the *content-generation IP* was the valuable core and the *institutional (school/district) go-to-market* was the expensive part. This repo is the response: a thin, opinionated authoring client over the same scoped-query IP, sold to adults who **bring their own Anthropic key (BYOK)** — so the vendor never carries a token bill — and which **compiles generated content into a portable EPUB3/PDF book**. The framing is "Claude Code, but for learners": refuse free-form chat, refuse generic markdown, force the six scope dimensions that turn a bare prompt into a real educational artefact.
+Mentible remains the **direct-to-learner answer to a GTM problem**: a thin, opinionated authoring client over the scoped-query IP, sold to adults who **bring their own key (BYOK)** so the vendor never carries a token bill, compiling generated content into a portable EPUB3/PDF book. Since v1.0 it has matured along two axes — it became **books-only** (the single-lesson Query surface removed, ADR-009) and **multi-provider** (Anthropic + OpenAI-compatible + free Groq/OpenRouter/Gemini).
 
-The product has moved fast and **re-scoped itself twice in five weeks** via ADRs. It is now explicitly **two products** (ADR-004): a *paid* authoring app — this repo — and a *separate, free, offline reader* app (not yet started). The brand changed from "StudyBuddy Q" to **Mentible** (ADR-006). A multi-provider + managed-key model (ADR-005) is *accepted but unbuilt*. Reading the ADRs first is mandatory — the `SCOPE.md` / `CLAUDE.md` single-app, "free download" framing predates the split.
+**The headline architectural event is the extraction of the provider seam into the installable `wegofwd-llm` package (ADR-012).** In v1.0 the multi-provider layer was an accepted-but-absent ADR and `tests/llm/` held only orphan `.pyc` files. It is now real code, in its own repo, with a typed contract (`LLMRequest`/`LLMResponse`/`Provider`), a registry, a validate→repair conformance loop, and 48 of its own tests. ADR-012 frames it as serving the whole product family, and that is the right move (package the seam, don't fork it three ways) — but the honest on-disk state is **one realized consumer (Mentible)**; the Pramana checkout imports nothing from it. The cost is **new cross-repo coupling**: the dependency is a **git URL pinned to a tag** (`@v0.1.0`), not a package on any registry, so CI and every install build it over the network from GitHub; and the pin has *already drifted* — SelfLearner pins `v0.1.0` while the package itself is at `v0.1.1` (a `py.typed` packaging fix). A consumer one tag behind its dependency is low-severity today but is exactly the failure mode a shared-package seam introduces.
 
-**What actually exists on disk is real and well-architected — not a stub.** ~11k lines of source across four clean layers: a React Native/Expo mobile app (the largest area at 6.5k LOC), a FastAPI BYOK generate/structure/export backend, a standalone TypeScript **compiler** that turns a `book.json` into EPUB3 *and* PDF, and a `pipeline/` of prompt IP vendored one-way from OnDemand with recorded source SHAs. The end-to-end loops — generate a lesson, structure a TOC into a book, compile a book to EPUB3/PDF — are all implemented and unit/integration-tested (75 backend test functions + ~171 JS test blocks), behind a four-job CI that includes a **repo-wide "no real `sk-ant-` key committed" gate**.
+**The BYOK 422-scrub fix is the security highlight, and it is real.** v1.0 did not flag this leak — it was found and closed in this window. The default 422 handler would have handed the user's `sk-ant-` key straight back in an HTTP response body on a malformed-but-key-bearing request. The fix is a custom handler + `scrub_validation_errors()` that redacts both by field-name (`loc` ends in `api_key`/`authorization`) and by value-pattern, backed by an explicit test (`test_missing_field_422_does_not_echo_key`). For a product whose entire trust proposition is "we touch your key safely," catching and closing a key-echo class this subtle is exactly the discipline the product needs.
 
-The security posture is the standout. BYOK is handled with genuine discipline (ADR-001, Pattern B): the key rides in the HTTPS request body, is AES-256-GCM-encrypted at rest in Redis under a **per-job HKDF-derived key** with a short TTL, read once by the worker, then shredded and deleted; it never touches a log line (a structlog redaction processor + a CI grep enforce this), a database row, or an exception traceback. For a product whose entire trust proposition is "we touch your API key safely," this is the right level of paranoia.
-
-The honest gap is **deployment and verification, not code**. Per `STATUS.md`, the backend has no public URL, the APK has never been built, and 5 of 6 MVP success criteria are "code-complete, unverified on device." The job runner is an **in-process FastAPI `BackgroundTask`**, not the Celery/Redis queue the plan and docstrings describe — so a process restart loses in-flight jobs. There is no auth, no accounts, no cloud sync (all deferred by design). And two accepted expansions — the free reader app (ADR-004) and the multi-provider/managed-key layer (ADR-005) — exist only as decisions; `tests/llm/` holds orphan `.pyc` files but no `llm/` source.
+**The honest gaps are largely the same ones, plus the coupling.** The job runner is still an **in-process FastAPI `BackgroundTask`**, not the Celery/Redis queue the plan describes — a restart still loses in-flight jobs. The backend is still not deployed to a public URL (per `docs/STATUS.md`, last updated 2026-05-26). CORS, rate-limiting, auth, and queue-depth caps remain by-design MVP omissions. And the **doc-drift v1.0 flagged is only partially fixed**: `CLAUDE.md`/`SCOPE.md` got layered ADR-009/ADR-004 amendment *notes*, but the top-of-file status header still reads "Pre-MVP — directory stubs only, no application code yet," and `docs/STATUS.md` is still pinned to `feat/mobile-skeleton` / 2026-05-26, now ~140 commits stale.
 
 | Area | Rating | Key Finding |
 |---|---|---|
-| Architecture | 🟢 Strong | Four clean layers; key-free deterministic compiler as a separate runtime; one-way vendoring with recorded SHAs; security-first BYOK design captured in ADRs |
-| Code Quality | 🟢 Strong | `mypy`/`ruff`-linted backend, typed TS compiler, zero committed secrets, single-source brand constant; idempotency + retry budgets thought through |
-| Test Coverage | 🟡 Good | 75 backend test functions (incl. mandatory `test_no_key_in_logs`) + ~171 mobile/compiler JS test blocks + full CI; **no live-Anthropic or on-device E2E**; `tests/` dir effectively empty |
-| Documentation | 🟢 Strong | 6 ADRs capturing every pivot; MVP/ARTIFACT_PIPELINE/SCOPE specs; but `SCOPE.md`/`CLAUDE.md`/`STATUS.md` are **stale vs current HEAD** and the brand/decisions drift between them |
-| Security | 🟢 Strong | BYOK Pattern B done right: HKDF-per-job AES-GCM envelope, TTL + shred, structlog key-redaction, CI key-leak gate, no hardcoded keys |
-| Scalability / Ops | 🟡 Good | Scale-to-zero Fly config ready; **but** in-process BackgroundTask (not durable), CORS `*`, no rate-limit / queue-depth cap / auth — all flagged as by-design MVP fragility |
+| Architecture | 🟢 Strong | Four clean layers + a now-**externalized provider seam (`wegofwd-llm`)** (one realized consumer, Mentible; family-DRY by intent); typed contract + conformance loop; new risk = cross-repo git-pin coupling (SelfLearner pins `v0.1.0`, package at `v0.1.1`) |
+| Code Quality | 🟢 Strong | `mypy`/`ruff` backend, typed TS compiler, zero committed secrets, single brand constant; multi-provider keystore namespaced cleanly; conformance/repair replaces blind retry |
+| Test Coverage | 🟡 Good | 96 backend `def test_` (was 75) + 71 compiler + 132 mobile blocks + 48 in the seam package; new live-provider self-reports (Groq/Anthropic) but **still no deployed-backend E2E**; residual `tests/llm/*.pyc` orphans |
+| Documentation | 🟡 Good | 13 ADRs (was 6) — reasoning fully legible; but `CLAUDE.md`/`SCOPE.md` header + `STATUS.md` **still stale** (v1.0 finding only half-closed); ADR-010/011 still *Proposed* |
+| Security | 🟢 Strong | BYOK Pattern B intact **+ the 422 key-echo leak found and closed (ADR-001)**; multi-provider redaction (`<redacted-provider-key>`); CORS `*` / no-auth still deferred |
+| Scalability / Ops | 🟡 Good | In-process `BackgroundTask` still the ceiling; new cross-repo build dependency (git+https, no registry) is a supply/availability coupling; still undeployed |
 
-**Top 5 actions:** (1) Replace the in-process `BackgroundTask` with the planned Celery/Redis worker (or document the data-loss window as accepted for MVP) before any real-device run. (2) Deploy the backend to Fly and run the BYOK loop against live Anthropic — the one verification gate everything else waits on. (3) Reconcile the stale `SCOPE.md`/`CLAUDE.md`/`STATUS.md` with the ADRs (brand = Mentible, two-product split, paid app) so the durable spec matches reality. (4) Tighten CORS off `*` and add request rate-limiting + a queue-depth cap before exposing a public URL. (5) Decide the ADR-005 sequencing — build the multi-provider/managed-key layer or mark it explicitly deferred, so it stops being an accepted-but-absent fork in the road.
+**Top 5 actions:** (1) **Fix the `wegofwd-llm` version pin** — bump SelfLearner from `@v0.1.0` to the package's `@v0.1.1`, and decide a registry (private PyPI / GitHub Packages) so installs don't depend on a live git fetch. (2) Replace the in-process `BackgroundTask` with the planned Celery/Redis worker, or formally document the restart-data-loss window. (3) **Close the doc-drift for real** — fix the `CLAUDE.md`/`SCOPE.md` status header and refresh `docs/STATUS.md` (multi-provider, books-only, package seam, ~13k LOC); amendment notes layered over a "directory stubs only" header is not enough. (4) Deploy to Fly and run one real end-to-end BYOK generation against the deployed backend — the verification gate everything still waits on. (5) Resolve ADR-010 (narrative mode) and ADR-011 (Pramana handoff) from *Proposed* — both have prototype code ahead of a decision.
 
 ---
 
 ## What This Product Is (and Isn't)
 
-| | StudyBuddy_OnDemand | **Mentible (this repo)** |
-|---|---|---|
-| Audience | Schools, teachers, districts (K-12) | Self-motivated adult learners + professionals |
-| GTM | B2B sales | App-store distribution |
-| Compliance | FERPA + COPPA | **Adult-only — neither** |
-| Multi-tenancy | Multi-tenant FastAPI + RLS | **Single-user; no RLS, no tenancy** |
-| Token spend | StudyBuddy pays Anthropic | **User pays Anthropic (BYOK)** |
-| Output | Rendered lessons in-app | **Compiled EPUB3 / PDF book artifact** |
-| Value prop | Governance, audit, curriculum lifecycle | Quality scoping + education-grade artifact |
-| Code reuse | — | **One-way vendor of `pipeline/` prompts from OnDemand; never cross-imports** |
+| | StudyBuddy_OnDemand | **Mentible (this repo)** | **Pramana** |
+|---|---|---|---|
+| Audience | Schools, districts (K-12) | Self-motivated adult learners | Compliance/publication backend |
+| Token spend | StudyBuddy pays | **User pays (BYOK, multi-provider)** | — (not yet wired to the seam) |
+| Output | Rendered lessons in-app | **Compiled EPUB3 / PDF book** | Approved **consumable package** |
+| LLM access | inline pipeline providers | **`wegofwd-llm` seam (sole on-disk consumer)** | none on disk (HTTP handoff to Mentible) |
+| Integration | — | One-way vendor of `pipeline/` prompts; consumes the seam package | **HTTP artifact exchange** with Mentible (`mentible_client.py`, ADR-011) |
 
-The IP shared with OnDemand is the **six scope dimensions** (topic / level / language / prior-knowledge / format / real-world framing) — "the LLM is the commodity; the scoping layer is the product." OnDemand's `book_export.py` (#400) emits content *into* this product's reader as neutral "Book JSON." There is deliberately **no customer funnel** between the two.
+The IP shared with OnDemand is still the **six scope dimensions**. New in this window: the **provider seam is now a package** (consumed by Mentible; ADR-012 intends Pramana too, but Pramana does not yet import it), and a *Proposed* "consumable package" handoff (ADR-011) connects Mentible (authoring) to Pramana (compliance/approval) via an **HTTP artifact exchange**, not a shared code dependency.
 
 ---
 
@@ -53,21 +82,21 @@ The IP shared with OnDemand is the **six scope dimensions** (topic / level / lan
 
 ### Strengths
 
-- **Four clean layers with downward-only dependencies.** `mobile/` (RN/Expo) → backend REST; `backend/src/{generate,structure,export}` → `core/` + `pipeline/`; `pipeline/` → Anthropic SDK only (kept import-portable so it can be re-vendored). The CLAUDE.md layer rules are actually respected in the tree.
-- **The compiler is a separate, key-free, deterministic runtime.** `compiler/` is a TypeScript Node CLI (`dist/cli.js`) the backend invokes as a subprocess: `book.json` in on stdin, artifact bytes out on stdout. It never sees the Anthropic key and has no network dependency, so the security-sensitive surface (the key) and the heavy-rendering surface (EPUB/PDF/Chromium-Mermaid) are physically isolated processes. Good blast-radius thinking.
-- **EPUB3 generation is genuinely complete, not a toy.** `epub.ts` walks `book.toc.subjects[].units[]` in reading order, emits one XHTML chapter per content-bearing topic, and builds a proper OCF container: `mimetype` (STORE), `META-INF/container.xml`, OPF 3.0 with full Dublin Core metadata (`dc:identifier/title/language/creator` + MARC relator role, publisher/date/description/subject/rights, `belongs-to-collection` series, `dcterms:modified`), **both** an EPUB3 `nav.xhtml` and a legacy EPUB2 `toc.ncx`, chapter items flagged `properties="mathml svg"` when present, a generated SVG cover, a colophon, an embedded Source Serif 4 font, and base64 images extracted into de-duplicated manifest resources. The PDF path (Vivliostyle, CSS Paged Media) lays out a real textbook: title → colophon → page-numbered TOC → chapters → Quizzes → Answers.
-- **One-way vendoring discipline with recorded provenance.** `pipeline/VENDORED.md` records the source repo and per-file SHAs (last sync `0e7ebc06`, 2026-04-25). `providers/anthropic.py` and `toc_structurer.py` are *deliberately modified* copies (per-call BYOK key; network wrapper dropped so an error path can't stringify the key) — the modifications are documented, not silent. Nothing imports across the repo boundary.
-- **Security-first design captured as decisions, not folklore.** ADR-001 specifies the full BYOK contract before any key-handling code; ADR-002 specifies the vendoring contract before any copy. The architecture was argued on paper first.
+- **Four clean layers, now with an externalized seam.** `mobile/` → backend REST; `backend/src/{generate,structure,export}` → `core/` + `pipeline/` + **`wegofwd_llm`**; `pipeline/` providers → the seam contract. The new dependency edge points *outward* to a versioned package, not sideways into a sibling repo's source — the right direction.
+- **The `wegofwd-llm` seam is genuinely well-factored.** A typed `contract.py` (`LLMRequest`/`LLMResponse`/`Provider` ABC/`Capabilities`), a `registry.py` of `ProviderSpec`s (default model + capabilities incl. `max_output_tokens` ceilings), a `conformance.py` `generate_validated` validate→repair loop, native Anthropic tool-use, and an OpenAI-compatible provider. 48 tests, `py.typed` shipped (v0.1.1). It is small (773 LOC) and does one thing.
+- **Per-provider output-token clamping is a real correctness fix.** `Capabilities.max_output_tokens` (0 = uncapped) + a `min(req.max_tokens, cap)` clamp in the OpenAI-compatible provider closed a live HTTP-413 from Groq's free tier (registry: groq/openrouter = 8000, gemini = 8192; OpenAI/Anthropic uncapped). It's a `min()`, never a floor — small requests pass through. This was found by a real BYOK call on an emulator, not in theory.
+- **The compiler remains a separate, key-free, deterministic runtime** (now larger and richer: house-style parity, branded diagram themes/tokens, EPUB Accessibility 1.1 OPF metadata, release watermarking).
+- **Security-first design captured as decisions.** 13 ADRs; the 422-scrub fix is documented under ADR-001, the seam under ADR-012, the Mentible↔Pramana boundary under ADR-011/013.
 
 ### Gaps & Risks
 
-⚠️ **The job runner is not what the architecture says it is.** `MVP_v1.md` and several docstrings describe a "Celery worker"; the implementation is an in-process FastAPI `BackgroundTask` (`tasks.py` is honest about this: "Migration to Celery for v1.1 is straightforward… a process restart loses in-flight jobs"). For a *minutes-long* async generation (D12), an unlucky deploy or crash silently drops a user's in-flight job and leaves an encrypted envelope in Redis until TTL. Fine as a stated MVP shortcut; dangerous if it ships unannounced.
+⚠️ **Cross-repo coupling via a git-pinned, registry-less dependency.** `wegofwd-llm` is pulled as `git+https://github.com/.../wegofwd-llm@v0.1.0`. There is no package registry, so every CI run and every install builds it from a live GitHub fetch (availability + supply-chain surface). More concretely, **the pin already lags the package**: SelfLearner pins `v0.1.0` while the package is at `v0.1.1` (a `py.typed`/PEP 561 fix). A consumer one tag behind its own dependency is the coupling cost made manifest in week one — and it multiplies the moment Pramana becomes a second consumer. Pin to the latest tag and publish the package somewhere resolvable.
 
-⚠️ **Single-consumer compiler contract, like OnDemand's engine.** The `book.json` schema is the contract between backend and compiler, and between this product and OnDemand's `book_export.py`. There is no schema version field or validator on the boundary — a field rename on either side breaks the bridge silently. Pin and version the Book JSON schema.
+⚠️ **The job runner is still not what the architecture says it is.** `tasks.py` is honest ("Migration to Celery for v1.1 is straightforward… a process restart loses in-flight jobs"), but for minutes-long async generation an unlucky deploy still silently drops a user's in-flight job and leaves an encrypted envelope in Redis until TTL.
 
-⚠️ **The two accepted expansions are absent from the tree.** ADR-004's free reader app (separate repo) and ADR-005's multi-provider/managed-key `llm/` layer are *accepted decisions with no code*. `tests/llm/` contains only orphan `.pyc` files. This is fine as roadmap, but the gap between "accepted" and "exists" is exactly where architecture drifts.
+⚠️ **The Mentible↔Pramana integration is decided ahead of its code.** ADR-010 (narrative/animated-character mode) has a prototyped animated-SVG prompt path while still *Proposed*. ADR-011 (Mentible↔Pramana consumable handoff) is *Proposed* and is the larger architecture; ADR-013 (its in-process amendment) is *Accepted* — but on disk Pramana's side is only a thin outbound HTTP port (`mentible_client.py`, default `NullMentibleClient`, URL/auth unspecified) and Mentible has not built an inbound Package-Request endpoint. Accepted-decision-ahead-of-code on a cross-product boundary is where integration architecture drifts.
 
-⚠️ **Stale specs outrank current reality.** `STATUS.md` is dated to branch `feat/mobile-skeleton` (2026-05-26) and predates ~40 commits of compiler/EPUB/cover/metadata work; `SCOPE.md`/`CLAUDE.md` still describe a single free app. A new contributor reading top-down would build the wrong mental model before reaching the ADRs.
+⚠️ **Single-consumer compiler contract, unchanged.** `book.json` is still the unversioned contract between backend↔compiler and OnDemand↔reader. Add a `schema_version` field and validate it.
 
 ---
 
@@ -75,19 +104,19 @@ The IP shared with OnDemand is the **six scope dimensions** (topic / level / lan
 
 ### Strengths
 
-- **No committed secrets, enforced.** `grep -rn "sk-ant-[A-Za-z0-9]"` across `.py/.ts/.tsx` (excluding tests) returns zero, and a dedicated CI job re-checks the whole repo every push.
-- **Backend is linted and typed.** `ruff check` + `ruff format` gate in CI; `pydantic-settings` config with no secret defaults (startup fails if `BYOK_MASTER_KEY` is unset). The compiler is TypeScript with a `tsc` typecheck job.
-- **Defensive generation logic.** `/generate` dedups on `request_id` (idempotency key `req:{id}`), the worker retries invalid-JSON/schema failures up to 6× (raised from 3 — commit `d8316df`) before failing the job, and every Claude response is `model_validate`-d against `LessonOutput` before returning.
-- **Single source of brand truth.** `mobile/src/constants/brand.ts` holds `BRAND_NAME`/`BRAND_TAGLINE`; the rebrand to Mentible flows from one constant rather than scattered string literals. (The `app.json` `slug`/`package` deliberately stay `studybuddy-q` until trademark clearance — a documented, intentional inconsistency.)
-- **The Anthropic caller refuses to leak.** It logs only `type(exc).__name__` (never the message or `exc_info`, which can carry the key in an SDK repr) and re-raises `AnthropicCallError` `from None`.
+- **No committed secrets, enforced.** The repo-wide `no-real-key-in-repo` CI gate still runs; multi-provider redaction now also covers non-Anthropic keys (`<redacted-provider-key>`).
+- **Backend is linted and typed; the seam mirrors the same ruff config** so a file passes lint identically in either repo (per `wegofwd-llm/pyproject.toml`).
+- **Conformance/repair replaces blind retry.** The worker now routes through `generate_validated` (validate the response, and on a schema miss send a targeted repair turn) rather than re-rolling the whole generation up to N times — fewer wasted tokens on the user's bill.
+- **Multi-provider keystore is migration-safe.** `keyStore.ts` keeps Anthropic on the legacy storage key (`sbq_byok_key`) so existing installs need no migration, and namespaces others (`sbq_byok_key_{provider}`). Provider id matches the backend registry / `GenerationParams.provider` — one identifier across the stack.
+- **Single source of brand truth** (`mobile/src/constants/brand.ts`); `app.json`/identifiers still intentionally `studybuddy-q` pending clearance.
 
 ### Gaps & Risks
 
-⚠️ **`tests/` is a misleading empty shell.** The top-level `tests/` dir holds only a README (real tests live in `backend/tests`, `compiler/__tests__`, `mobile/__tests__`); `tests/llm/` holds stale `.pyc` files from deleted multi-provider work. Delete the orphans — committed `.pyc` with no source is debt and a small supply-chain smell.
+⚠️ **Residual orphan bytecode.** `tests/llm/` is no longer pure orphans — `test_config.py` (15 funcs) is now real source — but `tests/llm/__pycache__/*.pyc` from *deleted* test modules (`test_conformance`, `test_registry`, `test_anthropic_native`, …) still sits committed with no matching source. Those modules now live in the `wegofwd-llm` repo; `git rm` the stale `.pyc`.
 
-⚠️ **CPython `del api_key` cannot zero memory.** The code comments acknowledge this; string immutability means the plaintext key can persist in the process heap until GC. Not fixable in pure Python, but worth a one-line note in ADR-001's threat model that the "shred" is best-effort for the in-process copy (the Redis copy *is* genuinely deleted).
+⚠️ **`max_tokens` defaults are duplicated across the seam boundary.** `16384` appears as the default in `wegofwd_llm/contract.py`, `backend/src/generate/tasks.py`, `pipeline/providers/base.py`, and `anthropic_caller.py`. With clamping now centralized in the seam, the pipeline-side legacy `16384` defaults are belt-and-suspenders at best and a drift risk at worst.
 
-⚠️ **Only `format="lesson"` is wired.** Quiz and Explanation (D13 v1 formats) are rejected at the `/generate` boundary despite being in-scope for v1. Either implement them or down-scope the v1 format claim so the spec matches the code.
+⚠️ **CPython `del api_key` still can't zero memory.** Acknowledged in code; worth the one-line note in ADR-001's threat model (the Redis copy *is* genuinely deleted; the in-process shred is best-effort).
 
 ---
 
@@ -95,21 +124,20 @@ The IP shared with OnDemand is the **six scope dimensions** (topic / level / lan
 
 ### Strengths
 
-- **The security-critical path is tested first.** `backend/tests/test_no_key_in_logs.py` asserts no log line in any code path contains the test key — and CI enforces it. `test_byok_envelope.py` covers the AES-GCM/HKDF envelope, `test_idempotency.py` the dedup, `test_generate_e2e.py` the (mocked) generate loop, `test_export.py` the compile path, `test_structure.py` the TOC structuring. 75 `def test_` functions across 11 files.
-- **The compiler is independently tested.** `compiler/__tests__` — 9 files / ~60 `it/test` blocks covering EPUB assembly, PDF render, cover, colophon, metadata, image packaging.
-- **Mobile has the most tests by count.** `mobile/__tests__` — 22 files / ~111 `it/test` blocks (Jest + RNTL).
-- **Four-job CI.** `.github/workflows/ci.yml`: backend-lint (ruff), backend-test (pytest with a test `BYOK_MASTER_KEY`), compiler-test (tsc + jest), and the `no-real-key-in-repo` defence job. Triggers on PR, push to main, and manual.
-- **No external calls in CI, by rule.** Anthropic/Redis are mocked (`fakeredis`-style + mocked SDK); the discipline matches OnDemand's.
+- **The security-critical path is tested first and has grown.** `test_no_key_in_logs.py` is up to 138 lines and now covers the new vectors: `test_missing_field_422_does_not_echo_key` (the 422 leak), a failed-job worker error path for Anthropic *and* OpenAI keys (the most realistic leak vector — an SDK error stringifying the key). Backend `def test_` count rose **75 → 96**.
+- **The seam package is independently tested** — 48 `def test_` across `test_{allowlist,anthropic_native,conformance,openai_compatible,registry,versioning}.py`, including the 3 clamp cases (clamps down / not raised below ceiling / uncapped at 0).
+- **Compiler and mobile suites grew** (compiler 71 blocks/11 files; mobile 132 blocks/23 files) tracking the new compiler/house-style and import/cover work.
+- **Some provider paths are now self-reported live-verified.** Commit messages record real BYOK calls (Groq → 200, single call, schema-valid first try; Anthropic tool-use "unit-green, LIVE-UNVERIFIED" for the tool path). This is more than v1.0 had — but it is commit-message provenance, not a committed live test.
 
 ### Gaps & Risks
 
-⚠️ **The headline loop has never run for real.** No test (and per `STATUS.md`, no manual run) exercises a live Anthropic call or a deployed backend. 5 of 6 MVP success criteria are "code-complete, unverified on device." The single most valuable test right now is one real end-to-end BYOK generation against a deployed Fly instance.
+⚠️ **Still no deployed-backend end-to-end test.** Per `docs/STATUS.md` (stale, 2026-05-26) the backend has no public URL; no committed test exercises a deployed instance. The live-provider self-reports are encouraging but unrepeatable in CI by design (no real keys in CI).
 
-⚠️ **No mobile on-device E2E.** The BYOK loop's UX — `expo-secure-store` async key load, WebView KaTeX/Mermaid render, minutes-long poll — is only unit-tested. Detox/Maestro on a real device (or at least an emulator) is the gap before alpha.
+⚠️ **No mobile on-device E2E.** The BYOK loop UX (multi-provider key load, WebView render, minutes-long poll) is still only unit-tested.
 
-⚠️ **Pipeline has no dedicated tests.** `pipeline/` is exercised only transitively via backend tests; the vendored prompt/validator logic has no direct coverage in this repo (it inherits OnDemand's, but those don't run here).
+⚠️ **The seam is tested in its own repo, not here.** SelfLearner's CI installs `wegofwd-llm` from the git pin but runs none of the seam's 48 tests; a seam regression at a new tag is only caught if SelfLearner re-pins and its own tests happen to exercise the changed path.
 
-⚠️ **JS counts are `it/test(` blocks, not asserted-unique cases.** Treat the ~171 mobile+compiler figure as an upper-bound approximation; backend's 75 is an exact `def test_` count.
+⚠️ **JS counts are `it/test(` blocks, not asserted-unique cases** — treat 71/132 as upper-bound approximations; backend's 96 is an exact `def test_` count.
 
 ---
 
@@ -117,17 +145,17 @@ The IP shared with OnDemand is the **six scope dimensions** (topic / level / lan
 
 ### Strengths
 
-- **Six ADRs capture every pivot.** ADR-001 (BYOK Pattern B), ADR-002 (vendoring, Approach C), ADR-003 (book authoring — *Proposed*), ADR-004 (two-product split + EPUB3 artifact — *Proposed*), ADR-005 (multi-provider + hybrid keys — *Accepted 2026-05-29, unbuilt*), ADR-006 (rebrand to Mentible — *Accepted 2026-05-29*). The product's reasoning is fully legible.
-- **Companion specs are thorough.** `MVP_v1.md` (the BYOK single-lesson loop + 6 success criteria + named "intentionally fragile" gaps), `ARTIFACT_PIPELINE.md` (book.json → EPUB3/PDF/MOBI matrix, matches the compiler closely), plus `PARAMETERS.md`, `COMPILE_PIPELINE_PLAN.md`, `CONTENT_MIGRATION_CONTEXT_ENGINEERING.md`, `DEPLOY_FLY.md`, and branding/competitive analyses.
-- **`VENDORED.md` is real provenance.** Per-file source SHAs + which files are verbatim vs modified vs explicitly-not-vendored.
+- **13 ADRs capture every pivot** (was 6). New: ADR-007 (templates/theme, Accepted 2026-06-03), ADR-008 (release lifecycle/watermarking, Accepted 2026-06-03), ADR-009 (books-only, Accepted 2026-06-05), ADR-010 (narrative mode, *Proposed*), ADR-011 (Pramana handoff, *Proposed*), ADR-012 (shared seam package, **Accepted 2026-06-09**), ADR-013 (Pramana in-process generation, **Accepted 2026-06-09**). The reasoning is fully legible. (ADR statuses verified from the files' own `**Status:**` lines.)
+- **The seam and integration decisions are documented from both sides.** ADR-012 argues "library, not a service" (D8); ADR-013 draws the artifact-not-the-LLM-call boundary between Mentible and Pramana cleanly (even though Pramana's code hasn't realized it yet).
+- **`docs/PROFESSIONAL_PUBLISHING.md`** (385 lines) and the manus.ai comparison docs add real product/positioning depth.
 
 ### Gaps & Risks
 
-⚠️ **The top-of-funnel docs are stale and contradict the ADRs.** `SCOPE.md` (single free app, BYOK only), `CLAUDE.md` ("Pre-MVP — directory stubs only, no application code yet"), and `STATUS.md` (branch `feat/mobile-skeleton`) all predate the current state. The CLAUDE.md *header note* points to the ADRs, but the body still misleads. **Promote the ADR outcomes into `CLAUDE.md`/`SCOPE.md`** so the durable spec is self-consistent — the doc-drift this product warns about in OnDemand is now present here.
+⚠️ **The v1.0 doc-drift is only half-closed.** `CLAUDE.md` and `SCOPE.md` received ADR-009/ADR-004 amendment *notes*, but `CLAUDE.md`'s top-of-file status line still reads **"Pre-MVP — directory stubs only, no application code yet"** over a ~13k-LOC codebase, and `docs/STATUS.md` is still **"Last updated 2026-05-26, branch `feat/mobile-skeleton`"** — now ~140 commits stale, predating multi-provider, books-only, and the package seam entirely. A new contributor reading top-down still builds the wrong mental model before reaching the ADRs. **Fix the headers, not just append notes.**
 
-⚠️ **`MVP_v1.md` plan says Celery; code is BackgroundTask.** A reader trusting the plan will look for a worker that isn't there.
+⚠️ **`MVP_v1.md` plan still says Celery; code is still `BackgroundTask`.**
 
-⚠️ **No `CONTRIBUTING.md` / runbook.** Local dev is inferable from `docker-compose.yml` + `dev_start.sh`, but there's no single onboarding doc, and no deploy runbook beyond `DEPLOY_FLY.md`.
+⚠️ **No `CONTRIBUTING.md` / multi-repo dev runbook** — and the multi-repo story is now more complex (SelfLearner + `wegofwd-llm` + Pramana, editable-install dance noted only in a `requirements.txt` comment).
 
 ---
 
@@ -135,21 +163,19 @@ The IP shared with OnDemand is the **six scope dimensions** (topic / level / lan
 
 ### Strengths
 
-- **BYOK Pattern B is implemented as specified (ADR-001).** The user's Anthropic key travels in the HTTPS request *body* (validated `min_length=20, max_length=512`, must start `sk-ant-`) — never in a URL, query string, or an `Authorization` header the backend owns.
-- **Encrypted at rest with a per-job key.** `byok_envelope.py` AES-256-GCM-encrypts the key into `byok:{job_id}` using a key derived via **HKDF-SHA256(master, salt=job_id)**; the master `BYOK_MASTER_KEY` is a 64-hex env var with no default (startup fails if absent), giving the master key a separate blast radius from the Redis ciphertext. TTL defaults to 120 s; the worker re-derives the key (HKDF is deterministic) so plaintext is never shared back through Redis.
-- **Explicit shred on every path.** The worker `finally`-block does `del api_key` and `DEL byok:{id}` on success and failure alike. Status rows outlive the envelope (×10) so polling still works after the key is gone.
-- **Key never reaches logs.** `core/log_redaction.py` is a structlog processor that redacts by field name (`api_key`, `authorization`, `token`, …) *and* by value regex (`sk-ant-[A-Za-z0-9_\-]{8,}` → `<redacted-anthropic-key>`). The Anthropic caller logs only the exception *type*. `test_no_key_in_logs.py` + the CI key-leak job enforce both.
-- **Mobile stores the key in hardware-backed secure storage.** `expo-secure-store` (`WHEN_UNLOCKED_THIS_DEVICE_ONLY`) on native, with a `localStorage` fallback only on web; `maskApiKey` shows last-4 in Settings.
+- **BYOK Pattern B intact** (HTTPS-body key, AES-256-GCM envelope in Redis under an HKDF-per-job key, TTL + shred, structlog redaction by field-name *and* `sk-ant-` value-regex, CI key-leak gate). All unchanged and verified on disk.
+- ✅ **The 422 key-echo leak is found and closed (ADR-001).** Verified by reading `backend/main.py` (a custom `@app.exception_handler(RequestValidationError)` that runs `scrub_validation_errors(exc.errors())`) and `backend/src/core/log_redaction.py:119` (`scrub_validation_errors`: loc-based wholesale redaction when the error targets a sensitive field — catching a too-short or non-`sk-ant-` key that the value-regex can't — *and* value-based `_scrub_value` otherwise). Backed by `test_no_key_in_logs.py::test_missing_field_422_does_not_echo_key`, which posts a real fake key in a body missing a required field and asserts the key is absent from `resp.text`. This is a genuine leak class (the default FastAPI 422 echoes the whole request body, which is the key on a missing-field error) and it is genuinely closed.
+- **Multi-provider redaction.** The seam introduced non-Anthropic keys; `log_redaction.py` now redacts provider keys too (`<redacted-provider-key>`), and the worker error-path tests cover an OpenAI-key leak vector, not just Anthropic.
 
 ### Gaps & Risks
 
-⚠️ **CORS is `allow_origins=["*"]`.** Acceptable for a single-user MVP with no cookies/session, but must be locked to the app's origins before a public URL exists — especially since the request body carries the user's key.
+⚠️ **CORS `allow_origins=["*"]`, no auth, no rate-limit, no queue-depth cap** — all the v1.0 by-design MVP omissions persist; the first public deploy is still unauthenticated and unbounded over an endpoint carrying the user's key.
 
-⚠️ **No rate limiting, no queue-depth cap, no auth.** All by-design MVP omissions (single-user, no accounts until v1.1+), but together they mean the first public deployment is unauthenticated and unbounded. A single misbehaving client can exhaust the in-process worker.
+⚠️ **docker-compose all-zeros dev master key** — still a copy-paste-to-prod hazard; refuse to start on the all-zeros value when `APP_ENV != development`.
 
-⚠️ **docker-compose ships an all-zeros dev master key.** Documented, dev-only — but a copy-paste-to-prod hazard. Consider refusing to start if `BYOK_MASTER_KEY` is the all-zeros value outside `APP_ENV=development`.
+⚠️ **New supply-chain edge: the seam is fetched from a git URL at build time.** A compromised or unavailable `wegofwd-llm@<tag>` would break or poison every install. A registry with hash-pinning closes this.
 
-⚠️ **The in-process worker holds the encrypted envelope through a restart window.** Until TTL expires, a crashed/restarted process leaves the (still-encrypted) key in Redis with no worker to consume or shred it. The encryption makes this low-severity, but the durable-queue migration closes it cleanly.
+⚠️ **In-process worker still holds the encrypted envelope through a restart window** (encryption keeps it low-severity; the durable-queue migration closes it cleanly).
 
 ---
 
@@ -157,17 +183,16 @@ The IP shared with OnDemand is the **six scope dimensions** (topic / level / lan
 
 ### Strengths
 
-- **Scale-to-zero Fly config is deploy-ready.** `fly.toml` (app `studybuddyq-backend`, region `iad`, `shared-cpu-1x`/512 MB, `min_machines_running = 0`, `/healthz` check) + `REDIS_URL`/`BYOK_MASTER_KEY` via `fly secrets`. Matches the "demo/quality-first, not scale-first" stance (D7).
-- **`/readyz` actually checks dependencies** (pings Redis), distinct from a liveness `/healthz`.
-- **The expensive work is isolated.** EPUB/PDF/Chromium-Mermaid rendering happens in the subprocess compiler, not the request path; the backend stays light.
+- **Scale-to-zero Fly config remains deploy-ready**; `/readyz` checks Redis; the heavy compile work stays isolated in the subprocess compiler.
+- **The conformance/repair loop reduces wasted token spend** under schema-miss conditions (fewer full re-rolls), which is both a cost and a latency win on the user's bill.
 
 ### Gaps & Risks
 
-⚠️ **In-process BackgroundTask is the scaling ceiling.** One process = one worker pool; minutes-long jobs block capacity and don't survive restarts. The Celery/Redis migration is the prerequisite for any concurrency story.
+⚠️ **In-process `BackgroundTask` is still the scaling ceiling** — one process, one worker pool, no restart durability.
 
-⚠️ **No load/perf testing and no real latency data.** D12 promises "minutes" but nothing has timed a real generation+compile. The compile step (headless Chromium for Mermaid, Vivliostyle for PDF) is the likely tail-latency risk and is untested under load.
+⚠️ **No load/perf data; the compile step (headless Chromium/Vivliostyle) is still the untested tail-latency risk**, now with more compiler features (watermarking, theming) on the path.
 
-⚠️ **Not yet deployed.** No public URL, APK never built (per `STATUS.md`). Everything operational is theoretical until the first Fly deploy + device run.
+⚠️ **Still not deployed** — no public URL, APK not built (per stale STATUS.md). Everything operational remains theoretical until the first Fly deploy + device run.
 
 ---
 
@@ -175,20 +200,19 @@ The IP shared with OnDemand is the **six scope dimensions** (topic / level / lan
 
 | Priority | Action | Area |
 |---|---|---|
-| P1 | Deploy backend to Fly + run one real BYOK generation against live Anthropic — clears the single gate everything else waits on | Verification |
-| P1 | Replace in-process `BackgroundTask` with the planned Celery/Redis worker, or explicitly document the restart-data-loss window as accepted for MVP | Architecture |
-| P1 | Lock CORS to the app origins (off `*`) and add request rate-limiting + a queue-depth cap before exposing a public URL | Security |
-| P1 | Refuse startup if `BYOK_MASTER_KEY` is the all-zeros dev value when `APP_ENV != development` | Security |
-| P2 | Reconcile `SCOPE.md`/`CLAUDE.md`/`STATUS.md` with ADR-004/005/006 (brand = Mentible, two products, paid app) — kill the doc drift | Documentation |
-| P2 | Pin + version the `book.json` schema and validate it on both the backend↔compiler and OnDemand↔reader boundaries | Architecture |
-| P2 | Add on-device (Detox/Maestro or emulator) E2E for the BYOK loop: key load → generate → poll → render | Testing |
-| P2 | Implement the remaining v1 formats (Quiz, Explanation) or down-scope the v1 format claim to "Lesson only" | Code Quality |
-| P2 | Decide ADR-005 sequencing — build the multi-provider/managed-key `llm/` layer or mark it explicitly deferred | Architecture |
-| P3 | Delete the orphan `tests/llm/*.pyc` files | Code Quality |
-| P3 | Add `CONTRIBUTING.md` + a deploy runbook beyond `DEPLOY_FLY.md` | Documentation |
-| P3 | Note in ADR-001's threat model that the in-process `del api_key` shred is best-effort (CPython string immutability) | Security |
-| P3 | Add direct `pipeline/` tests in this repo rather than relying only on transitive backend coverage | Testing |
+| P1 | **Reconcile the `wegofwd-llm` version pin** (SelfLearner `@v0.1.0` lags the package's `@v0.1.1`) and publish the seam to a resolvable registry so installs don't depend on a live git fetch | Architecture / Supply chain |
+| P1 | Deploy backend to Fly + run one real BYOK generation against the deployed backend — the single gate everything else waits on | Verification |
+| P1 | Replace in-process `BackgroundTask` with Celery/Redis, or explicitly document the restart-data-loss window as accepted for MVP | Architecture |
+| P1 | **Actually fix the stale headers** in `CLAUDE.md`/`SCOPE.md` and refresh `docs/STATUS.md` (multi-provider, books-only, seam package, ~13k LOC) — amendment notes over a "directory stubs only" header isn't enough | Documentation |
+| P1 | Lock CORS off `*`, add rate-limiting + queue-depth cap, refuse the all-zeros master key outside dev — before any public URL | Security |
+| P2 | Decide ADR-010 (narrative mode) and ADR-011 (Pramana handoff) from *Proposed* — both have prototype code ahead of the decision | Architecture |
+| P2 | Pin + version the `book.json` schema and validate it on both boundaries | Architecture |
+| P2 | Add on-device (Detox/Maestro) E2E for the multi-provider BYOK loop, and a committed live-provider smoke test gated on an opt-in secret | Testing |
+| P2 | De-duplicate the `16384` `max_tokens` defaults now that clamping lives in the seam | Code Quality |
+| P3 | `git rm` the stale `tests/llm/__pycache__/*.pyc` orphans (the modules moved to `wegofwd-llm`) | Code Quality |
+| P3 | Add a `CONTRIBUTING.md` / multi-repo dev runbook (SelfLearner + `wegofwd-llm` + Pramana, editable installs) | Documentation |
+| P3 | Note in ADR-001's threat model that the in-process `del api_key` shred is best-effort | Security |
 
 ---
 
-*This critique is a point-in-time review measured against the code on disk at `e1c66f7` (branch `feat/authoring-regenerate-export-fixes`). Deployment status, live-Anthropic behaviour, and on-device UX are **self-reported in `STATUS.md`** and were not verifiable from source. The brand "Mentible" is adopted per ADR-006 but pending trademark/domain clearance; the repo and some identifiers remain `StudyBuddy_SelfLearner` / `studybuddy-q` intentionally.*
+*This critique is a point-in-time review measured against the code on disk at `40166ee` (branch `main`, 2026-06-09), the 13 ADRs, the commit log `e1c66f7..HEAD` (97 commits), and the sibling repos `wegofwd-llm` (latest tag `v0.1.1`) and `pramana` (HEAD `e2958ef`, branch `feat/ai-drafted-approved-content`). Deployment status and on-device UX are **self-reported in `docs/STATUS.md`** (now stale) and were not verifiable from source; pytest could not be executed in the review environment (no `pytest` module installed), so the 422-scrub claim is verified by reading the handler, the `scrub_validation_errors` implementation, and the asserting test, not by a green run. The brand "Mentible" is adopted per ADR-006 pending trademark/domain clearance; the repo and some identifiers remain `StudyBuddy_SelfLearner` / `studybuddy-q` intentionally. Supersedes v1.0 (2026-06-02 @ `e1c66f7`).*

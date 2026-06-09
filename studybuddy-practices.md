@@ -2,11 +2,22 @@
 
 **Document type:** Engineering practices analysis
 **Scope:** Backend (FastAPI/Python), Web (Next.js), Mobile (Kivy), Pipeline, Infrastructure
-**Period:** 2026-06-02 (v1.6 — alignment with critique v1.6: numbers re-measured on `main` @ `0d7abe1`; new practices surfaced — interactive authoring studio with publish-completeness gate, one-way content-export bridge, ADR to fix product boundary)
-**Prior:** v1.5 May 2026 (additive-RBAC via capabilities table, CONTESTED-status discipline) · v1.4 May 2026 (visual-library wave 1+2, four bug close-outs, PAI removal) · v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
+**Period:** 2026-06-09 (v1.7 — alignment with critique v1.7: numbers re-measured on `main` @ `d50bc3e`; new practices surfaced — onboarding wizard on derived signals (no new endpoints), UI grouping that disclaims being authz, retro/refine ADR hygiene, backup restore-path fixed with tests)
+**Prior:** v1.6 June 2026 (interactive authoring studio with publish-completeness gate, one-way content-export bridge, ADR to fix product boundary) · v1.5 May 2026 (additive-RBAC via capabilities table, CONTESTED-status discipline) · v1.4 May 2026 (visual-library wave 1+2, four bug close-outs, PAI removal) · v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
 **Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-development-pattern.md](studybuddy-development-pattern.md) · [studybuddy-cost.md](studybuddy-cost.md) · sibling product: [studybuddy-selflearner-practices.md](studybuddy-selflearner-practices.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
 
+> **Note (2026-06-09, v1.7):** the body below is the v1.4 record, preserved. No documented practice has been overturned. New since v1.6 (26-commit window, HEAD `d50bc3e`), worth adding to the catalogue:
+>
+> - **✅ New good practice — UI affordance built on derived signals, not new endpoints (#420).** The school onboarding wizard computes its checklist purely from counts the portal already exposes (`web/lib/school/setup-checklist.ts`, a pure unit-tested function) — zero backend surface added. *Build the guidance layer on existing read signals; don't grow the API to power a UI hint.*
+> - **✅ New good practice — convenience menu that explicitly disclaims being an authz boundary (#415/#417).** `AdministrationMenu.tsx` gates section visibility by capability but documents in its own header: *"the backend enforces each action's gate independently — hiding a link is never the control."* Naming the distinction in code prevents anyone mistaking link-hiding for authorization.
+> - **✅ New good practice — restore-path bug fixed with test coverage proportional to blast radius (#411).** A backup whose restore path didn't match the real schema is a data-loss bug; the fix reconciled the schema and grew `test_backup.py` by ~297 lines (now 32 tests) rather than a one-line patch. Two sibling fixes in the same window: #410 (key on `curriculum_id` not `id`), #413 (stop leaking internal identifiers in failure emails). *Verify the restore, not just the backup.*
+> - **✅ New good practice — two flavors of ADR hygiene.** ADR-005 (Proposed) refines an open question *ahead of* code (school_admin as role-superset, email-only uniqueness — declining the long-proposed `UNIQUE(schools.name)`); ADR-006 (Accepted) *retro-documents* a capability that shipped two months earlier (multi-provider LLM = Epic 1 / migration 0043) and fixes a stale status in the same commit. The ADR register is used both prospectively and to pay down doc debt.
+> - **⚠️ New watch-item — `purge_account.py` (#416) is a super-admin hard-delete marked test-only.** Convenient for teardown, but a hard-delete of a school account must be provably un-runnable against production data before launch. *Gate destructive scripts behind an environment assertion, not a comment.*
+> - **✅ Carried forward — zero TODO/FIXME/XXX in `backend/src` + `pipeline` + web.** Holds at **1,085 backend tests / 77 files**. Verified at the precise code-comment scope this cycle.
+>
+> Re-measured 2026-06-09: 1,085 backend tests / 77 files, 17 Playwright specs / 2,779 LOC, 60 migrations (latest 0060 — no schema change this window), 4 ADRs (ADR-005/006 added). See [studybuddy-cost.md](studybuddy-cost.md) for the real-world cost analysis.
+>
 > **Note (2026-06-02, v1.6):** the body below is the v1.4 record, preserved. No documented practice has been overturned. New since v1.5, worth adding to the catalogue:
 >
 > - **✅ New good practice — publish-completeness gate on generated content (#401/#402).** `publish()` used to gate only on existing versions being *accepted*, so a unit whose generation had failed published silently with holes (a real book shipped missing 3 lessons / 2 tutorials / 1 quiz). The fix requires every unit to have an active version per expected content type per language and returns **409 "incomplete"** enumerating the missing pieces — with an explicit `allow_incomplete=True` escape hatch. Practice: *fail loud on incompleteness; make the override deliberate and named.*
@@ -860,6 +871,10 @@ Before the first paying school, the live-key rollout procedure must exist.
 │  SBOM per CI run            │  ✅ Good  │  —                         │
 │  RedBeat resolves Beat SPOF │  ✅ Good  │  —                         │
 │  OpenAPI → TS drift check   │  ✅ Good  │  —                         │
+│  Onboarding on derived sigs │  ✅ Good  │  —  (no new endpoints)     │
+│  Menu disclaims authz       │  ✅ Good  │  —  (#415/#417)            │
+│  Restore-path fixed + tests │  ✅ Good  │  —  (#411)                 │
+│  ADR-005/006 hygiene        │  ✅ Good  │  —  (refine + retro)       │
 ├─────────────────────────────┼──────────┼────────────────────────────┤
 │  APP_ENV not asserted       │  ⚠️  Bad  │  P1 — 3-line fix           │
 │  Slowapi + Redis coexist    │  ⚠️  Bad  │  P1 — audit + consolidate  │
@@ -880,6 +895,9 @@ Before the first paying school, the live-key rollout procedure must exist.
 │  DEV_ACCOUNTS verify outstand│ ⚠️  Bad  │  P3 — confirm tag action   │
 │  Mobile UI not tested       │  ⚠️  Bad  │  P3 — pending Epic 3 choice│
 │  No cross-client auth tests │  ⚠️  Bad  │  P3 — as Epic 3 activates  │
+│  purge_account test-only gate│ ⚠️  Bad  │  P2 — env-assert, not cmt  │
+│  Onboarding/Admin E2E gap   │  ⚠️  Bad  │  P2 — web-unit only today  │
+│  ADR-005 still Proposed      │ ⚠️  Bad  │  P2 — soft-delete to ship  │
 └─────────────────────────────┴──────────┴────────────────────────────┘
 
 P1 = Fix before first production users
