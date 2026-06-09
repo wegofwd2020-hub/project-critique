@@ -1,152 +1,166 @@
 # StudyBuddy SelfLearner (Mentible) — Good Practices, Bad Practices & How to Improve
 
 **Document type:** Engineering practices analysis
-**Scope:** Backend (FastAPI/Python), Mobile (React Native/Expo), Compiler (TypeScript/Node), Pipeline (vendored), Infrastructure
-**Period:** 2026-06-02 (v1.0 — first analysis; measured on disk at `e1c66f7`, branch `feat/authoring-regenerate-export-fixes`)
+**Scope:** Backend (FastAPI/Python), Mobile (React Native/Expo), Compiler (TypeScript/Node), Pipeline (vendored), **the shared `wegofwd-llm` seam package**, Infrastructure
+**Last refresh:** 2026-06-09 (v2.0 — major refresh; measured on disk at `40166ee`, branch `main`. **97 commits since v1.0**; new practice surfaces: the extracted `wegofwd-llm` provider seam (ADR-012), multi-provider BYOK, the BYOK 422-scrub fix (ADR-001), per-provider token clamping.)
+**Prior refresh:** 2026-06-02 (v1.0 — first analysis, `e1c66f7`, branch `feat/authoring-regenerate-export-fixes`)
 **Repo / brand:** `wegofwd2020-hub/StudyBuddy_SelfLearner` · public brand **Mentible**
 **Related:** [studybuddy-selflearner-critique.md](studybuddy-selflearner-critique.md) · [studybuddy-selflearner-development-pattern.md](studybuddy-selflearner-development-pattern.md) · [studybuddy-selflearner-cost.md](studybuddy-selflearner-cost.md) · parent product: [studybuddy-practices.md](studybuddy-practices.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
 
-> A catalogue of concrete practices observed in the Mentible codebase, with fixes. The through-line: **the security practices are exemplary; the discipline gaps are all about the distance between an accepted decision (or a stale spec) and the code that exists.**
+> A catalogue of concrete practices observed in the Mentible codebase, with fixes. The through-line holds from v1.0: **the security practices are exemplary; the discipline gaps are all about the distance between an accepted decision (or a stale frame, or a drifted version pin) and the code that exists.** v2.0 adds a whole new practice surface — a *shared package seam* — which is well-executed but introduces the first cross-repo version-coupling debt.
+
+---
+
+## What changed since v1.0
+
+- **New good practice surfaces:** the externalized `wegofwd-llm` seam (typed contract + registry + conformance loop + `py.typed`); the **BYOK 422-scrub fix** (a found key-echo leak, closed and tested); per-provider **output-token clamping** modeled as a capability, not a name-branch; the **validate→repair conformance loop** replacing blind retry; a migration-safe **multi-provider keystore**.
+- **One v1.0 bad practice partly fixed:** `tests/llm/` is no longer pure orphans — `test_config.py` (15 funcs) is now real — but stale `__pycache__/*.pyc` for *deleted* modules persists.
+- **One v1.0 bad practice persists, half-addressed:** the doc-drift (`CLAUDE.md`/`SCOPE.md`/`STATUS.md`) got ADR amendment *notes* but the stale top-of-file frames remain.
+- **One new bad practice:** **a lagging version pin** — SelfLearner pins `wegofwd-llm@v0.1.0`; the package is already at `@v0.1.1`.
 
 ---
 
 ## ✅ Good Practices
 
-### ✅ Make the core security invariant an enforced test, not a comment
+### ✅ Make the core security invariant an enforced test — even for a newly discovered leak
 
-The product's entire trust proposition is "we handle your Anthropic key safely." So the invariant is a test: `backend/tests/test_no_key_in_logs.py` asserts no log line in any code path contains the test key, and a dedicated CI job (`no-real-key-in-repo`) greps the *whole repo* for a committed `sk-ant-` value on every push. The invariant cannot regress silently.
+v1.0's exemplar was `test_no_key_in_logs.py`. v2.0 extends it: a real key-echo leak was found (FastAPI's default 422 handler echoes the request body, which on a missing-field error *is* the api_key) and locked with `test_missing_field_422_does_not_echo_key`, plus failed-job worker-error-path tests for both Anthropic *and* OpenAI keys. The backend `def test_` count rose 75 → **96**.
 
-🔧 *Reusable takeaway:* when a product has one non-negotiable property, write the test that fails if it's ever violated **before** the feature, and gate CI on it.
+🔧 *Reusable takeaway:* when you find a leak outside your threat model, the fix isn't done until a test would fail if it regressed — and the test should name the exact vector (here, a *missing* field, not a malformed one).
 
-### ✅ BYOK key lifecycle: encrypt-per-job, TTL, shred — on every path
+### ✅ Scrub secrets on the way OUT, not just in logs
 
-`byok_envelope.py` AES-256-GCM-encrypts the key under a per-job key derived via HKDF-SHA256(master, salt=`job_id`); the master `BYOK_MASTER_KEY` is a 64-hex env var with **no default** (startup fails if unset); TTL defaults to 120 s; the worker re-derives the key (HKDF is deterministic, so plaintext never round-trips through Redis) and the `finally` block does `del api_key` + `DEL byok:{id}` on success and failure alike.
+`scrub_validation_errors()` (`core/log_redaction.py:119`) redacts the BYOK key from the 422 *response body* two ways: **loc-based** (if the error targets a sensitive field, redact `input`/`ctx` wholesale — catching a too-short or non-`sk-ant-` key the value-regex would miss) and **value-based** (`_scrub_value` otherwise). The custom `@app.exception_handler(RequestValidationError)` in `main.py` mirrors FastAPI's default 422 shape but runs every error through it first.
 
-🔧 *One gap to document:* CPython string immutability means `del api_key` can't truly zero the in-process copy. Note in ADR-001's threat model that the in-memory shred is best-effort while the Redis deletion is genuine.
+🔧 *Takeaway:* a redaction layer that only covers logs is incomplete — any place you echo request data back (error bodies, debug endpoints) needs the same scrubber.
 
-### ✅ Redact secrets by field name *and* value regex
+### ✅ Extract a shared seam as a package — with its contract, tests, and lint config
 
-`core/log_redaction.py` is a structlog processor that redacts both known field names (`api_key`, `authorization`, `token`, …) and any value matching `sk-ant-[A-Za-z0-9_\-]{8,}`. Belt and suspenders — a key leaks neither by a known field nor by appearing in an arbitrary string.
+`wegofwd-llm` (773 LOC, 48 tests, tags v0.1.0/v0.1.1) is a typed `Provider`/`LLMRequest`/`LLMResponse`/`Capabilities` contract + a `ProviderSpec` registry + a `generate_validated` conformance loop, shipping `py.typed` (PEP 561) so consumers type-check against it. Its `pyproject.toml` **mirrors the consumers' ruff config** so a file lints identically in either repo. On disk its sole consumer is Mentible; ADR-012 intends Pramana as a second consumer, but the Pramana checkout imports nothing from it yet.
 
-### ✅ Log exception *types*, never exception *bodies*, on the key path
+🔧 *Takeaway:* extract the *contract + tests + lint rules*, not just the code — otherwise consuming it is neither type-safe nor lint-clean. And prove the seam in production (Mentible ran it across five phases) before packaging — a forward-looking extraction for an anticipated second consumer is fine *if* the abstraction has already earned its shape in real use.
 
-The Anthropic caller logs `type(exc).__name__` only — never the message or `exc_info`, because an SDK exception repr can embed the request (and thus the key) — and re-raises `AnthropicCallError` `from None` to drop the chained context.
+### ✅ Model provider quirks as capabilities, not name-branches
 
-### ✅ Vendor with recorded provenance, modify deliberately
+The Groq free-tier HTTP-413 (the fixed 16384 budget exceeded its ~12k ceiling) was fixed by adding `Capabilities.max_output_tokens` (0 = uncapped) to the contract and clamping `min(req.max_tokens, cap)` in the OpenAI-compatible provider — the *registry* declares each ceiling (groq/openrouter 8000, gemini 8192; OpenAI/Anthropic 0). A `min()`, never a floor, so small requests pass through unchanged.
 
-`pipeline/VENDORED.md` records the source repo + per-file SHA, marks which files are verbatim vs modified vs explicitly-not-vendored, and `scripts/sync-from-ondemand.sh` makes re-syncing a deliberate, reviewable act. The two *modified* copies (`anthropic.py` for per-call BYOK, `toc_structurer.py` with the network wrapper removed so an error path can't stringify the key) document *why* they diverge. Copying code without provenance is debt; this is copying done right.
+🔧 *Takeaway:* when a provider rejects a request for a provider-specific reason, encode the limit as registry data, not an `if provider == "x"`.
 
-### ✅ Idempotency + bounded retry on the generation path
+### ✅ Validate→repair instead of blind retry
 
-`/generate` dedups on a client `request_id` (`req:{id}` Redis key) so a retried submit doesn't double-spend the user's tokens; the worker retries invalid-JSON/schema failures up to 6× before failing the job; every response is `model_validate`-d against `LessonOutput` before it reaches the client.
+The worker routes through `generate_validated` (validate the model's JSON against the schema, and on a miss send a *targeted repair turn*) rather than re-rolling the entire generation N times. On a BYOK product this directly reduces wasted tokens on the user's bill.
 
-### ✅ Isolate the heavy/risky runtime as a subprocess
+### ✅ Multi-provider keystore that doesn't break existing installs
 
-The EPUB3/PDF compiler is a separate, key-free, network-free TypeScript CLI invoked over stdin/stdout. The secret-handling surface and the headless-Chromium/Vivliostyle rendering surface live in different processes.
+`mobile/src/secure/keyStore.ts` keeps Anthropic on the legacy `sbq_byok_key` storage key (no migration for existing installs) and namespaces others as `sbq_byok_key_{provider}`; the provider id matches the backend registry and `GenerationParams.provider` — one identifier across mobile, backend, and the seam.
 
-### ✅ Single source of brand truth
+### ✅ BYOK key lifecycle: encrypt-per-job, TTL, shred — on every path (unchanged, still strong)
 
-`mobile/src/constants/brand.ts` holds `BRAND_NAME`/`BRAND_TAGLINE`; the Mentible rebrand flowed from one constant. The `app.json` identifiers staying `studybuddy-q` is a *documented* intentional inconsistency (pending trademark clearance), not an oversight.
+`byok_envelope.py` AES-256-GCM under an HKDF-SHA256(master, salt=`job_id`) per-job key; `BYOK_MASTER_KEY` 64-hex with **no default**; TTL ~120 s; `finally` block `del api_key` + `DEL byok:{id}` on success and failure. Redaction by field-name *and* `sk-ant-` value-regex, now extended with a `<redacted-provider-key>` path for non-Anthropic keys.
 
-### ✅ Config fails fast, no secret defaults
+### ✅ Vendor with recorded provenance; isolate the heavy runtime as a subprocess; single brand constant; config fails fast (all unchanged from v1.0, all still good)
 
-`pydantic-settings`; `BYOK_MASTER_KEY`, `REDIS_URL`, `ANTHROPIC_DEFAULT_MODEL` required at startup. No silent fallback to an insecure default in app code.
+`pipeline/VENDORED.md` SHAs; the key-free/network-free TS compiler subprocess; `mobile/src/constants/brand.ts`; `pydantic-settings` with no secret defaults.
 
 ---
 
 ## ⚠️ Bad Practices (and 🔧 fixes)
 
-### ⚠️ The plan says Celery; the code is an in-process `BackgroundTask`
+### ⚠️ The seam version pin already lags its dependency (NEW)
 
-`MVP_v1.md` and several docstrings describe a Celery worker; the implementation is a FastAPI `BackgroundTask`. A process restart silently drops in-flight (minutes-long) jobs and leaves an encrypted envelope in Redis until TTL.
+SelfLearner's `backend/requirements.txt` pins `wegofwd-llm[anthropic] @ git+https://...@v0.1.0`; the package is already at `@v0.1.1` (a `py.typed`/PEP 561 fix). The sole consumer is a tag behind its own dependency in the same week the seam shipped — and that will become genuine *cross-consumer* drift the moment Pramana (ADR-012's intended second consumer) wires it.
 
-🔧 Either implement the Celery/Redis worker, or make the spec tell the truth and add a one-line user-visible caveat that an in-flight job can be lost on redeploy. Don't let three documents disagree.
+🔧 Bump SelfLearner to `@v0.1.1`, and add a lightweight cross-repo version check (or a shared constraints file) before a second consumer exists. A shared package's whole value is one source of truth — defeated the moment a consumer drifts.
 
-### ⚠️ Doc drift: `SCOPE.md`/`CLAUDE.md`/`STATUS.md` predate the current product
+### ⚠️ The seam is fetched from a git URL, not a registry (NEW)
 
-`CLAUDE.md` still says "Pre-MVP — directory stubs only, no application code yet"; `SCOPE.md` describes a single free app; `STATUS.md` is pinned to an old branch. The real product (Mentible, two-product split, paid app, ~11k LOC, working compiler) is described only in the ADRs.
+`git+https://github.com/.../wegofwd-llm@<tag>` means every CI run and install builds the package from a live GitHub fetch — an availability and supply-chain coupling, with no hash-pinning.
 
-🔧 **Promote the ADR outcomes into the durable spec.** An ADR is half-done until the `SCOPE.md`/`CLAUDE.md` it changes is updated. This is the exact doc-drift class the team polices well in OnDemand — apply the same rigor here.
+🔧 Publish to a private PyPI / GitHub Packages and pin by version + hash. The git URL is fine for week-one bootstrapping; it shouldn't be the steady state.
 
-### ⚠️ CORS `allow_origins=["*"]` on an endpoint that carries the user's key
+### ⚠️ The plan says Celery; the code is still an in-process `BackgroundTask` (persists)
 
-Acceptable only because there's no cookie/session yet.
+A process restart silently drops in-flight (minutes-long) jobs and leaves an encrypted envelope in Redis until TTL. `MVP_v1.md` still says "Celery."
 
-🔧 Lock to the app's origins before any public URL exists; revisit when auth lands.
+🔧 Implement the Celery/Redis worker, or make the spec tell the truth with a one-line user-visible caveat. Don't let three documents disagree.
 
-### ⚠️ No rate limiting, no queue-depth cap, no auth
+### ⚠️ Doc drift: `CLAUDE.md`/`SCOPE.md`/`STATUS.md` frames are still stale (persists, half-fixed)
 
-By-design MVP omissions — but the first public deploy would be unauthenticated and unbounded, and a single client can saturate the one in-process worker.
+`CLAUDE.md`/`SCOPE.md` got ADR-009/ADR-004 amendment *notes*, but `CLAUDE.md`'s status header still says "**Pre-MVP — directory stubs only, no application code yet**" over ~13k LOC, and `docs/STATUS.md` is still "Last updated 2026-05-26, branch `feat/mobile-skeleton`" — ~140 commits stale, predating multi-provider, books-only, and the seam package.
 
-🔧 Add a basic per-IP rate limit and a queue-depth cap *before* exposing a URL, even ahead of full auth (v1.1+).
+🔧 **Fix the headers, don't just append notes.** An ADR is half-done until the durable frame it changes is rewritten — and a layered note over a "directory stubs only" header reads as more wrong, not less.
 
-### ⚠️ docker-compose ships an all-zeros dev `BYOK_MASTER_KEY`
+### ⚠️ Stale `.pyc` orphans persist (partly fixed)
 
-Documented and dev-only, but a copy-paste-to-prod hazard.
+`tests/llm/test_config.py` is now real source (15 funcs), but `tests/llm/__pycache__/*.pyc` for *deleted* modules (`test_conformance`, `test_registry`, `test_anthropic_native`, `test_allowlist`, `test_openai_compatible`, `test_versioning`) still sits committed — those modules moved into the `wegofwd-llm` repo.
 
-🔧 Refuse to start if the master key is the all-zeros value when `APP_ENV != development`.
+🔧 `git rm` the stale bytecode; add `__pycache__/` and `*.pyc` to `.gitignore` if not already enforced.
 
-### ⚠️ Orphan `.pyc` files with no source (`tests/llm/`)
+### ⚠️ Duplicated `16384` max-tokens defaults across the seam boundary (NEW)
 
-Leftovers from deleted multi-provider work; the top-level `tests/` dir is otherwise just a README.
+`16384` is the default in `wegofwd_llm/contract.py`, `backend/.../tasks.py`, `pipeline/providers/base.py`, and `anthropic_caller.py`. With clamping now centralized in the seam, the pipeline-side legacy defaults are redundant and a drift risk.
 
-🔧 `git rm` the orphans. Committed bytecode without source is debt and a minor supply-chain smell.
+🔧 Source the default budget from one place (the seam contract); delete the pipeline-side legacy constants.
 
-### ⚠️ Only `format="lesson"` is implemented, but v1 claims three formats
+### ⚠️ CORS `allow_origins=["*"]`, no auth, no rate-limit, no queue cap, all-zeros dev master key (all persist)
 
-Quiz and Explanation (D13) are rejected at the boundary.
+Unchanged from v1.0; all by-design MVP omissions, all still need closing before a public URL.
 
-🔧 Implement them, or narrow the v1 scope statement to "Lesson only" so the spec matches the code.
+🔧 Lock CORS to app origins; add a per-IP rate limit + queue-depth cap; refuse the all-zeros master key when `APP_ENV != development`.
 
-### ⚠️ Unversioned `book.json` contract on two boundaries
+### ⚠️ Unversioned `book.json` contract on two boundaries (persists)
 
-The Book JSON is the contract backend↔compiler *and* OnDemand-export↔reader, with no schema version or validator.
-
-🔧 Add a `schema_version` field and validate on ingest at both boundaries — a field rename otherwise breaks the bridge silently.
+🔧 Add a `schema_version` field and validate on ingest at both backend↔compiler and OnDemand↔reader.
 
 ---
 
-## 🔧 Testing practices — strong core, missing edges
+## 🔧 Testing practices — strong core, growing, missing the deployed edge
 
 | Practice | State | Fix |
 |---|---|---|
-| Security path tested first (`test_no_key_in_logs`, `test_byok_envelope`) | ✅ Excellent | — |
-| Idempotency / export / structure unit+integration tests | ✅ Good | — |
-| Compiler independently tested (EPUB/PDF/cover/metadata) | ✅ Good | — |
-| Mobile component tests (22 files) | ✅ Good | — |
-| Live-Anthropic E2E | ⚠️ Absent | Run one real BYOK generation against a deployed backend |
-| On-device mobile E2E | ⚠️ Absent | Detox/Maestro for key-load → generate → poll → render |
-| Direct `pipeline/` tests in this repo | ⚠️ Absent (transitive only) | Add schema/retry/prompt tests locally |
+| Security path tested first (`test_no_key_in_logs`, 422-scrub, multi-provider error paths) | ✅ Excellent (75→96 backend tests) | — |
+| Seam package independently tested (contract/registry/conformance/clamp) | ✅ Good (48 tests in `wegofwd-llm`) | Also exercise the seam from SelfLearner's CI at the pinned tag |
+| Idempotency / export / structure / compiler / mobile tests | ✅ Good (compiler 71, mobile 132 blocks) | — |
+| Per-provider clamp + validate→repair tested | ✅ Good | — |
+| Live-provider verification | ⚠️ Self-reported only | Commit-message provenance (Groq→200, Anthropic tool-use); add an opt-in live smoke test gated on a secret |
+| Deployed-backend E2E | ⚠️ Absent | Run one real BYOK generation against a deployed Fly instance |
+| On-device mobile E2E | ⚠️ Absent | Detox/Maestro: multi-provider key-load → generate → poll → render |
+| Direct `pipeline/` tests in this repo | ⚠️ Absent (transitive only) | Add schema/retry tests locally |
 
 ---
 
-## Practices Scorecard (v1.0)
+## Practices Scorecard (v2.0)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  Mentible (StudyBuddy_SelfLearner) — Practices Scorecard (v1.0)       │
+│  Mentible (StudyBuddy_SelfLearner) — Practices Scorecard (v2.0)       │
 ├──────────────────────────────────────┬───────────┬───────────────────┤
-│  Practice area                        │  Rating   │  Note              │
+│  Practice area                        │  Rating   │  Note (Δ vs v1.0)  │
 ├──────────────────────────────────────┼───────────┼───────────────────┤
-│  BYOK key lifecycle (encrypt/TTL/shred)│  ✅ Strong │  HKDF-per-job AES  │
-│  Secret redaction + CI key-leak gate  │  ✅ Strong │  field + regex     │
-│  Vendoring with recorded provenance   │  ✅ Strong │  VENDORED.md SHAs  │
-│  Idempotency + bounded retry          │  ✅ Strong │  request_id dedup  │
-│  Runtime isolation (compiler subproc) │  ✅ Strong │  key-free renderer │
-│  ADR decision discipline              │  ✅ Strong │  6 ADRs, losers    │
-│                                       │           │  closed            │
-│  Config fail-fast / no secret defaults│  ✅ Good   │  pydantic-settings │
+│  BYOK key lifecycle (encrypt/TTL/shred)│  ✅ Strong │  unchanged         │
+│  Secret redaction (logs + 422 response)│  ✅ Strong │  ↑ 422-scrub added │
+│  Multi-provider key redaction         │  ✅ Strong │  NEW               │
+│  Shared seam as a typed package       │  ✅ Strong │  NEW (wegofwd-llm) │
+│  Provider quirks as capabilities      │  ✅ Strong │  NEW (clamp fix)   │
+│  Validate→repair (vs blind retry)     │  ✅ Strong │  NEW               │
+│  Vendoring with recorded provenance   │  ✅ Strong │  unchanged         │
+│  Idempotency + bounded retry          │  ✅ Strong │  unchanged         │
+│  Runtime isolation (compiler subproc) │  ✅ Strong │  unchanged         │
+│  ADR decision discipline              │  ✅ Strong │  6 → 13 ADRs       │
+│  Config fail-fast / no secret defaults│  ✅ Good   │  unchanged         │
+│  Seam version-pin currency            │  ⚠️ Weak   │  NEW (pins v0.1.0; │
+│                                       │           │  pkg at v0.1.1)    │
+│  Dependency sourcing (git vs registry)│  ⚠️ Weak   │  NEW (git+https)   │
 │  Durable job execution                │  ⚠️ Weak   │  in-proc BG task   │
-│  Spec ↔ code reconciliation           │  ⚠️ Weak   │  ADRs outran specs │
-│  Public-surface hardening (CORS/RL)   │  ⚠️ Weak   │  MVP-deferred      │
-│  Live + on-device test coverage       │  ⚠️ Gap    │  not yet run       │
-│  v1 format completeness               │  ⚠️ Gap    │  lesson-only       │
+│  Spec ↔ code frame reconciliation     │  ⚠️ Weak   │  half-fixed        │
+│  Public-surface hardening (CORS/RL)   │  ⚠️ Weak   │  unchanged         │
+│  Deployed + on-device test coverage   │  ⚠️ Gap    │  still not run     │
 └──────────────────────────────────────┴───────────┴───────────────────┘
 ```
 
-The shape is consistent and telling: **everything that protects the user's key is strong; everything that bridges "decided/planned" to "running in production" is the work that remains.** None of the weak items are architectural mistakes — they are MVP deferrals and spec-reconciliation debt, both cheap to close.
+The shape is consistent and still telling: **everything that protects the user's key is strong — and got stronger (the 422-scrub fix)**; the seam extraction is a genuine architecture-quality win; and the weak items are all the same family — MVP deferrals (jobs/CORS/auth) plus *reconciliation debt* that now spans repos (version pins) as well as docs. None are architectural mistakes; all are cheap to close.
 
 ---
 
-*Practices observed in the code on disk at `e1c66f7`. Where docstrings, `MVP_v1.md`, or `STATUS.md` disagreed with the implementation, the implementation was treated as the source of truth.*
+*Practices observed in the code on disk at `40166ee` (branch `main`), the `wegofwd-llm` package (latest tag `v0.1.1`), and `pramana` (HEAD `e2958ef`, branch `feat/ai-drafted-approved-content` — a cross-repo grep confirms Pramana does not yet import the seam). Where docstrings, `MVP_v1.md`, or `docs/STATUS.md` disagreed with the implementation, the implementation was treated as the source of truth. `pytest` was not runnable in the review environment, so test-pass claims rest on reading the asserting tests, not a green run. Supersedes v1.0 (2026-06-02 @ `e1c66f7`).*
