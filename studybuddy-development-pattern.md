@@ -3,12 +3,20 @@
 **Document type:** Development pattern analysis
 **Scope:** Full lifecycle — from idea to late-build production system
 **Period:** 2025–2026
-**Last refresh:** 2026-05-24 (v1.4 — alignment with critique v1.5: numbers re-measured, `teacher_capabilities` capability surfaced, corporate-L&D epics surfaced as a CONTESTED-status discipline)
-**Prior:** v1.3 May 2026 (visual-library wave cadence + Pivot 7 helpers-toolkit + resolver-eval feedback loop) · v1.2 April 2026 (Epic 10 governance, Epic 11 content formatting, Streams registry, Playwright persona expansion)
-**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-practices.md](studybuddy-practices.md) · [studybuddy-cost.md](studybuddy-cost.md)
+**Last refresh:** 2026-06-02 (v1.5 — alignment with critique v1.6: numbers re-measured on `main` @ `0d7abe1`; Curriculum Authoring Studio (Epic 12) as a method milestone; ADR-004 product-boundary decision; book-export as a one-way content bridge)
+**Prior:** v1.4 May 2026 (alignment with critique v1.5: numbers re-measured, `teacher_capabilities`, CONTESTED-status discipline) · v1.3 May 2026 (visual-library wave cadence + Pivot 7 helpers-toolkit + resolver-eval feedback loop) · v1.2 April 2026 (Epic 10 governance, Epic 11 content formatting, Streams registry, Playwright persona expansion)
+**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-practices.md](studybuddy-practices.md) · [studybuddy-cost.md](studybuddy-cost.md) · sibling product: [studybuddy-selflearner-development-pattern.md](studybuddy-selflearner-development-pattern.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
 
-> **Note (2026-05-24):** the body below is the v1.3 record, preserved. No methodological pattern has been overturned in the v1.4 cycle. New since v1.3, worth noting as additions to the documented pattern:
+> **Note (2026-06-02, v1.5):** the body below is the v1.3 record, preserved; nothing in the method has been overturned. New since v1.4, worth adding to the documented pattern:
+>
+> - **Generation pipeline turned inward — the Authoring Studio (Epic 12).** The same scoped-query IP that generated *student-facing* content per curriculum is now driven by a super-admin **authoring workflow**: paste a TOC → LLM structures it (`pipeline/toc_structurer.py`) + advisory flow analysis (`pipeline/flow_analyzer.py`) → editable topic tree → staged curriculum → per-topic generate → review with unlimited regenerate → snapshot/restore → publish. The method milestone: the content pipeline graduated from a batch `build_grade.py` script into an *interactive, reviewable, governed* studio with versioning and a hard publish-completeness gate (#401/#402). This is the "tooling-eats-its-own-pipeline" pattern — the generator becomes a product surface.
+> - **Product-boundary decision recorded as an ADR, not a fork (ADR-004).** When the "author a book + free reader, BYOK" idea grew large enough to be its own product, the team did not bolt it onto OnDemand — ADR-004 (Accepted 2026-05-26) sends it to the sibling Self-Learner/Mentible repo and *closes OnDemand's own ADR-002/ADR-003 without merge*. Healthy discipline: a scope-defining decision gets a durable artifact and the losing options are explicitly closed, not left dangling. See [studybuddy-selflearner-development-pattern.md](studybuddy-selflearner-development-pattern.md).
+> - **One-way content bridge over cross-import (book-export #400).** Sharing between the two products is `port + vendor`, never a runtime dependency — `book_export.py` emits a neutral "Book JSON" the sibling consumes; no code crosses the repo boundary. Same vendoring discipline as Pivot 7, applied at the *product* boundary.
+>
+> Re-measured 2026-06-02: **1,081 backend tests / 78 files** (was 1,030), **60 migrations (latest 0060, `curriculum_authoring_studio`)**, 17 Playwright specs / 2,779 LOC. Zero TODO/FIXME holds.
+>
+> **Note (2026-05-24, v1.4):** the v1.4 additions (preserved): launch/demo hardening as a lifecycle stage; additive-RBAC via `teacher_capabilities`; CONTESTED epics; backlog correction as a first-class operation —
 >
 > - **Launch/demo hardening as its own lifecycle stage.** The window since v1.3 was almost entirely launch-readiness work — `vm-localhost-bootstrap.sh` + JSON deploy log, demo unit pre-import (`preimport_demo_units.py`), nginx/DNS fixes, demo JWT TTL extension to 4h, domain rename `studybuddy.app` → `usestudybuddy.com`. This sits between "feature-complete" and "first paying customer" and deserves a named phase in the lifecycle taxonomy.
 > - **Additive-RBAC via a capabilities table.** `teacher_capabilities` (#358, migration 0059, RLS) extends RBAC by adding an authoritative table with a two-gate read/act model rather than mutating existing role-grant logic. Reusable pattern for future capability classes.

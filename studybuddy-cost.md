@@ -1,29 +1,32 @@
 # StudyBuddy OnDemand — Real-World Cost Analysis
 
-**Analysed:** 2026-05-24 (v1.0 — first cost pass against HEAD `d5c75ad` on branch `fix/frontend-unit-tests-363`)
+**Analysed:** 2026-06-02 (v1.1 — re-anchored to HEAD `0d7abe1` on `main`; adds the Curriculum Authoring Studio / Epic 12 + book-export) · 2026-05-24 (v1.0 — first cost pass against HEAD `d5c75ad`)
 **Repo:** `wegofwd2020-hub/StudyBuddy_OnDemand`
 **Question being answered:** if this same artifact had been built by a conventional team in the real world (not by a single founder with Claude-assisted execution), what would it have cost in money and calendar time?
-**Scope of measurement:** code on disk at HEAD `d5c75ad` — "late-build / pre-production" state per the v1.5 critique. Production launch costs (load testing, security audit, SOC2-lite, datacentre, on-call rota) are **not** in either column; both a real team and the actual build still need to do that work before paying customers.
+**Scope of measurement:** code on disk at HEAD `0d7abe1` (2026-06-01) — "late-build / pre-production" state per the v1.6 critique. Production launch costs (load testing, security audit, SOC2-lite, datacentre, on-call rota) are **not** in either column; both a real team and the actual build still need to do that work before paying customers.
+
+> **v1.1 refresh note (2026-06-02).** Re-measured at HEAD `0d7abe1`: **808 commits** (was 726), **1,081 backend test functions** (was 1,029), **60 Alembic migrations** (was 59), **first commit 2026-03-23 → last 2026-06-01 = ~70 calendar days** (was 60). The substantive addition since v1.0 is **Epic 12 — the Curriculum Authoring Studio** (interactive TOC-structure → generate → review/regenerate → snapshot → publish, with a publish-completeness gate) plus the **book-export (#400)** content bridge to the sibling Mentible product. For a conventional team this is roughly **+3–4 engineer-months** of additional work (an interactive, versioned authoring surface + LLM structuring + export transform + completeness gating). The central estimate therefore moves **42 → ~45 EM**, and the Scenario A/B/C dollar figures below scale up by **~7%** (e.g. Scenario A ~$1.41M → ~$1.51M; Scenario B ~$467k → ~$500k). The detailed tables in §3–§4 are preserved as the v1.0 baseline; treat them as the lower bound of the current artifact. Headline multipliers (§7) are essentially unchanged (the actual outlay grew by perhaps a week of founder time).
 
 ---
 
 ## 1. What's actually been built
 
-Measured directly from the repository (HEAD `d5c75ad`, 2026-05-22; first commit 2026-03-23 → **60 calendar days**).
+Measured directly from the repository (v1.1 re-anchored to HEAD `0d7abe1`, 2026-06-01; first commit 2026-03-23 → **~70 calendar days**. LOC/route figures below are the v1.0 `d5c75ad` measurement unless marked; counts marked ⟳ were re-measured at `0d7abe1`).
 
 | Slice | Measure |
 |---|---|
-| Backend (FastAPI / Python) | **43,434 LOC**, 23 domain modules, **275 API routes**, **1,029 test functions** (27,751 test LOC) |
+| Backend (FastAPI / Python) | **43,434 LOC** (v1.0), 23 domain modules, **275 API routes**, ⟳ **1,081 test functions** across 78 files |
+| Authoring Studio (Epic 12, ⟳ new since v1.0) | super-admin `backend/src/admin/authoring_*` + `pipeline/toc_structurer.py` + `flow_analyzer.py` + web `app/(admin)/admin/authoring`; migration 0060; book-export `admin/book_export.py` |
 | Web (Next.js 14 / TypeScript) | **59,294 LOC** across 271 files, 66 components, **130 page routes** |
 | Web tests | **17 Playwright specs + 63 unit tests** (18,205 test LOC) |
 | Pipeline (Python) | **3,941 LOC** — content + Remotion video generation |
 | Mobile harness (Python) | **6,904 LOC** |
-| Database | **59 Alembic migrations**, multi-tenant RLS, pgvector, RedBeat, pgbouncer |
+| Database | ⟳ **60 Alembic migrations** (latest 0060, Authoring Studio), multi-tenant RLS, pgvector, RedBeat, pgbouncer |
 | Visual assets | **500 SVG** library entries with embeddings |
 | Documentation | **86 markdown files**, **17 formal Epic specs** (3,855 LOC of specifications) |
 | Integrations | Auth0 (JWKS + RBAC), Stripe (subscriptions), Voyage AI (embeddings), Celery/Redis, S3/Local storage backend, Remotion (video), nginx |
 | Compliance | COPPA codified in `compliance.ts`, RLS extended in migrations 0028 / 0046 |
-| Activity | **726 commits**, **214 GitHub-issue closures**, sole-author |
+| Activity | ⟳ **808 commits**, **214+ GitHub-issue closures**, sole-author |
 | **Production LOC (excl. tests, sample-content)** | **~113,500 LOC** |
 
 ---

@@ -2,12 +2,22 @@
 
 **Document type:** Engineering practices analysis
 **Scope:** Backend (FastAPI/Python), Web (Next.js), Mobile (Kivy), Pipeline, Infrastructure
-**Period:** 2026-05-24 (v1.5 — alignment with critique v1.5: numbers re-measured; new practices surfaced — additive-RBAC via capabilities table, CONTESTED-status discipline for speculative epics)
-**Prior:** v1.4 May 2026 (visual-library wave 1+2, four bug close-outs, PAI removal) · v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
-**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-development-pattern.md](studybuddy-development-pattern.md) · [studybuddy-cost.md](studybuddy-cost.md)
+**Period:** 2026-06-02 (v1.6 — alignment with critique v1.6: numbers re-measured on `main` @ `0d7abe1`; new practices surfaced — interactive authoring studio with publish-completeness gate, one-way content-export bridge, ADR to fix product boundary)
+**Prior:** v1.5 May 2026 (additive-RBAC via capabilities table, CONTESTED-status discipline) · v1.4 May 2026 (visual-library wave 1+2, four bug close-outs, PAI removal) · v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
+**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-development-pattern.md](studybuddy-development-pattern.md) · [studybuddy-cost.md](studybuddy-cost.md) · sibling product: [studybuddy-selflearner-practices.md](studybuddy-selflearner-practices.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
 
-> **Note (2026-05-24):** the body below is the v1.4 record, preserved. No documented practice has been overturned. New since v1.4, worth adding to the catalogue:
+> **Note (2026-06-02, v1.6):** the body below is the v1.4 record, preserved. No documented practice has been overturned. New since v1.5, worth adding to the catalogue:
+>
+> - **✅ New good practice — publish-completeness gate on generated content (#401/#402).** `publish()` used to gate only on existing versions being *accepted*, so a unit whose generation had failed published silently with holes (a real book shipped missing 3 lessons / 2 tutorials / 1 quiz). The fix requires every unit to have an active version per expected content type per language and returns **409 "incomplete"** enumerating the missing pieces — with an explicit `allow_incomplete=True` escape hatch. Practice: *fail loud on incompleteness; make the override deliberate and named.*
+> - **✅ New good practice — interactive, versioned authoring studio over batch scripts (Epic 12).** The content pipeline graduated from `build_grade.py` into a super-admin studio with per-topic generate, **unlimited regenerate**, and snapshot/restore — generation became reviewable and reversible rather than fire-and-forget. `_EXPECTED_BASE_CONTENT_TYPES` kept local to avoid a circular import (small, real, good).
+> - **✅ New good practice — one-way content-export bridge instead of cross-import (#400).** `book_export.py` is a pure, DB-free transform that emits a neutral "Book JSON" for the sibling Mentible reader; nothing imports across repos. The product boundary is enforced the same way the vendoring boundary is — by *copying data/shape, never code*.
+> - **✅ New good practice — settle a product-scope question with an ADR that closes the losers (ADR-004).** The standalone author-a-book product was assigned to the sibling repo and OnDemand's own ADR-002/ADR-003 were **closed without merge** — the rejected options are explicitly retired, not left ambiguous.
+> - **✅ Carried forward — zero TODO/FIXME/XXX in `backend/src` + `pipeline` + web.** Holds at **1,081 backend tests / 78 files**. Verified at the precise code-comment scope this cycle.
+>
+> Re-measured 2026-06-02: 1,081 backend tests / 78 files, 17 Playwright specs / 2,779 LOC, 60 migrations (latest 0060). See [studybuddy-cost.md](studybuddy-cost.md) for the real-world cost analysis.
+>
+> **Note (2026-05-24, v1.5):** the v1.5 additions (preserved below):
 >
 > - **✅ New good practice — additive-RBAC via a dedicated capabilities table.** `teacher_capabilities` (#358, migration 0059, RLS) extends RBAC by *adding* an authoritative table with a two-gate read/act model rather than mutating existing role-grant logic. Same PR also fixed school uploads to write `owner_type='school'` (was defaulting to platform). Pattern reusable for future capability classes.
 > - **✅ New good practice — CONTESTED status stamp on speculative epics.** Epic 17 (corporate-L&D fork) was stamped `CONTESTED` after advisor pushback rather than silently dropped or deleted. Healthy discipline — keeps the speculative-epic visible-but-on-hold rather than invisible-but-lurking. Recommend extending the formal epic-status vocabulary alongside DELIVERED / IN-PROGRESS / DEFERRED.
