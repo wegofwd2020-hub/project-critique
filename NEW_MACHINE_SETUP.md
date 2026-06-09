@@ -70,6 +70,7 @@ $BASE/STEM_studybuddy/thittam|thittam-memory|$BASE/STEM_studybuddy/_claude-memor
 $BASE/STEM_studybuddy/mambakkam-net|mambakkam-net-memory|$BASE/STEM_studybuddy/_claude-memory-mambakkam-net
 $BASE/STEM_studybuddy/project-critique|project-critique-memory|$BASE/STEM_studybuddy/_claude-memory-project-critique
 $BASE/STEM_studybuddy/MarketingTools|MarketingTools-memory|$BASE/STEM_studybuddy/_claude-memory-MarketingTools
+$BASE/STEM_studybuddy/wegofwd-llm|wegofwd-llm-memory|$BASE/STEM_studybuddy/_claude-memory-wegofwd-llm
 $BASE/dronePrjs|dronePrjs-memory|$BASE/_claude-memory-dronePrjs
 $BASE/dronePrjs/closedSpace|closedSpace-memory|$BASE/_claude-memory-closedSpace
 "
@@ -96,6 +97,7 @@ PROOT="$HOME/.claude/projects"
 for enc in \
   -home-*-StudyBuddy-OnDemand -home-*-StudyBuddy-SelfLearner -home-*-thittam \
   -home-*-mambakkam-net -home-*-project-critique -home-*-MarketingTools \
+  -home-*-wegofwd-llm \
   -home-*-AIStuff-dronePrjs -home-*-AIStuff-dronePrjs-closedSpace ; do
   for M in "$PROOT"/$enc/memory; do
     [ -d "$M/.git" ] && echo "OK  $(git -C "$M" log -1 --format='%h %s')  <- $M"
@@ -105,7 +107,7 @@ done
 
 Each should show its latest commit, and `git -C <M> status` should be clean. From then on the Stop hook resumes auto-snapshotting.
 
-## The eight repos
+## The nine repos
 
 | Project | Memory repo | Symlink |
 |---|---|---|
@@ -115,6 +117,7 @@ Each should show its latest commit, and `git -C <M> status` should be clean. Fro
 | mambakkam-net | `mambakkam-net-memory` | `STEM_studybuddy/_claude-memory-mambakkam-net` |
 | project-critique | `project-critique-memory` | `STEM_studybuddy/_claude-memory-project-critique` |
 | MarketingTools | `MarketingTools-memory` | `STEM_studybuddy/_claude-memory-MarketingTools` |
+| wegofwd-llm | `wegofwd-llm-memory` | `STEM_studybuddy/_claude-memory-wegofwd-llm` |
 | dronePrjs | `dronePrjs-memory` | `AIStuff/_claude-memory-dronePrjs` |
 | closedSpace (subdir of dronePrjs) | `closedSpace-memory` | `AIStuff/_claude-memory-closedSpace` |
 
