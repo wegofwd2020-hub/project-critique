@@ -69,6 +69,7 @@ $BASE/STEM_studybuddy/StudyBuddy_SelfLearner|studybuddy-selflearner-memory|$BASE
 $BASE/STEM_studybuddy/thittam|thittam-memory|$BASE/STEM_studybuddy/_claude-memory-thittam
 $BASE/STEM_studybuddy/mambakkam-net|mambakkam-net-memory|$BASE/STEM_studybuddy/_claude-memory-mambakkam-net
 $BASE/STEM_studybuddy/pramana|pramana-memory|$BASE/STEM_studybuddy/_claude-memory-pramana
+$BASE/STEM_studybuddy/kathai-chithiram|kathai-chithiram-memory|$BASE/STEM_studybuddy/_claude-memory-kathai-chithiram
 $BASE/STEM_studybuddy/project-critique|project-critique-memory|$BASE/STEM_studybuddy/_claude-memory-project-critique
 $BASE/STEM_studybuddy/MarketingTools|MarketingTools-memory|$BASE/STEM_studybuddy/_claude-memory-MarketingTools
 $BASE/STEM_studybuddy/wegofwd-llm|wegofwd-llm-memory|$BASE/STEM_studybuddy/_claude-memory-wegofwd-llm
@@ -98,7 +99,7 @@ PROOT="$HOME/.claude/projects"
 for enc in \
   -home-*-StudyBuddy-OnDemand -home-*-StudyBuddy-SelfLearner -home-*-thittam \
   -home-*-mambakkam-net -home-*-project-critique -home-*-MarketingTools \
-  -home-*-pramana -home-*-wegofwd-llm \
+  -home-*-pramana -home-*-wegofwd-llm -home-*-kathai-chithiram \
   -home-*-AIStuff-dronePrjs -home-*-AIStuff-dronePrjs-closedSpace ; do
   for M in "$PROOT"/$enc/memory; do
     [ -d "$M/.git" ] && echo "OK  $(git -C "$M" log -1 --format='%h %s')  <- $M"
@@ -108,7 +109,7 @@ done
 
 Each should show its latest commit, and `git -C <M> status` should be clean. From then on the Stop hook resumes auto-snapshotting.
 
-## The ten repos
+## The eleven repos
 
 | Project | Memory repo | Symlink |
 |---|---|---|
@@ -117,6 +118,7 @@ Each should show its latest commit, and `git -C <M> status` should be clean. Fro
 | thittam | `thittam-memory` | `STEM_studybuddy/_claude-memory-thittam` |
 | mambakkam-net | `mambakkam-net-memory` | `STEM_studybuddy/_claude-memory-mambakkam-net` |
 | pramana | `pramana-memory` | `STEM_studybuddy/_claude-memory-pramana` |
+| kathai-chithiram | `kathai-chithiram-memory` | `STEM_studybuddy/_claude-memory-kathai-chithiram` |
 | project-critique | `project-critique-memory` | `STEM_studybuddy/_claude-memory-project-critique` |
 | MarketingTools | `MarketingTools-memory` | `STEM_studybuddy/_claude-memory-MarketingTools` |
 | wegofwd-llm | `wegofwd-llm-memory` | `STEM_studybuddy/_claude-memory-wegofwd-llm` |
