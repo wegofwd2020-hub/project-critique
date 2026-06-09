@@ -175,6 +175,12 @@ This cycle re-ran the critique against the **code on disk** for the two projects
 
 ---
 
+## Planned — v2.6 (follow-ups)
+
+- **Kathai Chithiram — full four-lens first review (deferred).** The project (Tamil: கதை சித்திரம், "story → picture"; renamed from `behavioral_practices`) turns a parent's written story into an animation a special-needs child can understand, using the shared **`wegofwd-llm`** generation seam. As of 2026-06-09 it is two prototype renderers (`generate_animation.py`, `blender_animation.py`) + the hand-built "Silas Shines His Smile" social story — a proof-of-concept, not yet a system: the scene-script schema, the generation step, and parent intake are still roadmap. **Add the four-lens set once the generation→scene-script→renderer contract lands** (there is little to critique architecturally until then). Repo: `wegofwd2020-hub/kathai-chithiram`.
+
+---
+
 ## What Changed in v2.4 (2026-06-02)
 
 This cycle adds a **fourth project** and refreshes StudyBuddy OnDemand, both measured against the **code on disk**.
