@@ -1,8 +1,8 @@
 # StudyBuddy OnDemand — Code Review & Critique
 
-**Reviewed:** 2026-05-24 (v1.5 — refresh: numbers re-measured; `teacher_capabilities` #358; corporate-L&D epics 17/18 surfaced) · May 2026 (v1.4 — visual-library wave 1+2, four bug close-outs, PAI removal)
+**Reviewed:** 2026-06-02 (v1.6 — refresh: numbers re-measured on `main` @ `0d7abe1`; Curriculum Authoring Studio (Epic 12) shipped; book-export #400 + publish-gating #401/#402; ADR-004 sends the standalone author-your-own-book product to the Self-Learner/Mentible repo) · 2026-05-24 (v1.5 — numbers re-measured; `teacher_capabilities` #358; corporate-L&D epics 17/18 surfaced) · May 2026 (v1.4 — visual-library wave 1+2, four bug close-outs, PAI removal)
 **Prior reviews:** v1.3 April 2026 (Epic 10 / Epic 11 / Streams) · v1.2 March 2026 · v1.1 Feb 2026
-**Repos:** `wegofwd2020-hub/StudyBuddy_OnDemand` · `wegofwd2020-hub/studybuddy-docs`
+**Repos:** `wegofwd2020-hub/StudyBuddy_OnDemand` · `wegofwd2020-hub/studybuddy-docs` · sibling: `wegofwd2020-hub/StudyBuddy_SelfLearner` (brand **Mentible**, see [studybuddy-selflearner-critique.md](studybuddy-selflearner-critique.md))
 **Phase:** Late-build / pre-production
 **Rating key:** ✅ Strong · ⚠️ Gap / Risk · ❌ Critical Issue
 
@@ -10,7 +10,9 @@
 
 ## Executive Summary
 
-> **Note (2026-05-24):** the summary below is the v1.4 record (May 2026), preserved verbatim. The architectural read still holds. Numbers it cites in current tense (~914 backend tests, 16 Playwright specs / 2,620 LOC, 835 across 59 files) have moved — current is **1,030 tests across 73 files**, **17 specs / 2,781 LOC**, **59 migrations (latest 0059)**. New since v1.4: the `teacher_capabilities` capability (#358, migration 0059) and two speculative corporate-L&D epics (17/18; Epic 17 marked CONTESTED). See **What Changed Since v1.4 (2026-05-24 refresh)** immediately after this summary for the full delta.
+> **Note (2026-06-02, v1.6):** the summary below is the v1.4 record (May 2026), preserved verbatim, and the architectural read still holds. Numbers have moved again since the v1.5 note — current is **1,081 backend tests across 78 files**, **60 migrations (latest 0060, `curriculum_authoring_studio`)**, **17 Playwright specs / 2,779 LOC**. The headline addition this cycle is the **Curriculum Authoring Studio (Epic 12, super-admin)** — TOC paste → LLM structure + flow analysis → editable topic tree → staged platform curriculum → per-topic generate → review/regenerate → snapshots/restore → publish — plus **book-export (#400)** and **publish-gating (#401/#402)**. **ADR-004** decides that the *standalone* author-your-own-book + free-reader BYOK product belongs to the sibling Self-Learner repo (brand **Mentible**), not here; OnDemand keeps the Authoring Studio only as super-admin platform content-ops. See **What Changed Since v1.5 (2026-06-02 refresh)** immediately below for the full delta.
+>
+> **Note (2026-05-24, v1.5):** numbers it cites in current tense (~914 backend tests, 16 Playwright specs / 2,620 LOC, 835 across 59 files) had already moved by v1.5 to 1,030 tests / 73 files, 17 specs / 2,781 LOC, 59 migrations (latest 0059); the `teacher_capabilities` capability (#358, migration 0059) and two speculative corporate-L&D epics (17/18; Epic 17 CONTESTED) surfaced then. See **What Changed Since v1.4** further below.
 
 The v1.4 cycle is dominated by **execution-throughput evidence rather than new architecture**. Between 2026-04-26 and 2026-05-08 the project closed 10 visual-library expansion sub-issues (#327–#336 under Epic #326) plus four standalone bugs (#295, #297, #338, #339), shipping 144 SVG library entries with non-NULL embeddings, 80 resolver-eval records, and 9 Remotion Option-3 video clips — at roughly 14h 56m wall time against an estimated ~19 FTE-days, an order-of-magnitude compression. The compression source is **process maturity, not primitive reuse**: the helpers-toolkit + declarative SidecarSpec pattern from #327 lifted into every downstream class, the Phase 1/2/3 wave cadence (catalogue → Remotion → eval/seeder/MEMO) became routine, and side-issues were filed and closed inside the same wave rather than queued.
 
@@ -27,6 +29,34 @@ The platform continues to mature along the trajectory set by v1.2. All prior P0/
 The Playwright suite has grown from 3 student-path specs to 16 spec files totalling 2,620 LOC across persona-accessibility, auth, admin, and public flows (35/35 persona + 86/86 chromium-project specs passing). The backend test count has grown to 835 test functions across 59 files; per-module coverage thresholds (auth/subscription 90%, content 85%, default 80%) are still enforced by `scripts/check_coverage_thresholds.py`.
 
 The remaining risks are second-tier: `APP_ENV` is still not asserted against a valid enum at startup; the Redis-backed auth rate-limiter and the slowapi in-process limiter still coexist; pool arithmetic is logged but not a hard assertion; load/performance tests are still absent; and the E2E suite, while much broader, remains weighted toward accessibility coverage rather than functional teacher/admin flows. L-6 (retention sweeper) was paused deliberately; a handful of Epic 10 tickets (L-7..L-10) and Epic 11 tickets (C-5 regen in flight, C-7 PDF smoke, C-8 mobile parity) remain open.
+
+---
+
+## What Changed Since v1.5 (2026-06-02 refresh)
+
+No architectural overturn — the platform posture from v1.3–v1.5 holds. The window since the v1.5 cut (**82 commits**; HEAD `0d7abe1` on branch `main`) is dominated by one substantial new capability — the **Curriculum Authoring Studio** (Epic 12) — plus a content-export bridge to the sibling Self-Learner product, and continued launch hardening. Re-measured current numbers (commands run on disk 2026-06-02):
+
+| Metric | v1.5 stated | Now (2026-06-02) |
+|---|---|---|
+| Backend test functions | 1,030 across 73 files | **1,081 across 78 files** (`grep -rE "(async )?def test_" backend/`) |
+| Alembic migrations | 59 (latest 0059) | **60 (latest 0060, `0060_curriculum_authoring_studio`)** |
+| Playwright specs | 17 files / 2,781 LOC | **17 files / 2,779 LOC** (unchanged; 2-line drift) |
+| Web unit tests | (not tracked) | **65 files / ~820 `it/test` blocks** (Vitest; static-grep approximation) |
+| TODO/FIXME/XXX in `backend/src` + `pipeline` + web | zero | **zero (holds — verified at the precise comment scope)** |
+
+**New headline capability — Curriculum Authoring Studio (Epic 12, super-admin).** Backend `backend/src/admin/authoring_{flow,generation,router,schemas,service}.py` + `pipeline/toc_structurer.py` + `pipeline/flow_analyzer.py`; web `web/app/(admin)/admin/authoring/**`; **migration 0060** (`authoring_*` tables; extends the `curricula.source_type` CHECK with `admin_authored`). Flow: paste a table-of-contents → LLM structures it + runs an advisory flow analysis → editable topic table → staged platform curriculum → per-topic generate → review with **unlimited regenerate** → snapshots/restore → publish. Gated by the `curriculum:author` permission (super-admin only). PRs #383, #384/#390/#392/#393, #395. This realizes Epic 12 (Teacher Content Authoring), which was "ready to build" at v1.5.
+
+**Book export (#400) — a one-way content bridge to the Self-Learner / Mentible product.** `backend/src/admin/book_export.py` (229 LOC) + `backend/scripts/export_book.py` (167 LOC CLI) + `backend/tests/test_book_export.py` (12 tests). A pure, DB-free transform that exports a **published** Authoring-Studio curriculum into a "Q-shaped Book JSON" consumed by the sibling repo's local-first reader — field-renames the OnDemand lesson schema to the reader's `LessonOutput` (`sections[].body`→`body_markdown`, `key_points`→`key_takeaways`, `reading_level`→`level`), stable `topicId = uuid5(unit_id)`. It is a **data copy, not a code port** — nothing imports across repos (respects the sibling's one-way vendoring rule). Per the commit, not yet run against real content (waits on a Studio-published project).
+
+**Publish-gating (#401/#402).** `publish()` previously gated only on existing versions being *accepted*, never on *completeness* — so a unit whose generation had failed published silently with holes (the real "Context Engineering" book shipped missing 3 lessons / 2 tutorials / 1 quiz). The fix adds a completeness gate: every unit must have an active version for each expected content type per project language (`experiment` only where `has_lab`), returns **409 "incomplete"** listing the missing `(unit, lang, content_type)` pieces, with an explicit `allow_incomplete=True` escape hatch.
+
+**ADR-004 — the standalone author-your-own-book product is *not* OnDemand's.** `docs/ADR_004_authoring_studio_home_repo.md` (Accepted, 2026-05-26) decides that the standalone "author a book + free reader, BYOK" product is owned by the sibling **StudyBuddy_SelfLearner** repo (brand **Mentible**), not OnDemand. OnDemand retains the Authoring Studio strictly as **super-admin platform content-ops**. OnDemand's own ADR-002/ADR-003 were **closed without merge** (superseded; recast in the sibling repo). The two products share IP by **port + vendor, one-way, never cross-import** — see [studybuddy-selflearner-critique.md](studybuddy-selflearner-critique.md).
+
+**Other window items.** Backup fix #398/#399 (`join classroom_packages on classroom_id`). CI ratcheted: per-module coverage floors raised (#387/#389), a Prettier `format:check` pre-PR gate added, `pip-audit` ignore for PYSEC-2026-161 (starlette, patch blocked upstream), deploy-demo bumped to Node 24 + smoke-test fix. #356 closed (backend tests green + migration).
+
+**Note — stale tracker.** `docs/PROGRESS_epics.csv` stops at Epic 11 and is out of sync with `docs/epics/` (which carries EPIC_01–18, no 14). Epic statuses above were read from the `docs/epics/EPIC_*.md` headers, not the CSV. **Epic 17 (corporate-L&D fork) remains CONTESTED**, unchanged from v1.5.
+
+**Unchanged residual risks (no commits touched them).** `APP_ENV` enum assertion, slowapi/Redis limiter coexistence, pool-arithmetic warn-not-assert, absent load/perf tests, a11y-weighted E2E. All carry over.
 
 ---
 
@@ -265,7 +295,7 @@ No architectural change — the v1.4 posture holds in full. The window since the
 ✅ Structured logs with correlation IDs.
 ✅ RedBeat gives Beat resilience without manual intervention.
 ⚠️ No documented alerting rules or runbooks for: DB connection exhaustion, Redis OOM, Stripe webhook backlog, Beat lock expiry, pipeline failure, `--stream` mode memory pressure.
-⚠️ No documented Alembic `downgrade` testing. With 48 migrations, the rollback path for the most recent migration should be verified before each production deploy.
+⚠️ No documented Alembic `downgrade` testing. With 60 migrations, the rollback path for the most recent migration (0060, the Authoring Studio tables) should be verified before each production deploy.
 
 ### SaaS Subscription Model Specific
 
@@ -302,9 +332,11 @@ No architectural change — the v1.4 posture holds in full. The window since the
 | P2 | Verify ADR-001 legacy Stripe webhook cleanup — no live subscriptions on old schema | Subscription |
 | P2 | Ship C-7 (PDF smoke) and C-8 (Kivy KaTeX/table parity) before mobile re-opens | Content |
 | P2 | Implement L-6 TTL sweeper before archived-curriculum storage cost becomes material | Governance |
+| P2 | Run book-export (#400) against a real Studio-published curriculum end-to-end — it has unit tests but has never executed on live content | Content |
+| P2 | Add E2E coverage for the Authoring Studio flow (TOC structure → generate → publish-gate 409 → publish) — currently backend-test-only | Testing |
 | P3 | Add a `Makefile` | DevEx |
 | P3 | Add runbooks: DB exhaustion, Redis OOM, Stripe webhook backlog, Beat lock expiry, `--stream` memory | Operations |
-| P3 | Document Alembic `downgrade` testing procedure (48 migrations) | Operations |
+| P3 | Document Alembic `downgrade` testing procedure (60 migrations) | Operations |
 | P3 | Schedule Kivy platform assessment before Epic 3 Path B activation | Architecture |
 | P3 | Write API deprecation policy for `/api/v1` → `/v2` migration | Architecture |
 | P3 | Consolidate docstring style (prefer Google style) | Documentation |
