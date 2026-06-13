@@ -2,8 +2,8 @@
 
 Code review and architectural critique for StudyBuddy OnDemand, StudyBuddy SelfLearner (Mentible), Thittam, dronePrjs, MarketingTools, and the claude_memory tooling.
 
-**Reviewed:** 2026-06-09 (v2.5 — **StudyBuddy OnDemand re-measured + refreshed (critique v1.7)** on `main` @ `d50bc3e` (school onboarding wizard, Administration menu, ADR-005/006, backup hardening); **SelfLearner / Mentible major refresh (v2.0)** on `main` @ `40166ee` (97 commits: LLM provider seam extracted into the `wegofwd-llm` package, Pramana integration, BYOK 422-scrub fix); **two new four-lens projects: MarketingTools (v1.0)** and **claude_memory tooling (v1.0)**; Thittam + dronePrjs re-checked, code unchanged since v2.3/v2.4)
-**Prior:** 2026-06-02 v2.4 (StudyBuddy OnDemand → critique v1.6 Authoring Studio/Epic 12; new project SelfLearner/Mentible v1.0) · May 2026 v2.3 (all three re-measured on disk: StudyBuddy v1.5, Thittam v1.3, dronePrjs v1.1) · v2.2 (adds dronePrjs first-review; StudyBuddy v1.4; Thittam v1.2) · v2.1 (StudyBuddy visual-library wave 1+2) · April 2026 v2 (proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
+**Reviewed:** 2026-06-13 (v2.6 — **wegofwd-llm admitted to the watch set (critique v1.0)**: the shared multi-provider LLM seam is now load-bearing for StudyBuddy_OnDemand, SelfLearner/Mentible, and Kathai Chithiram, which makes it a portfolio-level dependency rather than a single-product library; top-level-watch cadence proposed in the new critique §8, awaiting operator decision)
+**Prior:** 2026-06-09 v2.5 (StudyBuddy OnDemand → v1.7 on `main` @ `d50bc3e`; SelfLearner/Mentible → v2.0 on `main` @ `40166ee` with the `wegofwd-llm` extraction itself; new four-lens sets for MarketingTools and claude_memory) · 2026-06-02 v2.4 (StudyBuddy OnDemand → critique v1.6 Authoring Studio/Epic 12; new project SelfLearner/Mentible v1.0) · May 2026 v2.3 (all three re-measured on disk: StudyBuddy v1.5, Thittam v1.3, dronePrjs v1.1) · v2.2 (adds dronePrjs first-review; StudyBuddy v1.4; Thittam v1.2) · v2.1 (StudyBuddy visual-library wave 1+2) · April 2026 v2 (proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
 **Reviewer:** Claude (Anthropic)
 **Scope:** Architecture, code quality, test coverage, documentation, security, scalability
 
@@ -19,6 +19,7 @@ Code review and architectural critique for StudyBuddy OnDemand, StudyBuddy SelfL
 | [dronePrjs-critique.md](dronePrjs-critique.md) | dronePrjs (closedSpace + openSpace) | Code review — architecture, quality, safety, sim-only fidelity caveats |
 | [MarketingTools-critique.md](MarketingTools-critique.md) | MarketingTools | Code review — scoped-retrieval marketing toolkit; zero-test gap, reproducibility |
 | [claude-memory-critique.md](claude-memory-critique.md) | claude_memory (tooling) | System-design critique — robustness, privacy, portability, observability |
+| [wegofwd-llm-critique.md](wegofwd-llm-critique.md) | wegofwd-llm (shared library) | Code review — multi-provider LLM seam; key-leak discipline, provider verification, watch cadence |
 | [studybuddy-development-pattern.md](studybuddy-development-pattern.md) | StudyBuddy OnDemand | Full lifecycle analysis — scoping, design, architecture, development |
 | [studybuddy-selflearner-development-pattern.md](studybuddy-selflearner-development-pattern.md) | StudyBuddy SelfLearner (Mentible) | Lifecycle analysis — subtractive scoping, ADR-driven re-scoping, security-first design |
 | [thittam-development-pattern.md](thittam-development-pattern.md) | Thittam | Full lifecycle analysis — scoping, design, architecture, development |
@@ -163,6 +164,47 @@ Code review and architectural critique for StudyBuddy OnDemand, StudyBuddy SelfL
 
 ---
 
+### wegofwd-llm (shared LLM seam)
+
+**Overall:** Small, disciplined, **already load-bearing for the portfolio**. v0.1.2 at HEAD `4823606` (2026-06-09). Three commits, 778 src LOC / 620 test LOC, 9 providers registered (1 native Anthropic + 8 OpenAI-compat), 48 tests with no live APIs, CI present, zero TODO/FIXME. The two non-negotiable rules — *"the package never sources keys"* and *"no key ever leaks"* — are real in code (every SDK path is `raise ... from None`, no env reading anywhere). Three-axis versioning (package semver / `LLM_CONTRACT_VERSION` / per-provider `integration_version`) is stamped into `provenance()`. **Consumed by StudyBuddy_OnDemand (PRs #430/#431), SelfLearner/Mentible (the extraction source), and Kathai Chithiram** — which is why "top-level watch" is warranted: a regression here is a portfolio incident, not a single-product incident.
+
+| Area | Rating | Key Finding |
+|---|---|---|
+| Architecture | 🟢 Strong | Frozen-dataclass contract, schema-agnostic conformance loop, logical-role pinning; **no retry/failover/circuit-breaker policy in-package** — each consumer must write its own |
+| Code Quality | 🟢 Strong | PEP 561 `py.typed`; ruff config mirrors consumers; one docstring drift in `openai_compatible` re `raw=` |
+| Test Coverage | 🟡 Good | 48 tests mocked correctly; **no key-leak regression test** (the hardest rule has zero coverage); no per-provider live-smoke job |
+| Documentation | 🟢 Strong | README + module docstrings carry the *why*; **no CHANGELOG / SECURITY.md / async-consumer note**; UNVERIFIED markers live only inline |
+| Security (BYOK) | 🟢 Strong | BYOK enforced at construction; `raise ... from None` everywhere; typed errors → safe HTTP mapping; **no test guards the leak rule** |
+| Scalability / Ops | 🟡 Good | Stateless, no warm-up; **`git+https` distribution, no PyPI**; SelfLearner already lags at `v0.1.0` while package is at `v0.1.2`; **4 of 9 providers carry `UNVERIFIED` defaults**, gemma is dead-on-arrival (`base_url=""`) |
+
+**Top 3 actions:** (1) Resolve the `gemma` registry entry (remove / wire / mark unavailable) and the `license="Proprietary"` vs `public` GitHub contradiction, (2) Add the **key-leak regression test** (mock SDK to raise an exception whose `repr()` contains the api_key; assert the wrapped `LLMError` does not stringify it), (3) Document sync-only / async-consumer pattern + add a *"providers — verification matrix"* table to the README. See [wegofwd-llm-critique.md](wegofwd-llm-critique.md) §7 for the full ranked list.
+
+> **Watch case.** Because three on-disk consumers already depend on this package, a regression here is a portfolio outage. §8 of the critique proposes a watch cadence (weekly commit-delta + on-version-bump + on-consumer-pin-change). **Mechanism is wired** as `wegofwd-llm/.github/workflows/watch.yml` — weekly + on-push + manual; opens a PR here when anything changes; one-time token setup pending (see `wegofwd-llm/.watch/README.md`).
+
+💰 **Real-world cost** — conventional median **~$48k (US) / ~$16k (blended)**, ~9–10 weeks for a one-senior-plus-reviewer team. Actual: **~$5.6k all-in, ~3–4 founder-days, 5 calendar days.** Headline: **~8.5× cheaper US / 5.6× blended, ~9.5× faster** — smaller multiplier than products (e.g. StudyBuddy's ~28×) because specialist infra compresses less. See [wegofwd-llm-cost.md](wegofwd-llm-cost.md).
+
+---
+
+## What Changed in v2.6 (2026-06-13)
+
+This cycle admits **wegofwd-llm** to the critique suite as the **first cross-cutting shared dependency** in the set. Until now every tracked project was a product or piece of internal tooling; `wegofwd-llm` is neither — it is library infrastructure consumed by three other tracked projects, and a regression in it cascades. That asymmetry is the case for top-level watch.
+
+- **New: wegofwd-llm — full four-lens first review (v1.0).** A 778-LOC Python library extracted from SelfLearner per ADR-012 and re-injected into StudyBuddy_OnDemand via PRs #430/#431 (anthropic+openai) and #431 (Gemini consolidation). 3 commits / 48 tests / 9 providers / CI present / zero TODO. Four new docs: [critique](wegofwd-llm-critique.md), [development-pattern](wegofwd-llm-development-pattern.md), [practices](wegofwd-llm-practices.md), [cost](wegofwd-llm-cost.md). Strengths concentrate in design discipline (BYOK enforcement, key-leak prevention via `raise ... from None`, three-axis versioning stamped into `provenance()`, schema-agnostic conformance, the *extract-then-use* timing pattern). Gaps concentrate in pre-1.0 polish (4 UNVERIFIED providers, gemma dead-on-arrival, no key-leak regression test, no PyPI release, `Proprietary` license on a public repo, no in-package retry policy). Cost: ~**$48k US / $16k blended** for a conventional team vs **~$5.6k all-in / 3–4 founder-days** actual — ~8.5× cheaper US / 9.5× faster (smaller multiplier than products because specialist infra compresses less).
+- **New: wegofwd-llm watch wired in the watched repo.** `.github/workflows/watch.yml` in `wegofwd-llm` runs weekly (Mondays 09:00 UTC), on every push to `main`, and on manual `workflow_dispatch`. It compares HEAD against `wegofwd-llm-last-reviewed.txt` in this repo and opens a PR here with a dated `wegofwd-llm-watch-YYYY-MM-DD.md` when anything has changed. Quiet weeks produce no PR. Security-hardened: attacker-influenced values (commit subjects, diffstat) flow via `env:` not `${{ }}` interpolation; commit messages and PR bodies use `git commit -F` / `gh pr create --body-file`. **One-time setup required** — see `wegofwd-llm/.watch/README.md` for the PAT instructions.
+- **Founder docs reconciliation done.** [elevator-pitch.md](elevator-pitch.md) → v1.2 (anchored on Thittam + StudyBuddy + the shared seam as architectural credential; "past year"→"since 2025"; 17/18→21 rule count with continuity note; cost-evidence numbers added). [linkedin-posts.md](linkedin-posts.md) → v1.2 (same fixes + the **Thittam `audit_log` REVOKE marketing claim corrected** — the prior wording said "UPDATE and DELETE are revoked, not just discouraged", which is factually false per the v2.3 critique; replaced with the honest *"the migration ships with the REVOKE staged for a post-deploy step after role creation"*). [personality-review.md](personality-review.md) → v1.2 (refresh adds §2.4 *Extract-Then-Use Pattern* with wegofwd-llm as the cleanest example; §3.1 second cycle of closure observed; scorecard refreshed; new *Reusable IP extraction* row).
+- **Other projects unchanged this cycle.** StudyBuddy_OnDemand, SelfLearner/Mentible, Thittam, dronePrjs, MarketingTools, claude_memory all re-checked at the same HEADs as v2.5 (StudyBuddy moved to a different branch since v1.7 but no code change relevant to this cycle). Their entries are carried forward.
+
+---
+
+## Planned — v2.7 (follow-ups)
+
+- **Operator setup of the watch token.** Create the `PROJECT_CRITIQUE_PR_TOKEN` secret on `wegofwd2020-hub/wegofwd-llm` per `.watch/README.md` step 2. Until this is done the watch workflow exists but cannot push; once done it begins reporting from `4823606` (v0.1.2) as the bootstrap baseline.
+- **Kathai Chithiram — full four-lens first review (deferred from v2.6).** The project (Tamil: கதை சித்திரம், "story → picture"; renamed from `behavioral_practices`) turns a parent's written story into an animation a special-needs child can understand, using the shared **`wegofwd-llm`** generation seam. As of 2026-06-09 it is two prototype renderers (`generate_animation.py`, `blender_animation.py`) + the hand-built "Silas Shines His Smile" social story — a proof-of-concept, not yet a system: the scene-script schema, the generation step, and parent intake are still roadmap. **Add the four-lens set once the generation→scene-script→renderer contract lands** (there is little to critique architecturally until then). Repo: `wegofwd2020-hub/kathai-chithiram`.
+- **Pramana — full four-lens first review (deferred).** Currently spec + early data model only; review when the v1 service surface lands and the named tenant pilot is in motion (see `PORTFOLIO_SCORECARD.md`).
+- **Founder-doc *positioning* pass.** This cycle reconciled facts (numbers, dates, the audit-trail claim) and added the seam credential. A future pass may reconsider the *anchor* itself if the strategic fork in `PORTFOLIO_SCORECARD.md` resolves toward selling the engine vs an application.
+
+---
+
 ## What Changed in v2.5 (2026-06-09)
 
 This cycle re-ran the critique against the **code on disk** for the two projects that moved, and added **two new four-lens projects**.
@@ -172,12 +214,6 @@ This cycle re-ran the critique against the **code on disk** for the two projects
 - **New: MarketingTools — full four-lens first review (v1.0).** A ~2.3k-LOC scoped-retrieval marketing toolkit (`main` @ `76addee`). Strong design/docs, **zero tests** (🔴), and an incomplete `requirements.txt` that breaks deck builds from a clean clone.
 - **New: claude_memory tooling — full four-lens first review (v1.0).** The git-backed portable per-project memory system (10 private repos + a global Stop hook + two runbooks). Durable and well-documented, with two real gaps: **silent hook failure** (already bit `pramana`) and an **unredacted/unencrypted, one-token blast-radius** privacy posture. The two runbooks (`NEW_MACHINE_SETUP.md`, `claude-memory-add-project.md`) are now indexed here.
 - **Thittam and dronePrjs unchanged this cycle** — re-checked on disk 2026-06-09; HEADs are identical to their v2.3 measurements (Thittam `3883769`, dronePrjs `5e38a44`). Their entries above are carried forward.
-
----
-
-## Planned — v2.6 (follow-ups)
-
-- **Kathai Chithiram — full four-lens first review (deferred).** The project (Tamil: கதை சித்திரம், "story → picture"; renamed from `behavioral_practices`) turns a parent's written story into an animation a special-needs child can understand, using the shared **`wegofwd-llm`** generation seam. As of 2026-06-09 it is two prototype renderers (`generate_animation.py`, `blender_animation.py`) + the hand-built "Silas Shines His Smile" social story — a proof-of-concept, not yet a system: the scene-script schema, the generation step, and parent intake are still roadmap. **Add the four-lens set once the generation→scene-script→renderer contract lands** (there is little to critique architecturally until then). Repo: `wegofwd2020-hub/kathai-chithiram`.
 
 ---
 
@@ -255,4 +291,4 @@ This cycle re-measured all three projects against the **code on disk** (prior cy
 
 ---
 
-*This critique is a point-in-time review. The **2026-06-09 (v2.5)** cycle re-measured StudyBuddy OnDemand (`main` @ `d50bc3e`) and SelfLearner/Mentible (`main` @ `40166ee`) directly against the code on disk, and added first-review four-lens sets for MarketingTools (`main` @ `76addee`) and the claude_memory tooling (10 private memory repos + Stop hook + runbooks, inspected live). Thittam and dronePrjs were re-checked and are byte-identical to their v2.3 measurements (HEADs `3883769` and `5e38a44`); their entries are carried forward unchanged. As before, Thittam's "71 docs / 13 ADRs" count lives in the sibling `thittam_docs` repo (not checked out here) and remains unverified. Where a test suite could not be executed in the review environment (e.g. `pytest` absent for SelfLearner), claims rest on reading the handlers/tests and are noted as such in the relevant doc.*
+*This critique is a point-in-time review. The **2026-06-13 (v2.6)** cycle admits **wegofwd-llm** to the watch set as the first cross-cutting shared dependency tracked here — first-review based on the source at HEAD `4823606` (`/tmp/wegofwd-llm` clone), CI workflow existence checked but tests not re-run live this pass. Three companion lenses (dev-pattern, practices, cost) and the watch mechanism itself are deferred to v2.7 pending operator decision on cadence/mechanism. The **2026-06-09 (v2.5)** cycle re-measured StudyBuddy OnDemand (`main` @ `d50bc3e`) and SelfLearner/Mentible (`main` @ `40166ee`) directly against the code on disk, and added first-review four-lens sets for MarketingTools (`main` @ `76addee`) and the claude_memory tooling (10 private memory repos + Stop hook + runbooks, inspected live). Thittam and dronePrjs were re-checked and are byte-identical to their v2.3 measurements (HEADs `3883769` and `5e38a44`); their entries are carried forward unchanged. As before, Thittam's "71 docs / 13 ADRs" count lives in the sibling `thittam_docs` repo (not checked out here) and remains unverified. Where a test suite could not be executed in the review environment (e.g. `pytest` absent for SelfLearner), claims rest on reading the handlers/tests and are noted as such in the relevant doc.*
