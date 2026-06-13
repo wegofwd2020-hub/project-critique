@@ -1,12 +1,18 @@
 # A Personality Review of Practice — Sivakumar (Siva) Mambakkam
 
 **Document type:** Architect practice assessment
-**Evidence base:** StudyBuddy OnDemand, Thittam, scratch pads, ADRs, coding standards,
-and supporting documentation
-**Period reviewed:** 2025–2026
-**Refresh:** April 2026 (v1.1 — after observing closure of prior execution gaps:
-Thittam proto completion, T1 secret fix, schema injection fix, 3.75× test growth;
-StudyBuddy Epic 10/11 delivery, Playwright persona expansion, zero TODO/FIXME)
+**Evidence base:** v2.6 portfolio — StudyBuddy_OnDemand, StudyBuddy_SelfLearner (Mentible),
+Thittam, dronePrjs, MarketingTools, claude_memory tooling, and the cross-cutting
+`wegofwd-llm` shared library; ADRs across the family (30+); coding-standards repo (21
+universal rules); and the `project-critique` self-review trail
+**Period reviewed:** 2025–2026 (~18 months)
+**Refresh:** 2026-06-13 (v1.2 — observes a *second* cycle of execution-gap closure: Thittam
+registration saga, reporting read-model, and impersonation lifecycle all implemented in
+source [were P0/P1 in v1.1]; dronePrjs ISC-28 done, D1/D2 ratified, Phase 6 CI added;
+the LLM-provider seam was extracted into `wegofwd-llm` and re-injected as the shared
+dependency — a cleaner pivot than v1.1 recorded. Residual gaps from v1.1 mostly persist.)
+**Prior:** April 2026 (v1.1 — first cycle of closure: proto completion, T1/schema-injection
+fixes, 3.75× Thittam test growth, Epic 10/11 delivery)
 **Tone:** Honest. Evidence-based. Forward-looking.
 
 ---
@@ -209,6 +215,34 @@ The Clean Pivot Pattern
   accumulating workarounds is rare and genuinely valuable.
 ```
 
+The v1.2 cycle produced a cleaner example of the same instinct, this time
+*additive* rather than corrective: the LLM provider code lived inside
+StudyBuddy_SelfLearner. When it became clear the same surface was about to be
+re-implemented in StudyBuddy_OnDemand (and would be needed by Kathai Chithiram
+shortly), the pattern was extracted into `wegofwd-llm` — a published Python
+package with a typed contract, three-axis versioning (package semver / contract
+version / per-provider integration version stamped into `provenance()`), and
+BYOK enforced at construction. ADR-012 names the rationale. Crucially, the
+SelfLearner copy was not left to drift: PRs #430/#431 re-injected the shared
+package into both consumers in the same window. The pattern was lifted *and*
+the old call sites were retired in the same cycle.
+
+```
+The Extract-Then-Use Pattern
+
+  Most architects:                   You:
+  ┌──────────────────────────────┐  ┌──────────────────────────────────────────┐
+  │ Extract a shared library      │  │ Build it for one consumer first          │
+  │ "in case it's needed later"   │  │ Recognize the second consumer is coming  │
+  │ Leave the original copy too   │  │ Extract with a typed contract + versioning│
+  │ Two implementations drift     │  │ Re-inject into BOTH consumers immediately│
+  └──────────────────────────────┘  │ Retire the original call site             │
+                                    └──────────────────────────────────────────┘
+
+  The discipline that distinguishes this from speculative DRY:
+  the second consumer is real and active, not anticipated.
+```
+
 ---
 
 ### 2.5 You Think About Business Model Before Technical Implementation
@@ -305,6 +339,35 @@ but they repeat the shape.
 The takeaway: **the external-accountability mechanism works on you**. The v1.0
 critique functioned as that accountability, and you responded. Whether you sustain
 closure without a further critique is the question to watch in v1.2.
+
+```
+The v1.2 update (2026-06-13) — second cycle of closure observed
+
+  v1.1 gap                                     v1.2 status (measured on disk)
+  ─────────────────────────────────────────────────────────────────────────
+  Thittam — registration saga                  ✅ Implemented (pkg/registration/saga.go)
+  Thittam — reporting read-model               ✅ Implemented (event-sourced ProjectionConsumer)
+  Thittam — impersonation lifecycle            ✅ Implemented (4h cap + audit)
+  dronePrjs — map-signature check (ISC-28)     ✅ Implemented (preflight checklist)
+  dronePrjs — CI (.github/workflows)           ✅ Added (Phase 6)
+  dronePrjs — D1/D2 decisions ratified         ✅ Logged in ISA
+  Thittam — audit_log REVOKE                   ⚠️  Still commented out (one open P0)
+  StudyBuddy — APP_ENV enum assertion          ⚠️  Still open
+  StudyBuddy — slowapi/Redis consolidation     ⚠️  Still open
+  StudyBuddy — pool arithmetic hard-assert     ⚠️  Still open
+  Load/performance tests across portfolio      ⚠️  Still absent
+
+  The v1.2 pattern: again, items the v1.1 critique named were closed; items
+  it did NOT externally name (or named only in technical critiques, not in
+  this personality review) mostly remain open. The external-accountability
+  mechanism continues to work — and now also continues to be the limiter.
+
+  New since v1.1 — the extraction of the wegofwd-llm seam (see §2.4 above):
+  closing a class of gap *before* anyone names it (the v1.1 review didn't
+  flag duplicate provider code as a debt; the v1.2 cycle eliminated it
+  proactively). This is closure without external prompt — a counterexample
+  worth noting in the v1.3 cycle to see if it generalizes.
+```
 
 ---
 
@@ -767,7 +830,7 @@ From Feature Momentum to Sprint Cadence
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│  Siva Mambakkam — Practice Scorecard                                  │
+│  Siva Mambakkam — Practice Scorecard (v1.2, 2026-06-13)               │
 ├─────────────────────────────────────┬───────────────┬────────────────┤
 │  Discipline                         │  Current      │  Trend         │
 ├─────────────────────────────────────┼───────────────┼────────────────┤
@@ -778,14 +841,28 @@ From Feature Momentum to Sprint Cadence
 │  Documentation discipline           │  Strong       │  Consistent    │
 │  Architectural decision-making      │  Strong       │  Consistent    │
 │  Business model clarity             │  Strong       │  Consistent    │
-│  Clean pivoting under new evidence  │  Strong       │  Improving     │
+│  Clean pivoting under new evidence  │  Excellent    │  Improving     │
+│  Reusable IP extraction             │  Strong       │  NEW v1.2 —    │
+│                                     │               │  wegofwd-llm   │
 ├─────────────────────────────────────┼───────────────┼────────────────┤
-│  Completion discipline              │  Improving    │  v1 gaps closed│
+│  Completion discipline              │  Improving    │  v1.1 + v1.2   │
+│                                     │               │  cycles closed │
 │  Architecture right-sizing          │  Needs focus  │  Stable gap    │
-│  Frontend engineering discipline    │  Improving    │  shadcn + axe  │
-│  Test coverage (actual vs target)   │  Strong       │  3.75× growth  │
-│  Peer review (own work)             │  Improving    │  Critique-loop │
-│  Technical debt management          │  Improving    │  Zero TODO/FIXME│
+│                                     │               │  (Thittam 10-svc│
+│                                     │               │  call still   │
+│                                     │               │  premature)    │
+│  Frontend engineering discipline    │  Strong       │  shadcn+Playwright│
+│                                     │               │  + 17 specs    │
+│  Test coverage (actual vs target)   │  Excellent    │  1,085 + 1,203 │
+│                                     │               │  + 114 across  │
+│                                     │               │  top 3 alone   │
+│  Peer review (own work)             │  Improving    │  Self-critique │
+│                                     │               │  via Claude;   │
+│                                     │               │  not yet human │
+│                                     │               │  peer          │
+│  Technical debt management          │  Strong       │  Zero TODO/    │
+│                                     │               │  FIXME holds   │
+│                                     │               │  across portfolio│
 │  Sprint cadence and closure         │  Needs focus  │  Ad-hoc        │
 ├─────────────────────────────────────┼───────────────┼────────────────┤
 │  Overall practice maturity          │  Senior+      │  Improving     │
@@ -794,12 +871,15 @@ From Feature Momentum to Sprint Cadence
 Summary in one sentence:
 
   You are an architect who builds systems that enforce correct
-  behaviour for others — the next level of your practice is
-  applying that same structural accountability to yourself.
-  The v1.1 refresh shows this is starting to happen: external
-  critiques function as structural accountability for you, and
-  you close what they name. The question for v1.2 is whether
-  you sustain closure without an external prompt.
+  behaviour for others — and the v1.2 cycle adds a piece of
+  evidence the v1.1 review was waiting for: you closed gaps that
+  no external critique had named (the wegofwd-llm extraction),
+  suggesting the closure discipline is partially internalizing,
+  not only externally driven. Two open questions remain for v1.3:
+  whether the *human* peer-review absence still bites (the
+  project-critique loop is Claude-authored, not independent),
+  and whether the open P0 list shrinks further without a
+  named-and-shamed list.
 ```
 
 ---
@@ -829,10 +909,15 @@ the rest.
 
 ---
 
-*This assessment is based entirely on observable evidence from the two projects and
-their supporting documentation. It reflects practice patterns, not personal character —
-and the practice is genuinely impressive. The v1.1 refresh observes meaningful
-closure of the execution gaps named in v1.0; the framework of strengths and
-residual blind spots remains valid as a lens for the next cycle.*
+*This assessment is based entirely on observable evidence from the v2.6 portfolio
+(StudyBuddy_OnDemand, SelfLearner/Mentible, Thittam, dronePrjs, MarketingTools, the
+claude_memory tooling, and the cross-cutting `wegofwd-llm` shared library) and the
+supporting standards / ADR / cost-analysis trail. It reflects practice patterns, not
+personal character — and the practice is genuinely impressive. The v1.2 refresh observes
+a **second** cycle of execution-gap closure since v1.1, plus one episode of closure
+without external prompt (the wegofwd-llm extraction). The framework of strengths and
+residual blind spots remains valid as a lens for the next cycle; the open question worth
+naming is whether the project-critique self-review loop (Claude-authored) substitutes for
+or merely defers the human peer review §3.4 called for.*
 
-*April 2026 (v1.1 refresh)*
+*2026-06-13 (v1.2 refresh — v2.6 portfolio evidence base)*

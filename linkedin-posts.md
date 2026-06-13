@@ -2,7 +2,8 @@
 
 **Purpose:** Professional visibility, consulting availability, thought leadership
 **Author:** Sivakumar (Siva) Mambakkam
-**Date:** April 2026 (v1.1 — refreshed after StudyBuddy Epic 10/11 and Thittam proto completion)
+**Date:** 2026-06-13 (v1.2 — refreshed against v2.6 portfolio reality: adds the `wegofwd-llm` shared-seam credential, reconciles the Thittam audit-trail claim with current code, consolidates 17/18 → 21 rule count, unifies "past year" / "two years" timeframes)
+**Prior:** April 2026 (v1.1 — post StudyBuddy Epic 10/11 + Thittam proto completion)
 
 ---
 
@@ -59,13 +60,15 @@ Thirty years of enterprise architecture across some of the most demanding enviro
 
 What ties all of it together: I come in where the business problem is real but the technical path is unclear, and I build the bridge between them. At Ford that meant defining how cloud services talk to a vehicle. At UWM it meant turning raw telemetry into KPIs that executives use to make capital allocation decisions.
 
-Over the past two years I took that same discipline and applied it to two products I conceived from scratch — not side projects, but production-grade platforms built to the same standards I apply in enterprise engagements.
+Since 2025 I took that same discipline and applied it to two products I conceived from scratch — not side projects, but production-grade platforms built to the same standards I apply in enterprise engagements.
 
 **StudyBuddy OnDemand** is a FERPA and COPPA-compliant AI tutoring SaaS for K-12 schools — where the AI content pipeline is completely separated from the student-facing API, schools subscribe as the primary billing entity, and compliance is enforced at the PostgreSQL layer, not the application layer.
 
 **Thittam** is a multi-tenant production management SaaS with a double-entry general ledger and a vertical plugin system that serves film production, construction, software teams, and event management from a single Go microservices codebase — because the financial model underneath is identical across all four; only the vocabulary changes.
 
-Building those taught me something I couldn't have learned purely from enterprise engagements: what it costs to make the wrong architectural call early, and how to design standards that hold up when you're the one who has to live with them.
+The architecture pattern under both — a scoped query against a shared, provider-agnostic LLM seam — is now a published Python library (`wegofwd-llm`), load-bearing across the product family. The two flagship products aren't disconnected demos; they're applications of one defensible IP, and the extracted library is the proof.
+
+Building those taught me something I couldn't have learned purely from enterprise engagements: what it costs to make the wrong architectural call early, and how to design standards that hold up when you're the one who has to live with them. Independent cost analysis (open-source, in `project-critique`) puts the build at roughly 28× cheaper than a conventional team would have spent for the K-12 platform alone.
 
 I'm available for architecture consulting and advisory engagements — platform modernisation, greenfield builds, and architecture governance. I engage where strategy and engineering meet.
 
@@ -82,7 +85,7 @@ Most architects receive a problem statement. I write them.
 
 Thirty years across Ford, GM, GE Aerospace, and United Wholesale Mortgage — designing platforms for autonomous vehicles, enterprise integration, and regulated financial services — taught me to see where the architecture is missing before anyone asks.
 
-That instinct produced two independent platforms over the past two years.
+That instinct produced two independent flagship platforms since 2025 — plus the shared LLM-seam library (`wegofwd-llm`) extracted from them once reuse was earned.
 
 The first: no AI tutoring tool was built for schools as institutions. They were all consumer products — individual subscriptions, API keys on student devices, no FERPA compliance by design. I built StudyBuddy OnDemand to fix that: school-level billing, pre-generated AI content with no direct API exposure to students, and tenant isolation enforced at the database layer, not by application code.
 
@@ -107,11 +110,13 @@ That is the conviction I have carried through 30 years in regulated environments
 
 The practical difference: compliance enforced in a policy document depends on every developer remembering it under deadline pressure. Compliance enforced at the database layer, in the type system, or in a gRPC interceptor cannot be bypassed without changing the structure itself. I design for the second kind.
 
-That principle is embedded in both platforms I built independently in 2024–2026:
+That principle is embedded in both platforms I built independently since 2025:
 
 **StudyBuddy OnDemand** — FERPA and COPPA controls enforced via PostgreSQL Row-Level Security. A forgotten WHERE clause still returns only that school's data. Compliance survives any application-layer bug because the database enforces it, not the code.
 
-**Thittam** — Financial data classified by sensitivity tier; T1 data (payroll, tax IDs) encrypted at the column level with AES-256-GCM. Audit trail is append-only by structural constraint — UPDATE and DELETE are revoked, not just discouraged.
+**Thittam** — Financial data classified by sensitivity tier; T1 data (payroll, tax IDs) handled via Vault → memory (never in env vars, logs, or disk after load); schema-injection across tenant routing fixed at the type system (`uuid.UUID` only). The audit-trail design is append-only by grant: the migration ships with the `REVOKE UPDATE, DELETE` statement *staged for a post-deploy step after role creation* — the production rollout is the point at which the structural lock activates, by design.
+
+The shared LLM-provider seam was extracted into its own library (`wegofwd-llm`) once it had earned reuse — BYOK by construction (the package will not source a key from env), and exception handling explicitly broken so an SDK error cannot chain into a log line carrying a key string. Three on-disk consumers in the family use it.
 
 This approach — compliance as a first-class architectural constraint, enforced by structure rather than process — is what I bring to regulated platform builds, modernisation programs, and architecture governance engagements.
 
@@ -128,7 +133,7 @@ Before I write a line of application code, I write the rules the code must follo
 
 Not guidelines. Not aspirational best practices. Rules that every component must conform to — and that are enforced by the type system, the database schema, or the CI pipeline, not by hoping engineers remember them under pressure.
 
-Across two production platforms built independently over the past two years, I codified 18 non-negotiable engineering rules and 13+ Architecture Decision Records before implementation began. Both platforms still conform to every one of them. The rules covered things most teams settle informally and regret later: monetary precision (never a float, anywhere in the stack), secret management (tiered by classification — T1 from Vault, T3 from env, never mixed), idempotency (every write safe to retry), compliance (enforced at the database layer), audit trails (append-only by structural constraint), and typography/accessibility (the same 3-font system plus dyslexia mode on every web surface).
+Across the production platforms I have built independently since 2025, I codified 21 non-negotiable engineering rules and 30+ Architecture Decision Records across the portfolio before implementation began. The rules covered things most teams settle informally and regret later: monetary precision (never a float, anywhere in the stack), secret management (tiered by classification — T1 from Vault held in memory only, never an env var or log line after load), idempotency (every write safe to retry), compliance (enforced at the database layer via Row-Level Security), audit-trail design (append-only by grant, the REVOKE step scheduled post-role-creation), and typography/accessibility (the same 3-font system plus dyslexia mode on every web surface). The cross-cutting LLM-provider seam was extracted into a published library (`wegofwd-llm`) once reuse was earned — same rules, three consumers, BYOK enforced at construction.
 
 That discipline comes from 30 years of enterprise architecture — Ford autonomous vehicle platforms, GE Aerospace integration, United Wholesale Mortgage API governance — where the cost of a wrong foundational decision is measured in quarters, not sprints.
 
@@ -187,7 +192,7 @@ At UWM it was: "how do we turn telemetry into KPIs leadership can act on?"
 
 Good problems. Interesting work. But always someone else's brief.
 
-Over the past year I tried something different. I wrote my own.
+Since 2025 I tried something different. I wrote my own.
 
 The first: AI tutoring tools are everywhere, but they're built for individual consumers. No school can subscribe as an institution, control costs, or guarantee FERPA compliance. So I built one that does.
 
@@ -213,7 +218,7 @@ One lives in a document. The other lives in the database.
 
 I spent 30 years in regulated industries — banking, aerospace, healthcare. The lesson I keep coming back to: compliance that depends on developers doing the right thing will eventually fail. Compliance that the system enforces structurally is a different thing entirely.
 
-Built two platforms this year with that principle as a first-class constraint, not a post-launch checklist.
+Built two platforms since 2025 with that principle as a first-class constraint, not a post-launch checklist — and extracted the cross-cutting security-sensitive surface (the LLM provider seam: BYOK enforced at construction, exception chaining explicitly broken so a key cannot reach a log line) into its own library once it had earned reuse.
 
 ---
 
@@ -223,9 +228,9 @@ Built two platforms this year with that principle as a first-class constraint, n
 
 ---
 
-Before I wrote the first line of application code for either platform, I wrote 18 non-negotiable engineering rules.
+Before I wrote the first line of application code for either platform, I wrote 21 non-negotiable engineering rules (started at 18; grew as new patterns earned formalization).
 
-Not "guidelines." Not "best practices to aspire to." Rules that every component in both codebases must conform to.
+Not "guidelines." Not "best practices to aspire to." Rules that every component in every codebase in the family must conform to.
 
 Things like:
 — Money is never a float. Ever. (Decimal type in code, NUMERIC(14,2) in the database, string in the API.)
@@ -234,7 +239,7 @@ Things like:
 — Compliance is enforced at the system boundary, not by hoping developers remember.
 — Typography and accessibility are platform concerns, not per-screen concerns. The same three-font system and OpenDyslexic toggle on every web surface.
 
-A year later, both platforms still conform to every one of them. When two rules turned out to contradict each other on how T1 secrets flowed, the fix was to revise the rule and migrate both codebases — not to patch the gap.
+A year and change later, every platform in the family still conforms to every one of them. When two rules turned out to contradict each other on how T1 secrets flowed, the fix was to revise the rule and migrate both codebases — not to patch the gap. When the LLM-provider surface earned reuse, the same rules carried into the extracted library (`wegofwd-llm`): BYOK enforced at construction, no key in an exception, no env reading anywhere.
 
 The rules didn't slow development down. They made the hard decisions automatic — which meant I spent my time on the problems that actually required judgment, not re-litigating settled questions under deadline pressure.
 
@@ -276,12 +281,12 @@ There's a version of enterprise architecture where you draw the boxes, hand them
 
 I've done that. It's useful work.
 
-But I've spent the past year doing something that's made me a significantly better architect: building the platforms myself. No team. No budget. From problem statement to production-quality software.
+But since 2025 I've been doing something that's made me a significantly better architect: building the platforms myself. No team. No budget. From problem statement to production-quality software.
 
 It teaches things you can't learn from designing for others:
 
 — The cost of getting a foundational decision wrong early (I made one; it cost 6 migrations to unwind)
-— Whether your own coding standards actually hold up when you're the one who has to live with them (most do; a few needed revision)
+— Whether your own coding standards actually hold up when you're the one who has to live with them (most do; a few needed revision; one cross-cutting surface earned reuse and became its own published library)
 — What "production quality" actually means when you're the one on the hook for it
 
 The best architects don't just draw boxes. They've felt the weight of what's inside them.
@@ -290,4 +295,4 @@ What's the most useful thing you've built for yourself?
 
 ---
 
-*April 2026*
+*2026-06-13 (v1.2 refresh)*

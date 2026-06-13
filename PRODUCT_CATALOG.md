@@ -31,6 +31,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | `project-critique` | Independent code reviews, development-pattern analyses, and real-world cost estimates across the portfolio. |
 | `studybuddy-docs` | Architecture, ADRs, runbooks, and phased plans for StudyBuddy OnDemand (code lives in `StudyBuddy_OnDemand`). |
 | `thittam_docs` | Architecture, ADRs, and API specs for Thittam (code lives in `thittam`). |
+| `wegofwd-llm` | **Shared multi-provider LLM seam** (Python library, BYOK, schema-agnostic conformance loop). Consumed by StudyBuddy_OnDemand, SelfLearner/Mentible, and Kathai Chithiram. ADR-012. Critique in `project-critique/wegofwd-llm-critique.md` — under top-level watch as of v2.6. |
 
 ---
 
