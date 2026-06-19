@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 GH="git@github.com:wegofwd2020-hub"                     # SSH (HTTPS needs gh/token; gh not installed here)
-BASE="$HOME/Documents/AIStuff/wegofwd2020-hub"          # flat: every project is $BASE/<project>
+BASE="$(dirname "$PWD")"                                # hub = parent of CWD; run from inside a project repo
 PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
