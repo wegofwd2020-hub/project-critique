@@ -112,6 +112,16 @@ done
 
 Each should show its latest commit, and `git -C <M> status` should be clean. From then on the Stop hook resumes auto-snapshotting.
 
+## Keeping repos in sync (any machine)
+
+`github_checkout.sh` is the one-time bootstrap. For day-to-day syncing, run the companion **`github_update.sh`** (tracked in this repo; a runnable copy sits at `~/Documents/AIStuff/github_update.sh`). It is re-runnable and safe:
+
+```bash
+sh ~/Documents/AIStuff/github_update.sh
+```
+
+For every project repo *and* memory repo it skips anything dirty (never clobbers local work), does a `git pull --ff-only` on the clean ones, and reports per-repo status (`up-to-date` / `UPDATED <range>` / `DIRTY` / `MISSING` / `ERROR`). `closedSpace` is pulled as a memory-only entry, since it is a subdir of `dronePrjs` rather than its own clone. A `MISSING` line means that repo hasn't been cloned yet — run `github_checkout.sh` (and clone the project repo itself) first.
+
 ## The eleven repos
 
 All symlinks live directly under `wegofwd2020-hub/` (flat layout).
