@@ -11,8 +11,8 @@ Each project has a dedicated memory store at `~/.claude/projects/<encoded-path>/
 ## Prerequisites
 
 - Claude Code installed (creates `~/.claude/`).
-- `git` and the GitHub CLI `gh`, authenticated as the repo owner: `gh auth login` (account `wegofwd2020-hub`).
-- The project repos themselves cloned to the **same absolute paths** as the old machine (the encoded path is derived from the absolute path — see *Path dependency* below).
+- `git`, plus **SSH access to GitHub** for the `wegofwd2020-hub` account (`ssh -T git@github.com` should greet you). The clone script uses SSH because HTTPS needs a token or the `gh` CLI, which isn't assumed to be installed. If you prefer HTTPS+`gh`, run `gh auth login` and set `GH="https://github.com/wegofwd2020-hub"` in the script.
+- The project repos themselves cloned to the **same absolute paths** as the old machine (the encoded path is derived from the absolute path — see *Path dependency* below). Current layout is **flat**: every project lives directly under `~/Documents/AIStuff/wegofwd2020-hub/`.
 
 ## The encoding rule
 
@@ -20,8 +20,8 @@ Each project has a dedicated memory store at `~/.claude/projects/<encoded-path>/
 
 ```bash
 echo "$PWD" | sed 's|[/_]|-|g'
-# /home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy/thittam
-#  -> -home-sivam-Documents-code-projects-AIStuff-STEM-studybuddy-thittam
+# /home/sivam/Documents/AIStuff/wegofwd2020-hub/thittam
+#  -> -home-sivam-Documents-AIStuff-wegofwd2020-hub-thittam
 ```
 
 This is the exact transform the hook uses, so the memory dir must sit under that name for the hook to find it.
@@ -55,24 +55,27 @@ It is a no-op for any project whose memory dir isn't a git repo, so it's safe gl
 
 Run this block (adjust `BASE` if your layout differs). It derives each encoded path, clones the repo into place, and makes the symlink.
 
+> This block is kept in sync with the runnable script. The version-controlled copy lives in this repo at `github_checkout.sh`; on a working machine the runnable copy sits one level up at `~/Documents/AIStuff/github_checkout.sh` (outside any repo, since it operates on the whole hub). Keep the two in sync when you edit either.
+
 ```bash
+#!/bin/sh
 set -e
-GH="https://github.com/wegofwd2020-hub"
-BASE="$HOME/Documents/code/projects/AIStuff"          # parent of STEM_studybuddy and dronePrjs
+GH="git@github.com:wegofwd2020-hub"                     # SSH (HTTPS needs gh/token; gh not assumed installed)
+BASE="$HOME/Documents/AIStuff/wegofwd2020-hub"          # flat: every project is $BASE/<project>
 PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
 # project_abs_path | memory_repo | symlink_abs_path
 MAP="
-$BASE/STEM_studybuddy/StudyBuddy_OnDemand|studybuddy-memory|$BASE/STEM_studybuddy/_claude-memory-studybuddy
-$BASE/STEM_studybuddy/StudyBuddy_SelfLearner|studybuddy-selflearner-memory|$BASE/STEM_studybuddy/_claude-memory-studybuddy-selflearner
-$BASE/STEM_studybuddy/thittam|thittam-memory|$BASE/STEM_studybuddy/_claude-memory-thittam
-$BASE/STEM_studybuddy/mambakkam-net|mambakkam-net-memory|$BASE/STEM_studybuddy/_claude-memory-mambakkam-net
-$BASE/STEM_studybuddy/pramana|pramana-memory|$BASE/STEM_studybuddy/_claude-memory-pramana
-$BASE/STEM_studybuddy/kathai-chithiram|kathai-chithiram-memory|$BASE/STEM_studybuddy/_claude-memory-kathai-chithiram
-$BASE/STEM_studybuddy/project-critique|project-critique-memory|$BASE/STEM_studybuddy/_claude-memory-project-critique
-$BASE/STEM_studybuddy/MarketingTools|MarketingTools-memory|$BASE/STEM_studybuddy/_claude-memory-MarketingTools
-$BASE/STEM_studybuddy/wegofwd-llm|wegofwd-llm-memory|$BASE/STEM_studybuddy/_claude-memory-wegofwd-llm
+$BASE/StudyBuddy_OnDemand|studybuddy-memory|$BASE/_claude-memory-studybuddy
+$BASE/StudyBuddy_SelfLearner|studybuddy-selflearner-memory|$BASE/_claude-memory-studybuddy-selflearner
+$BASE/thittam|thittam-memory|$BASE/_claude-memory-thittam
+$BASE/mambakkam-net|mambakkam-net-memory|$BASE/_claude-memory-mambakkam-net
+$BASE/pramana|pramana-memory|$BASE/_claude-memory-pramana
+$BASE/kathai-chithiram|kathai-chithiram-memory|$BASE/_claude-memory-kathai-chithiram
+$BASE/project-critique|project-critique-memory|$BASE/_claude-memory-project-critique
+$BASE/MarketingTools|MarketingTools-memory|$BASE/_claude-memory-MarketingTools
+$BASE/wegofwd-llm|wegofwd-llm-memory|$BASE/_claude-memory-wegofwd-llm
 $BASE/dronePrjs|dronePrjs-memory|$BASE/_claude-memory-dronePrjs
 $BASE/dronePrjs/closedSpace|closedSpace-memory|$BASE/_claude-memory-closedSpace
 "
@@ -90,7 +93,7 @@ echo "$MAP" | while IFS='|' read -r proj repo sym; do
 done
 ```
 
-> Verified end-to-end in a temp dir on 2026-06-01: all 8 repos clone with auth, and the symlinks resolve. The `mkdir -p` above is required — without it `ln` fails if the workspace parent dir isn't present yet.
+> Verified end-to-end in a temp dir on 2026-06-01 (original 8 repos). Re-verified live on 2026-06-19 on this machine: all 11 repos clone over SSH and all 11 symlinks resolve under the flat `wegofwd2020-hub/` layout. The `mkdir -p` above is required — without it `ln` fails if the workspace parent dir isn't present yet.
 
 ## Verify
 
@@ -100,7 +103,7 @@ for enc in \
   -home-*-StudyBuddy-OnDemand -home-*-StudyBuddy-SelfLearner -home-*-thittam \
   -home-*-mambakkam-net -home-*-project-critique -home-*-MarketingTools \
   -home-*-pramana -home-*-wegofwd-llm -home-*-kathai-chithiram \
-  -home-*-AIStuff-dronePrjs -home-*-AIStuff-dronePrjs-closedSpace ; do
+  -home-*-wegofwd2020-hub-dronePrjs -home-*-wegofwd2020-hub-dronePrjs-closedSpace ; do
   for M in "$PROOT"/$enc/memory; do
     [ -d "$M/.git" ] && echo "OK  $(git -C "$M" log -1 --format='%h %s')  <- $M"
   done
@@ -111,19 +114,21 @@ Each should show its latest commit, and `git -C <M> status` should be clean. Fro
 
 ## The eleven repos
 
+All symlinks live directly under `wegofwd2020-hub/` (flat layout).
+
 | Project | Memory repo | Symlink |
 |---|---|---|
-| studybuddy (StudyBuddy_OnDemand) | `studybuddy-memory` | `STEM_studybuddy/_claude-memory-studybuddy` |
-| studybuddy-selflearner | `studybuddy-selflearner-memory` | `STEM_studybuddy/_claude-memory-studybuddy-selflearner` |
-| thittam | `thittam-memory` | `STEM_studybuddy/_claude-memory-thittam` |
-| mambakkam-net | `mambakkam-net-memory` | `STEM_studybuddy/_claude-memory-mambakkam-net` |
-| pramana | `pramana-memory` | `STEM_studybuddy/_claude-memory-pramana` |
-| kathai-chithiram | `kathai-chithiram-memory` | `STEM_studybuddy/_claude-memory-kathai-chithiram` |
-| project-critique | `project-critique-memory` | `STEM_studybuddy/_claude-memory-project-critique` |
-| MarketingTools | `MarketingTools-memory` | `STEM_studybuddy/_claude-memory-MarketingTools` |
-| wegofwd-llm | `wegofwd-llm-memory` | `STEM_studybuddy/_claude-memory-wegofwd-llm` |
-| dronePrjs | `dronePrjs-memory` | `AIStuff/_claude-memory-dronePrjs` |
-| closedSpace (subdir of dronePrjs) | `closedSpace-memory` | `AIStuff/_claude-memory-closedSpace` |
+| studybuddy (StudyBuddy_OnDemand) | `studybuddy-memory` | `wegofwd2020-hub/_claude-memory-studybuddy` |
+| studybuddy-selflearner | `studybuddy-selflearner-memory` | `wegofwd2020-hub/_claude-memory-studybuddy-selflearner` |
+| thittam | `thittam-memory` | `wegofwd2020-hub/_claude-memory-thittam` |
+| mambakkam-net | `mambakkam-net-memory` | `wegofwd2020-hub/_claude-memory-mambakkam-net` |
+| pramana | `pramana-memory` | `wegofwd2020-hub/_claude-memory-pramana` |
+| kathai-chithiram | `kathai-chithiram-memory` | `wegofwd2020-hub/_claude-memory-kathai-chithiram` |
+| project-critique | `project-critique-memory` | `wegofwd2020-hub/_claude-memory-project-critique` |
+| MarketingTools | `MarketingTools-memory` | `wegofwd2020-hub/_claude-memory-MarketingTools` |
+| wegofwd-llm | `wegofwd-llm-memory` | `wegofwd2020-hub/_claude-memory-wegofwd-llm` |
+| dronePrjs | `dronePrjs-memory` | `wegofwd2020-hub/_claude-memory-dronePrjs` |
+| closedSpace (subdir of dronePrjs) | `closedSpace-memory` | `wegofwd2020-hub/_claude-memory-closedSpace` |
 
 ## Path dependency (important)
 
@@ -132,12 +137,13 @@ The encoded path is derived from the project's **absolute path**. If the new mac
 ## Adding a new project later
 
 ```bash
-gh repo create wegofwd2020-hub/<name>-memory --private
-M="$HOME/.claude/projects/$(echo /abs/path/to/project | sed 's|[/_]|-|g')/memory"
+BASE="$HOME/Documents/AIStuff/wegofwd2020-hub"
+gh repo create wegofwd2020-hub/<name>-memory --private   # or create it in the GitHub UI if gh isn't installed
+M="$HOME/.claude/projects/$(echo "$BASE/<name>" | sed 's|[/_]|-|g')/memory"
 mkdir -p "$M" && : > "$M/MEMORY.md"
-git -C "$M" init -b main && git -C "$M" remote add origin https://github.com/wegofwd2020-hub/<name>-memory.git
+git -C "$M" init -b main && git -C "$M" remote add origin git@github.com:wegofwd2020-hub/<name>-memory.git
 git -C "$M" add -A && git -C "$M" commit -m "chore: initial snapshot of Claude memory" && git -C "$M" push -u origin main
-ln -s "$M" /workspace/parent/_claude-memory-<name>
+ln -s "$M" "$BASE/_claude-memory-<name>"
 ```
 
 The global Stop hook needs no change — it just needs the repo + remote to exist.
