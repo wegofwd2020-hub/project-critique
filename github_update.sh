@@ -2,12 +2,15 @@
 # github_update.sh — pull latest in every wegofwd2020-hub project repo and Claude memory repo.
 # Companion to github_checkout.sh (one-time clone). Safe to re-run; never touches dirty repos.
 #
+#   - BASE (the hub folder) is derived as the parent of the current working directory, so this
+#     works on any machine regardless of where the hub lives. RUN IT FROM INSIDE A PROJECT REPO
+#     (a direct child of the hub), e.g.  cd <hub>/project-critique && sh github_update.sh
 #   - Project repos live flat under $BASE/<project>.
 #   - Memory repos live at $PROOT/<encoded project path>/memory (see the encoding rule in
 #     NEW_MACHINE_SETUP.md). closedSpace is a subdir of dronePrjs, not its own clone, so it is
 #     only pulled as a memory repo, not as a project repo.
 set -u
-BASE="$HOME/Documents/AIStuff/wegofwd2020-hub"
+BASE="$(dirname "$PWD")"          # one level above CWD = the hub folder
 PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
 

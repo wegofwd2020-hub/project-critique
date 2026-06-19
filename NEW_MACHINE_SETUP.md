@@ -114,10 +114,13 @@ Each should show its latest commit, and `git -C <M> status` should be clean. Fro
 
 ## Keeping repos in sync (any machine)
 
-`github_checkout.sh` is the one-time bootstrap. For day-to-day syncing, run the companion **`github_update.sh`** (tracked in this repo; a runnable copy sits at `~/Documents/AIStuff/github_update.sh`). It is re-runnable and safe:
+`github_checkout.sh` is the one-time bootstrap. For day-to-day syncing, run the companion **`github_update.sh`** (tracked in this repo; a runnable copy sits at `~/Documents/AIStuff/github_update.sh`). It is re-runnable and safe.
+
+It derives the hub folder (`BASE`) as **one level above the current working directory**, so it works on any machine no matter where the hub lives — but that means you must **run it from inside a project repo** (a direct child of the hub):
 
 ```bash
-sh ~/Documents/AIStuff/github_update.sh
+cd <hub>/project-critique          # any direct child of the hub works
+sh github_update.sh                 # or: sh ~/Documents/AIStuff/github_update.sh
 ```
 
 For every project repo *and* memory repo it skips anything dirty (never clobbers local work), does a `git pull --ff-only` on the clean ones, and reports per-repo status (`up-to-date` / `UPDATED <range>` / `DIRTY` / `MISSING` / `ERROR`). `closedSpace` is pulled as a memory-only entry, since it is a subdir of `dronePrjs` rather than its own clone. A `MISSING` line means that repo hasn't been cloned yet — run `github_checkout.sh` (and clone the project repo itself) first.
