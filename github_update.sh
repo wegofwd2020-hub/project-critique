@@ -19,7 +19,7 @@ PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
 # project subdirs that are each their own git repo
-PROJECTS="StudyBuddy_OnDemand StudyBuddy_SelfLearner thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm dronePrjs"
+PROJECTS="StudyBuddy_OnDemand StudyBuddy_SelfLearner thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration dronePrjs"
 
 # absolute project paths whose memory repo should be pulled
 MEM_PATHS="
@@ -32,6 +32,7 @@ $BASE/kathai-chithiram
 $BASE/project-critique
 $BASE/MarketingTools
 $BASE/wegofwd-llm
+$BASE/wegofwd-orchestration
 $BASE/dronePrjs
 $BASE/dronePrjs/closedSpace
 "

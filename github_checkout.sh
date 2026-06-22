@@ -16,6 +16,7 @@ $BASE/kathai-chithiram|kathai-chithiram-memory|$BASE/_claude-memory-kathai-chith
 $BASE/project-critique|project-critique-memory|$BASE/_claude-memory-project-critique
 $BASE/MarketingTools|MarketingTools-memory|$BASE/_claude-memory-MarketingTools
 $BASE/wegofwd-llm|wegofwd-llm-memory|$BASE/_claude-memory-wegofwd-llm
+$BASE/wegofwd-orchestration|wegofwd-orchestration-memory|$BASE/_claude-memory-wegofwd-orchestration
 $BASE/dronePrjs|dronePrjs-memory|$BASE/_claude-memory-dronePrjs
 $BASE/dronePrjs/closedSpace|closedSpace-memory|$BASE/_claude-memory-closedSpace
 "
