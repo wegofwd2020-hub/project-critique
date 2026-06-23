@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-GH="git@github.com:wegofwd2020-hub"                     # SSH (HTTPS needs gh/token; gh not installed here)
+GH="git@github.com:wegofwd2020-hub"                     # clone over SSH (gh CLI is installed+authed if you prefer HTTPS)
 BASE="$(dirname "$PWD")"                                # hub = parent of CWD; run from inside a project repo
 PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
