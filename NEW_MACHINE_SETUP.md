@@ -11,8 +11,8 @@ Each project has a dedicated memory store at `~/.claude/projects/<encoded-path>/
 ## Prerequisites
 
 - Claude Code installed (creates `~/.claude/`).
-- `git`, plus **SSH access to GitHub** for the `wegofwd2020-hub` account (`ssh -T git@github.com` should greet you). The clone script uses SSH because HTTPS needs a token or the `gh` CLI, which isn't assumed to be installed. If you prefer HTTPS+`gh`, run `gh auth login` and set `GH="https://github.com/wegofwd2020-hub"` in the script.
-- The project repos themselves cloned to the **same absolute paths** as the old machine (the encoded path is derived from the absolute path — see *Path dependency* below). Current layout is **flat**: every project lives directly under `~/Documents/AIStuff/wegofwd2020-hub/`.
+- `git`, plus **SSH access to GitHub** for the `wegofwd2020-hub` account (`ssh -T git@github.com` should greet you). The clone script uses SSH by default. `gh` (the GitHub CLI) is installed and authed on the current machine, so if you prefer HTTPS just run `gh auth login` and set `GH="https://github.com/wegofwd2020-hub"` in the script.
+- The project repos cloned somewhere under a single **hub** folder (the encoded path is derived from each project's absolute path — see *Path dependency* below). The scripts no longer hardcode the hub location: they derive it as the **parent of the current working directory**, so run them from inside a project repo. On the current machine the hub is `~/Documents/code/projects/AIStuff/STEM_studybuddy/` and every project is a direct child of it.
 
 ## The encoding rule
 
@@ -20,8 +20,8 @@ Each project has a dedicated memory store at `~/.claude/projects/<encoded-path>/
 
 ```bash
 echo "$PWD" | sed 's|[/_]|-|g'
-# /home/sivam/Documents/AIStuff/wegofwd2020-hub/thittam
-#  -> -home-sivam-Documents-AIStuff-wegofwd2020-hub-thittam
+# /home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy/thittam
+#  -> -home-sivam-Documents-code-projects-AIStuff-STEM-studybuddy-thittam
 ```
 
 This is the exact transform the hook uses, so the memory dir must sit under that name for the hook to find it.
@@ -55,13 +55,13 @@ It is a no-op for any project whose memory dir isn't a git repo, so it's safe gl
 
 Run this block (adjust `BASE` if your layout differs). It derives each encoded path, clones the repo into place, and makes the symlink.
 
-> This block is kept in sync with the runnable script. The version-controlled copy lives in this repo at `github_checkout.sh`; on a working machine the runnable copy sits one level up at `~/Documents/AIStuff/github_checkout.sh` (outside any repo, since it operates on the whole hub). Keep the two in sync when you edit either.
+> This block is kept in sync with the runnable script `github_checkout.sh`, version-controlled in this repo. It derives the hub as the parent of CWD, so run it directly from inside a project repo (e.g. `cd <hub>/project-critique && sh github_checkout.sh`) — there is no longer a separate copy at the hub root. Keep this embedded block in sync with the script when you edit either.
 
 ```bash
 #!/bin/sh
 set -e
-GH="git@github.com:wegofwd2020-hub"                     # SSH (HTTPS needs gh/token; gh not assumed installed)
-BASE="$HOME/Documents/AIStuff/wegofwd2020-hub"          # flat: every project is $BASE/<project>
+GH="git@github.com:wegofwd2020-hub"                     # clone over SSH (gh CLI is installed+authed if you prefer HTTPS)
+BASE="$(dirname "$PWD")"                                # hub = parent of CWD; run from inside a project repo
 PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
@@ -76,6 +76,7 @@ $BASE/kathai-chithiram|kathai-chithiram-memory|$BASE/_claude-memory-kathai-chith
 $BASE/project-critique|project-critique-memory|$BASE/_claude-memory-project-critique
 $BASE/MarketingTools|MarketingTools-memory|$BASE/_claude-memory-MarketingTools
 $BASE/wegofwd-llm|wegofwd-llm-memory|$BASE/_claude-memory-wegofwd-llm
+$BASE/wegofwd-orchestration|wegofwd-orchestration-memory|$BASE/_claude-memory-wegofwd-orchestration
 $BASE/dronePrjs|dronePrjs-memory|$BASE/_claude-memory-dronePrjs
 $BASE/dronePrjs/closedSpace|closedSpace-memory|$BASE/_claude-memory-closedSpace
 "
@@ -93,7 +94,9 @@ echo "$MAP" | while IFS='|' read -r proj repo sym; do
 done
 ```
 
-> Verified end-to-end in a temp dir on 2026-06-01 (original 8 repos). Re-verified live on 2026-06-19 on this machine: all 11 repos clone over SSH and all 11 symlinks resolve under the flat `wegofwd2020-hub/` layout. The `mkdir -p` above is required — without it `ln` fails if the workspace parent dir isn't present yet.
+> Verified end-to-end in a temp dir on 2026-06-01 (original 8 repos). Re-verified 2026-06-23 on this machine: all 12 memory repos clone over SSH and their symlinks resolve under the hub (now `~/Documents/code/projects/AIStuff/STEM_studybuddy/`, derived as the parent of CWD). The `mkdir -p` above is required — without it `ln` fails if the workspace parent dir isn't present yet.
+>
+> ⚠ `set -e` gotcha: if a project is registered in the MAP before its `<name>-memory` GitHub repo exists, the failed clone aborts the **whole loop**, silently skipping every repo listed after it. Create the GitHub repo(s) first (see *Adding a new project later*).
 
 ## Verify
 
@@ -103,7 +106,8 @@ for enc in \
   -home-*-StudyBuddy-OnDemand -home-*-StudyBuddy-SelfLearner -home-*-thittam \
   -home-*-mambakkam-net -home-*-project-critique -home-*-MarketingTools \
   -home-*-pramana -home-*-wegofwd-llm -home-*-kathai-chithiram \
-  -home-*-wegofwd2020-hub-dronePrjs -home-*-wegofwd2020-hub-dronePrjs-closedSpace ; do
+  -home-*-wegofwd-orchestration \
+  -home-*-STEM-studybuddy-dronePrjs -home-*-STEM-studybuddy-dronePrjs-closedSpace ; do
   for M in "$PROOT"/$enc/memory; do
     [ -d "$M/.git" ] && echo "OK  $(git -C "$M" log -1 --format='%h %s')  <- $M"
   done
@@ -114,34 +118,35 @@ Each should show its latest commit, and `git -C <M> status` should be clean. Fro
 
 ## Keeping repos in sync (any machine)
 
-`github_checkout.sh` is the one-time bootstrap. For day-to-day syncing, run the companion **`github_update.sh`** (tracked in this repo; a runnable copy sits at `~/Documents/AIStuff/github_update.sh`). It is re-runnable and safe.
+`github_checkout.sh` is the one-time bootstrap. For day-to-day syncing, run the companion **`github_update.sh`** (tracked in this repo). It is re-runnable and safe.
 
 It derives the hub folder (`BASE`) as **one level above the current working directory**, so it works on any machine no matter where the hub lives — but that means you must **run it from inside a project repo** (a direct child of the hub):
 
 ```bash
 cd <hub>/project-critique          # any direct child of the hub works
-sh github_update.sh                 # or: sh ~/Documents/AIStuff/github_update.sh
+sh github_update.sh
 ```
 
 For every project repo *and* memory repo it skips anything dirty (never clobbers local work), does a `git pull --ff-only` on the clean ones, and reports per-repo status (`up-to-date` / `UPDATED <range>` / `DIRTY` / `MISSING` / `ERROR`). `closedSpace` is pulled as a memory-only entry, since it is a subdir of `dronePrjs` rather than its own clone. A `MISSING` line means that repo hasn't been cloned yet — run `github_checkout.sh` (and clone the project repo itself) first.
 
-## The eleven repos
+## The twelve repos
 
-All symlinks live directly under `wegofwd2020-hub/` (flat layout).
+All symlinks live directly under the hub (`<hub>` = `~/Documents/code/projects/AIStuff/STEM_studybuddy/` on the current machine; the scripts derive it as the parent of CWD).
 
 | Project | Memory repo | Symlink |
 |---|---|---|
-| studybuddy (StudyBuddy_OnDemand) | `studybuddy-memory` | `wegofwd2020-hub/_claude-memory-studybuddy` |
-| studybuddy-selflearner | `studybuddy-selflearner-memory` | `wegofwd2020-hub/_claude-memory-studybuddy-selflearner` |
-| thittam | `thittam-memory` | `wegofwd2020-hub/_claude-memory-thittam` |
-| mambakkam-net | `mambakkam-net-memory` | `wegofwd2020-hub/_claude-memory-mambakkam-net` |
-| pramana | `pramana-memory` | `wegofwd2020-hub/_claude-memory-pramana` |
-| kathai-chithiram | `kathai-chithiram-memory` | `wegofwd2020-hub/_claude-memory-kathai-chithiram` |
-| project-critique | `project-critique-memory` | `wegofwd2020-hub/_claude-memory-project-critique` |
-| MarketingTools | `MarketingTools-memory` | `wegofwd2020-hub/_claude-memory-MarketingTools` |
-| wegofwd-llm | `wegofwd-llm-memory` | `wegofwd2020-hub/_claude-memory-wegofwd-llm` |
-| dronePrjs | `dronePrjs-memory` | `wegofwd2020-hub/_claude-memory-dronePrjs` |
-| closedSpace (subdir of dronePrjs) | `closedSpace-memory` | `wegofwd2020-hub/_claude-memory-closedSpace` |
+| studybuddy (StudyBuddy_OnDemand) | `studybuddy-memory` | `<hub>/_claude-memory-studybuddy` |
+| studybuddy-selflearner | `studybuddy-selflearner-memory` | `<hub>/_claude-memory-studybuddy-selflearner` |
+| thittam | `thittam-memory` | `<hub>/_claude-memory-thittam` |
+| mambakkam-net | `mambakkam-net-memory` | `<hub>/_claude-memory-mambakkam-net` |
+| pramana | `pramana-memory` | `<hub>/_claude-memory-pramana` |
+| kathai-chithiram | `kathai-chithiram-memory` | `<hub>/_claude-memory-kathai-chithiram` |
+| project-critique | `project-critique-memory` | `<hub>/_claude-memory-project-critique` |
+| MarketingTools | `MarketingTools-memory` | `<hub>/_claude-memory-MarketingTools` |
+| wegofwd-llm | `wegofwd-llm-memory` | `<hub>/_claude-memory-wegofwd-llm` |
+| wegofwd-orchestration | `wegofwd-orchestration-memory` | `<hub>/_claude-memory-wegofwd-orchestration` |
+| dronePrjs | `dronePrjs-memory` | `<hub>/_claude-memory-dronePrjs` |
+| closedSpace (subdir of dronePrjs) | `closedSpace-memory` | `<hub>/_claude-memory-closedSpace` |
 
 ## Path dependency (important)
 
@@ -150,8 +155,8 @@ The encoded path is derived from the project's **absolute path**. If the new mac
 ## Adding a new project later
 
 ```bash
-BASE="$HOME/Documents/AIStuff/wegofwd2020-hub"
-gh repo create wegofwd2020-hub/<name>-memory --private   # or create it in the GitHub UI if gh isn't installed
+BASE="$(dirname "$PWD")"                                 # run from inside a project repo, or set the hub path explicitly
+gh repo create wegofwd2020-hub/<name>-memory --private   # gh is installed+authed; or create it in the GitHub UI
 M="$HOME/.claude/projects/$(echo "$BASE/<name>" | sed 's|[/_]|-|g')/memory"
 mkdir -p "$M" && : > "$M/MEMORY.md"
 git -C "$M" init -b main && git -C "$M" remote add origin git@github.com:wegofwd2020-hub/<name>-memory.git
@@ -160,3 +165,9 @@ ln -s "$M" "$BASE/_claude-memory-<name>"
 ```
 
 The global Stop hook needs no change — it just needs the repo + remote to exist.
+
+A few things to also do when adding a project:
+
+- **Register it in both scripts.** Add the new `$BASE/<name>|<name>-memory|...` row to the `MAP` in `github_checkout.sh`, and add `<name>` to the `PROJECTS` list (and the `MEM_PATHS` block) in `github_update.sh`.
+- **Create the GitHub repo(s) before running `github_checkout.sh`.** Because of the `set -e` gotcha above, a missing `<name>-memory` remote aborts the rest of the checkout loop. The snippet here creates the memory repo locally and pushes, so it sidesteps the empty-clone problem; if you instead create an empty repo and let the script clone it, seed it with an initial commit on `main` first (an empty repo has no branch, so `pull --ff-only` errors).
+- **The scripts only manage *memory* repos**, never the project code repos. Clone the project repo itself separately: `git clone git@github.com:wegofwd2020-hub/<name>.git "$BASE/<name>"`.
