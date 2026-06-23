@@ -51,9 +51,9 @@ Add this to `~/.claude/settings.json` (merge into existing `hooks`):
 
 It is a no-op for any project whose memory dir isn't a git repo, so it's safe globally.
 
-## Step 2 + 3 — Clone the memory repos and recreate the symlinks
+## Step 2 + 3 — Clone the project + memory repos and recreate the symlinks
 
-Run this block (adjust `BASE` if your layout differs). It derives each encoded path, clones the repo into place, and makes the symlink.
+Run this block (adjust `BASE` if your layout differs). It clones each project code repo flat under the hub, then derives each encoded path, clones the matching memory repo into place, and makes the symlink.
 
 > This block is kept in sync with the runnable script `github_checkout.sh`, version-controlled in this repo. It derives the hub as the parent of CWD, so run it directly from inside a project repo (e.g. `cd <hub>/project-critique && sh github_checkout.sh`) — there is no longer a separate copy at the hub root. Keep this embedded block in sync with the script when you edit either.
 
@@ -65,6 +65,22 @@ BASE="$(dirname "$PWD")"                                # hub = parent of CWD; r
 PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
+# Project code repos cloned flat under the hub ($BASE/<name>). The GitHub repo name
+# matches the local dir name for every project. closedSpace is a subdir of dronePrjs,
+# not its own repo, so it is not listed here. Keep this list in sync with PROJECTS in
+# github_update.sh.
+PROJECTS="StudyBuddy_OnDemand StudyBuddy_SelfLearner thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration dronePrjs"
+
+echo "Project repos:"
+for n in $PROJECTS; do
+  P="$BASE/$n"
+  if [ -d "$P/.git" ]; then echo "skip (exists): $n"; else
+    git clone "$GH/$n.git" "$P"
+    echo "cloned: $n -> $P"
+  fi
+done
+
+echo "Memory repos:"
 # project_abs_path | memory_repo | symlink_abs_path
 MAP="
 $BASE/StudyBuddy_OnDemand|studybuddy-memory|$BASE/_claude-memory-studybuddy
@@ -127,7 +143,7 @@ cd <hub>/project-critique          # any direct child of the hub works
 sh github_update.sh
 ```
 
-For every project repo *and* memory repo it skips anything dirty (never clobbers local work), does a `git pull --ff-only` on the clean ones, and reports per-repo status (`up-to-date` / `UPDATED <range>` / `DIRTY` / `MISSING` / `ERROR`). `closedSpace` is pulled as a memory-only entry, since it is a subdir of `dronePrjs` rather than its own clone. A `MISSING` line means that repo hasn't been cloned yet — run `github_checkout.sh` (and clone the project repo itself) first.
+For every project repo *and* memory repo it skips anything dirty (never clobbers local work), does a `git pull --ff-only` on the clean ones, and reports per-repo status (`up-to-date` / `UPDATED <range>` / `DIRTY` / `MISSING` / `ERROR`). `closedSpace` is pulled as a memory-only entry, since it is a subdir of `dronePrjs` rather than its own clone. A `MISSING` line means that repo hasn't been cloned yet — run `github_checkout.sh` first (it clones both the project code repos and the memory repos).
 
 ## The twelve repos
 
@@ -168,6 +184,6 @@ The global Stop hook needs no change — it just needs the repo + remote to exis
 
 A few things to also do when adding a project:
 
-- **Register it in both scripts.** Add the new `$BASE/<name>|<name>-memory|...` row to the `MAP` in `github_checkout.sh`, and add `<name>` to the `PROJECTS` list (and the `MEM_PATHS` block) in `github_update.sh`.
-- **Create the GitHub repo(s) before running `github_checkout.sh`.** Because of the `set -e` gotcha above, a missing `<name>-memory` remote aborts the rest of the checkout loop. The snippet here creates the memory repo locally and pushes, so it sidesteps the empty-clone problem; if you instead create an empty repo and let the script clone it, seed it with an initial commit on `main` first (an empty repo has no branch, so `pull --ff-only` errors).
-- **The scripts only manage *memory* repos**, never the project code repos. Clone the project repo itself separately: `git clone git@github.com:wegofwd2020-hub/<name>.git "$BASE/<name>"`.
+- **Register it in both scripts.** Add `<name>` to the `PROJECTS` list and the `$BASE/<name>|<name>-memory|...` row in the `MAP` in `github_checkout.sh`, and add `<name>` to the `PROJECTS` list (and the `MEM_PATHS` block) in `github_update.sh`. The project's GitHub repo name must match the local dir name `<name>`.
+- **Create the GitHub repo(s) before running `github_checkout.sh`.** Because of the `set -e` gotcha above, a missing `<name>` or `<name>-memory` remote aborts the rest of the checkout loop. The snippet here creates the memory repo locally and pushes, so it sidesteps the empty-clone problem; if you instead create an empty repo and let the script clone it, seed it with an initial commit on `main` first (an empty repo has no branch, so `pull --ff-only` errors).
+- **`github_checkout.sh` clones both the project code repo and its memory repo.** The project repo is cloned flat under the hub at `$BASE/<name>`; the memory repo into the encoded path. closedSpace is the one exception — it's a subdir of `dronePrjs`, so it has a memory repo but no project clone of its own.
