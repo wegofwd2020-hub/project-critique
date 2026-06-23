@@ -5,6 +5,22 @@ BASE="$(dirname "$PWD")"                                # hub = parent of CWD; r
 PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
+# Project code repos cloned flat under the hub ($BASE/<name>). The GitHub repo name
+# matches the local dir name for every project. closedSpace is a subdir of dronePrjs,
+# not its own repo, so it is not listed here. Keep this list in sync with PROJECTS in
+# github_update.sh.
+PROJECTS="StudyBuddy_OnDemand StudyBuddy_SelfLearner thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration dronePrjs"
+
+echo "Project repos:"
+for n in $PROJECTS; do
+  P="$BASE/$n"
+  if [ -d "$P/.git" ]; then echo "skip (exists): $n"; else
+    git clone "$GH/$n.git" "$P"
+    echo "cloned: $n -> $P"
+  fi
+done
+
+echo "Memory repos:"
 # project_abs_path | memory_repo | symlink_abs_path
 MAP="
 $BASE/StudyBuddy_OnDemand|studybuddy-memory|$BASE/_claude-memory-studybuddy
