@@ -1,0 +1,88 @@
+<mxfile host="Electron">
+  <diagram name="App-Features" id="appfeatures01">
+    <mxGraphModel dx="1000" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1480" pageHeight="1020" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 applications — feature overview (3 apps, 3 audiences) · 2026-06-23">
+          <mxGeometry height="30" width="1000" x="30" y="20" as="geometry" />
+        </mxCell>
+
+        <!-- ============ COLUMN 1: PRAMANA (blue) ============ -->
+        <mxCell id="p-head" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#6c8ebf;strokeColor=#3c5a80;fontColor=#ffffff;fontSize=12;arcSize=8;" value="&lt;b&gt;PRAMANA&lt;/b&gt;&lt;br&gt;Audit-grade compliance training &amp;amp; evidence&lt;br&gt;&lt;i&gt;Audience: compliance officers · regulated enterprises&lt;/i&gt;&lt;br&gt;Stage: backend live; content pipeline in progress">
+          <mxGeometry height="96" width="450" x="30" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;arcSize=8;" value="&lt;b&gt;Course &amp;amp; Content Management&lt;/b&gt;&lt;br&gt;• Video upload &amp;amp; playback&lt;br&gt;• Immutable course versioning&lt;br&gt;• Quiz authoring (single / true-false)&lt;br&gt;• AI-drafted, human-approved content&lt;br&gt;• Approval state machine (Draft→Published)">
+          <mxGeometry height="124" width="450" x="30" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;arcSize=8;" value="&lt;b&gt;Assignment &amp;amp; Delivery&lt;/b&gt;&lt;br&gt;• Manual &amp;amp; bulk-CSV assignment&lt;br&gt;• Assignment state machine&lt;br&gt;• Configurable cooldowns&lt;br&gt;• Multi-attempt quiz (max 2)&lt;br&gt;• Pass threshold (default 80%)">
+          <mxGeometry height="124" width="450" x="30" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;arcSize=8;" value="&lt;b&gt;Certification &amp;amp; Attestation&lt;/b&gt;&lt;br&gt;• PDF certificates&lt;br&gt;• Self-attestation (IP, timestamp)&lt;br&gt;• Public verification code&lt;br&gt;• Expiry tied to cooldown">
+          <mxGeometry height="124" width="450" x="30" y="444" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;arcSize=8;" value="&lt;b&gt;Audit &amp;amp; Evidence&lt;/b&gt;&lt;br&gt;• Append-only audit log&lt;br&gt;• Tamper-evident hash chain&lt;br&gt;• 7-year retention&lt;br&gt;• S3 Object-Lock archive&lt;br&gt;• Auditor evidence export">
+          <mxGeometry height="124" width="450" x="30" y="576" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;arcSize=8;" value="&lt;b&gt;Roles &amp;amp; Identity&lt;/b&gt;&lt;br&gt;• 5 roles (Trainee → Auditor)&lt;br&gt;• OIDC / SAML SSO&lt;br&gt;• Separation of duties&lt;br&gt;• GDPR right-to-erasure">
+          <mxGeometry height="124" width="450" x="30" y="708" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;arcSize=8;" value="&lt;b&gt;Regulatory Frameworks&lt;/b&gt;&lt;br&gt;• SOX · HIPAA · GDPR&lt;br&gt;• FCPA · ISO 27001 · PCI DSS&lt;br&gt;• Framework-native targeting &amp;amp; evidence">
+          <mxGeometry height="124" width="450" x="30" y="840" as="geometry" />
+        </mxCell>
+
+        <!-- ============ COLUMN 2: KATHAI CHITHIRAM (green) ============ -->
+        <mxCell id="k-head" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#82b366;strokeColor=#4f7a2f;fontColor=#ffffff;fontSize=12;arcSize=8;" value="&lt;b&gt;KATHAI CHITHIRAM&lt;/b&gt;&lt;br&gt;Parent's story → calm captioned animation&lt;br&gt;&lt;i&gt;Audience: parents/therapists author · special-needs children view&lt;/i&gt;&lt;br&gt;Stage: prototype (renderers + safety wired)">
+          <mxGeometry height="96" width="450" x="510" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="k1" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Generation &amp;amp; Narrative&lt;/b&gt;&lt;br&gt;• Story → scene-script → mp4&lt;br&gt;• Child-first narration (short, literal)&lt;br&gt;• Scene-script JSON contract&lt;br&gt;• Premise-aware rendering (planned)">
+          <mxGeometry height="124" width="450" x="510" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="k2" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Content Safety &amp;amp; Safeguarding&lt;/b&gt;&lt;br&gt;• Seizure-safety (flash ≤3 Hz)&lt;br&gt;• Scene-script validation gate&lt;br&gt;• Emotional-safety rules&lt;br&gt;• Mandatory human review">
+          <mxGeometry height="124" width="450" x="510" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="k3" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Privacy &amp;amp; Data Minimization&lt;/b&gt;&lt;br&gt;• Hard-delete on request&lt;br&gt;• Name pseudonymization&lt;br&gt;• 30-day auto-deletion&lt;br&gt;• Zero-retention LLM provider">
+          <mxGeometry height="124" width="450" x="510" y="444" as="geometry" />
+        </mxCell>
+        <mxCell id="k4" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Rendering Engines&lt;/b&gt;&lt;br&gt;• Matplotlib stick-figure (v1)&lt;br&gt;• Blender Grease Pencil (v2)&lt;br&gt;• Stable scene-script contract">
+          <mxGeometry height="124" width="450" x="510" y="576" as="geometry" />
+        </mxCell>
+        <mxCell id="k5" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Visual &amp;amp; Brand System&lt;/b&gt;&lt;br&gt;• Kolam-inspired logo&lt;br&gt;• Accessible palette (no red)&lt;br&gt;• Baloo bilingual type (Tamil+Latin)&lt;br&gt;• Child &amp;amp; adult icon sets">
+          <mxGeometry height="124" width="450" x="510" y="708" as="geometry" />
+        </mxCell>
+        <mxCell id="k6" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#eef7ec;strokeColor=#82b366;fontSize=11;arcSize=8;dashed=1;" value="&lt;b&gt;Roadmap (planned)&lt;/b&gt;&lt;br&gt;• Parent intake UI&lt;br&gt;• Multi-actor authoring&lt;br&gt;• First-person narration&lt;br&gt;• Progress-adaptive premises">
+          <mxGeometry height="124" width="450" x="510" y="840" as="geometry" />
+        </mxCell>
+
+        <!-- ============ COLUMN 3: STUDYBUDDY_SELFLEARNER / MENTIBLE (amber) ============ -->
+        <mxCell id="s-head" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d79b00;strokeColor=#a06800;fontColor=#ffffff;fontSize=12;arcSize=8;" value="&lt;b&gt;STUDYBUDDY_SELFLEARNER (Mentible)&lt;/b&gt;&lt;br&gt;Scoped query → publishable EPUB3 / PDF book&lt;br&gt;&lt;i&gt;Audience: adult self-learners &amp;amp; professionals (BYOK)&lt;/i&gt;&lt;br&gt;Stage: authoring + export shipped; accounts in flight">
+          <mxGeometry height="96" width="450" x="990" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;arcSize=8;" value="&lt;b&gt;Book Authoring &amp;amp; Generation&lt;/b&gt;&lt;br&gt;• 6-dimension scoped query&lt;br&gt;• Free-text TOC → structure&lt;br&gt;• Lesson / explanation / quiz gen&lt;br&gt;• Regenerate-with-reason&lt;br&gt;• Topic-tree editor">
+          <mxGeometry height="124" width="450" x="990" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;arcSize=8;" value="&lt;b&gt;Multi-Provider LLM (BYOK)&lt;/b&gt;&lt;br&gt;• Anthropic + OpenAI/Groq/OpenRouter/Gemini&lt;br&gt;• Per-request BYOK passthrough&lt;br&gt;• Managed-key vault (planned)&lt;br&gt;• Validate→repair conformance loop">
+          <mxGeometry height="124" width="450" x="990" y="312" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;arcSize=8;" value="&lt;b&gt;Artifact Compilation &amp;amp; Export&lt;/b&gt;&lt;br&gt;• EPUB3 (MathML + SVG, offline)&lt;br&gt;• Textbook-layout PDF&lt;br&gt;• Editorial covers&lt;br&gt;• Mermaid→SVG · KaTeX→MathML">
+          <mxGeometry height="124" width="450" x="990" y="444" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;arcSize=8;" value="&lt;b&gt;Templates &amp;amp; Theming&lt;/b&gt;&lt;br&gt;• Versioned BookTemplates&lt;br&gt;• Brand design tokens&lt;br&gt;• Cover motifs&lt;br&gt;• Glossary &amp;amp; front-matter">
+          <mxGeometry height="124" width="450" x="990" y="576" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;arcSize=8;" value="&lt;b&gt;Content Trust &amp;amp; Quality&lt;/b&gt;&lt;br&gt;• Content Trust Manifest&lt;br&gt;• Per-artifact Trust Badge&lt;br&gt;• Format-drift Gate 3&lt;br&gt;• Staleness hints">
+          <mxGeometry height="124" width="450" x="990" y="708" as="geometry" />
+        </mxCell>
+        <mxCell id="s6" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;arcSize=8;" value="&lt;b&gt;Mobile App &amp;amp; Backend&lt;/b&gt;&lt;br&gt;• RN + Expo (Library · Studio · Settings)&lt;br&gt;• Async job API (generate/structure/export)&lt;br&gt;• Accounts via external IdP (JWKS)&lt;br&gt;• Fly / VPS deployment">
+          <mxGeometry height="124" width="450" x="990" y="840" as="geometry" />
+        </mxCell>
+
+        <!-- Footer note -->
+        <mxCell id="foot" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" value="All three apps share the wegofwd-llm generation seam (and wegofwd-secure for key handling) — see shared_library.drawio. Dashed = planned/not-yet-built. Feature groups condensed from each repo's README/docs/ADRs.">
+          <mxGeometry height="40" width="1410" x="30" y="972" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
