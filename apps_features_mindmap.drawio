@@ -1,6 +1,6 @@
 <mxfile host="Electron">
   <diagram name="App-Feature-MindMaps" id="appmindmaps01">
-    <mxGraphModel dx="1350" dy="1226" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="2250" dy="2053" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -8,97 +8,97 @@
           <mxGeometry height="30" width="1100" x="20" y="20" as="geometry" />
         </mxCell>
         <mxCell id="l0_0_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Course versioning" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="94" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="202" as="geometry" />
         </mxCell>
         <mxCell id="l0_0_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Quiz authoring" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="124" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="232" as="geometry" />
         </mxCell>
         <mxCell id="l0_0_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• AI-drafted content" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="214" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="272" as="geometry" />
         </mxCell>
         <mxCell id="l0_0_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Human approval gate" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="244" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="302" as="geometry" />
         </mxCell>
         <mxCell id="g0_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#b0c4de;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;arcSize=20;" value="Course &amp; Content" vertex="1">
-          <mxGeometry height="36" width="150" x="190" y="172" as="geometry" />
+          <mxGeometry height="36" width="150" x="230" y="247" as="geometry" />
         </mxCell>
         <mxCell id="l0_1_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Bulk-CSV assign" vertex="1">
-          <mxGeometry height="24" width="190" x="460" y="332" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="363" as="geometry" />
         </mxCell>
         <mxCell id="l0_1_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Assignment state machine" vertex="1">
-          <mxGeometry height="24" width="190" x="460" y="362" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="393" as="geometry" />
         </mxCell>
         <mxCell id="l0_1_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Configurable cooldowns" vertex="1">
-          <mxGeometry height="24" width="190" x="460" y="392" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="423" as="geometry" />
         </mxCell>
         <mxCell id="l0_1_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Multi-attempt (max 2)" vertex="1">
-          <mxGeometry height="24" width="190" x="460" y="422" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="453" as="geometry" />
         </mxCell>
         <mxCell id="g0_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#b0c4de;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;arcSize=20;" value="Assignment &amp; Delivery" vertex="1">
-          <mxGeometry height="36" width="150" x="200" y="371" as="geometry" />
+          <mxGeometry height="36" width="150" x="240" y="416" as="geometry" />
         </mxCell>
         <mxCell id="l0_2_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• PDF certificates" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="489" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="523" as="geometry" />
         </mxCell>
         <mxCell id="l0_2_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Self-attestation" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="519" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="553" as="geometry" />
         </mxCell>
         <mxCell id="l0_2_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Public verification" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="549" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="583" as="geometry" />
         </mxCell>
         <mxCell id="l0_2_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Expiry" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="579" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="613" as="geometry" />
         </mxCell>
         <mxCell id="g0_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#b0c4de;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;arcSize=20;" value="Certification" vertex="1">
-          <mxGeometry height="36" width="150" x="190" y="531" as="geometry" />
+          <mxGeometry height="36" width="150" x="230" y="551" as="geometry" />
         </mxCell>
         <mxCell id="l0_3_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Append-only log" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="660" as="geometry" />
+          <mxGeometry height="24" width="190" x="470" y="764" as="geometry" />
         </mxCell>
         <mxCell id="l0_3_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Tamper-evident hash chain" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="695" as="geometry" />
+          <mxGeometry height="24" width="190" x="470" y="799" as="geometry" />
         </mxCell>
         <mxCell id="l0_3_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• 7-year retention" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="720" as="geometry" />
+          <mxGeometry height="24" width="190" x="470" y="824" as="geometry" />
         </mxCell>
         <mxCell id="l0_3_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Auditor export" vertex="1">
-          <mxGeometry height="24" width="190" x="440" y="750" as="geometry" />
+          <mxGeometry height="24" width="190" x="470" y="854" as="geometry" />
         </mxCell>
         <mxCell id="g0_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#b0c4de;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;arcSize=20;" value="Audit &amp; Evidence" vertex="1">
-          <mxGeometry height="36" width="150" x="200" y="679" as="geometry" />
+          <mxGeometry height="36" width="150" x="230" y="783" as="geometry" />
         </mxCell>
         <mxCell id="l0_4_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• 5 roles" vertex="1">
-          <mxGeometry height="24" width="190" x="430" y="814" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="915" as="geometry" />
         </mxCell>
         <mxCell id="l0_4_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• OIDC / SAML SSO" vertex="1">
-          <mxGeometry height="24" width="190" x="430" y="844" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="945" as="geometry" />
         </mxCell>
         <mxCell id="l0_4_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• Separation of duties" vertex="1">
-          <mxGeometry height="24" width="190" x="430" y="874" as="geometry" />
+          <mxGeometry height="24" width="190" x="480" y="975" as="geometry" />
         </mxCell>
         <mxCell id="l0_4_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• GDPR erasure" vertex="1">
-          <mxGeometry height="24" width="190" x="430" y="904" as="geometry" />
+          <mxGeometry height="24" width="190" x="475" y="1005" as="geometry" />
         </mxCell>
         <mxCell id="g0_4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#b0c4de;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;arcSize=20;" value="Roles &amp; Identity" vertex="1">
-          <mxGeometry height="36" width="150" x="200" y="868" as="geometry" />
+          <mxGeometry height="36" width="150" x="230" y="948" as="geometry" />
         </mxCell>
         <mxCell id="l0_5_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• SOX / HIPAA" vertex="1">
-          <mxGeometry height="24" width="190" x="430" y="981" as="geometry" />
+          <mxGeometry height="24" width="190" x="460" y="1078" as="geometry" />
         </mxCell>
         <mxCell id="l0_5_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• GDPR / FCPA" vertex="1">
-          <mxGeometry height="24" width="190" x="430" y="1011" as="geometry" />
+          <mxGeometry height="24" width="190" x="460" y="1108" as="geometry" />
         </mxCell>
         <mxCell id="l0_5_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• ISO 27001" vertex="1">
-          <mxGeometry height="24" width="190" x="430" y="1041" as="geometry" />
+          <mxGeometry height="24" width="190" x="460" y="1138" as="geometry" />
         </mxCell>
         <mxCell id="l0_5_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="• PCI DSS" vertex="1">
-          <mxGeometry height="24" width="190" x="430" y="1071" as="geometry" />
+          <mxGeometry height="24" width="190" x="460" y="1168" as="geometry" />
         </mxCell>
         <mxCell id="g0_5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#b0c4de;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;arcSize=20;" value="Frameworks" vertex="1">
-          <mxGeometry height="36" width="150" x="190" y="1024" as="geometry" />
+          <mxGeometry height="36" width="150" x="230" y="1087" as="geometry" />
         </mxCell>
         <mxCell id="root0" parent="1" style="ellipse;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#6c8ebf;strokeColor=#3c5a80;fontColor=#ffffff;fontSize=13;fontStyle=1;" value="&lt;b&gt;PRAMANA&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;compliance training&lt;/font&gt;" vertex="1">
-          <mxGeometry height="129" width="120" x="10" y="521" as="geometry" />
+          <mxGeometry height="129" width="120" y="686" as="geometry" />
         </mxCell>
         <mxCell id="e0_0" edge="1" parent="1" source="root0" style="edgeStyle=entityRelationEdgeStyle;curved=1;startArrow=none;endArrow=none;rounded=0;strokeColor=#6c8ebf;strokeWidth=1.5;" target="g0_0">
           <mxGeometry relative="1" as="geometry" />
@@ -236,16 +236,16 @@
           <mxGeometry height="36" width="150" x="940" y="523" as="geometry" />
         </mxCell>
         <mxCell id="l1_3_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;arcSize=20;" value="• Matplotlib stick-figure (v1)" vertex="1">
-          <mxGeometry height="24" width="190" x="1290" y="596" as="geometry" />
-        </mxCell>
-        <mxCell id="l1_3_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;arcSize=20;" value="• Blender Grease Pencil (v2)" vertex="1">
           <mxGeometry height="24" width="190" x="1290" y="625" as="geometry" />
         </mxCell>
+        <mxCell id="l1_3_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;arcSize=20;" value="• Blender Grease Pencil (v2)" vertex="1">
+          <mxGeometry height="24" width="190" x="1290" y="654" as="geometry" />
+        </mxCell>
         <mxCell id="l1_3_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;arcSize=20;" value="• Stable scene-script contract" vertex="1">
-          <mxGeometry height="24" width="190" x="1290" y="655" as="geometry" />
+          <mxGeometry height="24" width="190" x="1290" y="684" as="geometry" />
         </mxCell>
         <mxCell id="g1_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#b9d7a8;strokeColor=#82b366;fontSize=11;fontStyle=1;arcSize=20;" value="Rendering Engines" vertex="1">
-          <mxGeometry height="36" width="150" x="940" y="650" as="geometry" />
+          <mxGeometry height="36" width="150" x="950" y="650" as="geometry" />
         </mxCell>
         <mxCell id="l1_4_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;arcSize=20;" value="• Kolam-inspired logo" vertex="1">
           <mxGeometry height="24" width="190" x="1290" y="825" as="geometry" />
@@ -278,7 +278,7 @@
           <mxGeometry height="36" width="150" x="960" y="984" as="geometry" />
         </mxCell>
         <mxCell id="root1" parent="1" style="ellipse;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#82b366;strokeColor=#4f7a2f;fontColor=#ffffff;fontSize=13;fontStyle=1;" value="&lt;b&gt;KATHAI CHITHIRAM&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;stories to animation&lt;/font&gt;" vertex="1">
-          <mxGeometry height="105" width="120" x="670" y="543" as="geometry" />
+          <mxGeometry height="105" width="120" x="690" y="610" as="geometry" />
         </mxCell>
         <mxCell id="e1_0" edge="1" parent="1" source="root1" style="edgeStyle=entityRelationEdgeStyle;curved=1;startArrow=none;endArrow=none;rounded=0;strokeColor=#82b366;strokeWidth=1.5;" target="g1_0">
           <mxGeometry relative="1" as="geometry" />
@@ -368,97 +368,97 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="l2_0_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• 6-dimension scoped query" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="94" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="453" as="geometry" />
         </mxCell>
         <mxCell id="l2_0_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• TOC to structure" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="124" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="483" as="geometry" />
         </mxCell>
         <mxCell id="l2_0_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Lesson / quiz generation" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="154" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="513" as="geometry" />
         </mxCell>
         <mxCell id="l2_0_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Topic-tree editor" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="184" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="543" as="geometry" />
         </mxCell>
         <mxCell id="g2_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="Book Authoring" vertex="1">
-          <mxGeometry height="36" width="150" x="1730" y="193" as="geometry" />
+          <mxGeometry height="36" width="150" x="1760" y="552" as="geometry" />
         </mxCell>
         <mxCell id="l2_1_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Anthropic + OAI / Groq / etc." vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="242" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="601" as="geometry" />
         </mxCell>
         <mxCell id="l2_1_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Per-request BYOK passthrough" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="272" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="631" as="geometry" />
         </mxCell>
         <mxCell id="l2_1_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Managed-key vault (planned)" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="302" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="661" as="geometry" />
         </mxCell>
         <mxCell id="l2_1_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Validate to repair loop" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="332" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="691" as="geometry" />
         </mxCell>
         <mxCell id="g2_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="Multi-Provider LLM (BYOK)" vertex="1">
-          <mxGeometry height="36" width="150" x="1730" y="371" as="geometry" />
+          <mxGeometry height="36" width="150" x="1760" y="730" as="geometry" />
         </mxCell>
         <mxCell id="l2_2_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• EPUB3 (offline)" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="399" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="758" as="geometry" />
         </mxCell>
         <mxCell id="l2_2_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Textbook-layout PDF" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="429" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="788" as="geometry" />
         </mxCell>
         <mxCell id="l2_2_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Editorial covers" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="459" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="818" as="geometry" />
         </mxCell>
         <mxCell id="l2_2_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Mermaid / KaTeX prerender" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="489" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="848" as="geometry" />
         </mxCell>
         <mxCell id="g2_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="Compile &amp; Export" vertex="1">
-          <mxGeometry height="36" width="150" x="1730" y="513" as="geometry" />
+          <mxGeometry height="36" width="150" x="1760" y="872" as="geometry" />
         </mxCell>
         <mxCell id="l2_3_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Versioned BookTemplates" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="615" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="974" as="geometry" />
         </mxCell>
         <mxCell id="l2_3_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Brand design tokens" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="645" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1004" as="geometry" />
         </mxCell>
         <mxCell id="l2_3_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Cover motifs" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="675" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1034" as="geometry" />
         </mxCell>
         <mxCell id="l2_3_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Glossary / front-matter" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="705" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1064" as="geometry" />
         </mxCell>
         <mxCell id="g2_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="Templates &amp; Theming" vertex="1">
-          <mxGeometry height="36" width="150" x="1730" y="655" as="geometry" />
+          <mxGeometry height="36" width="150" x="1760" y="1014" as="geometry" />
         </mxCell>
         <mxCell id="l2_4_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Content Trust Manifest" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="780" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1139" as="geometry" />
         </mxCell>
         <mxCell id="l2_4_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Per-artifact Trust Badge" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="810" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1169" as="geometry" />
         </mxCell>
         <mxCell id="l2_4_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Format-drift Gate 3" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="840" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1199" as="geometry" />
         </mxCell>
         <mxCell id="l2_4_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Staleness hints" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="870" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1229" as="geometry" />
         </mxCell>
         <mxCell id="g2_4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="Content Trust" vertex="1">
-          <mxGeometry height="36" width="150" x="1730" y="797" as="geometry" />
+          <mxGeometry height="36" width="150" x="1760" y="1156" as="geometry" />
         </mxCell>
         <mxCell id="l2_5_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• RN + Expo app" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="945" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1304" as="geometry" />
         </mxCell>
         <mxCell id="l2_5_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Async job API" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="975" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1334" as="geometry" />
         </mxCell>
         <mxCell id="l2_5_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• IdP / JWKS auth" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="1005" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1364" as="geometry" />
         </mxCell>
         <mxCell id="l2_5_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="• Fly / VPS deploy" vertex="1">
-          <mxGeometry height="24" width="190" x="2000" y="1035" as="geometry" />
+          <mxGeometry height="24" width="190" x="2030" y="1394" as="geometry" />
         </mxCell>
         <mxCell id="g2_5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="App &amp; Backend" vertex="1">
-          <mxGeometry height="36" width="150" x="1730" y="939" as="geometry" />
+          <mxGeometry height="36" width="150" x="1760" y="1298" as="geometry" />
         </mxCell>
         <mxCell id="root2" parent="1" style="ellipse;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#d79b00;strokeColor=#a06800;fontColor=#ffffff;fontSize=13;fontStyle=1;" value="&lt;b&gt;SELFLEARNER / Mentible&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;query to EPUB/PDF book&lt;/font&gt;" vertex="1">
-          <mxGeometry height="130" width="120" x="1520" y="560" as="geometry" />
+          <mxGeometry height="130" width="120" x="1550" y="919" as="geometry" />
         </mxCell>
         <mxCell id="e2_0" edge="1" parent="1" source="root2" style="edgeStyle=entityRelationEdgeStyle;curved=1;startArrow=none;endArrow=none;rounded=0;strokeColor=#d79b00;strokeWidth=1.5;" target="g2_0">
           <mxGeometry relative="1" as="geometry" />
