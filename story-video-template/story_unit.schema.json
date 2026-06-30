@@ -1,0 +1,369 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wegofwd2020.dev/schemas/story_unit-1.0.json",
+  "title": "StoryUnit",
+  "description": "Shared contract for the Story -> Video -> Post-Activities content unit, consumed by kathai-chithiram and pramana. The three stages (story, video, activities) are generated/rendered independently and each carries its own provenance and governance. Apps MAY persist this verbatim (kathai: story_unit.json on disk; pramana: ContentDraft.body JSONB) or project it onto native models.",
+  "type": "object",
+  "required": ["contract_version", "unit_id", "app", "story", "video", "activities", "provenance", "governance"],
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "description": "Bump on any breaking change to this schema. Independent of the LLM/video integration versions in provenance.",
+      "const": "1.0"
+    },
+    "unit_id": { "type": "string", "description": "Stable id for the unit (UUID). kathai story_id / pramana ContentDraft.id map here." },
+    "app": { "type": "string", "enum": ["kathai-chithiram", "pramana"], "description": "Owning application. Open enum -- add portfolio apps as they adopt." },
+    "title": { "type": "string" },
+    "locale": { "type": "string", "description": "BCP-47, e.g. en-US, ta-IN." },
+    "audience": { "type": "string", "description": "Free-text audience note, e.g. 'special-needs child, age 4-8' or 'corporate employee, SOX in-scope'." },
+
+    "story": {
+      "type": "object",
+      "description": "Stage 1: the source narrative + the structured scene breakdown that bridges into the video brief.",
+      "required": ["source", "scenes"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "type": "string", "enum": ["free-text", "reference"] },
+            "text": { "type": "string", "description": "Present when kind=free-text. May be a pseudonymized placeholder (see privacy)." },
+            "ref": { "type": "string", "description": "Present when kind=reference, e.g. a clause path 'docs/frameworks/framework_sox.md#section-404'." },
+            "sensitivity": { "type": "string", "enum": ["public", "internal", "high"], "default": "internal", "description": "kathai source story is HIGH (parent-authored, about a child)." }
+          }
+        },
+        "scenes": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Ordered beats. This is the SHARED bridge: each scene becomes one shot in video.brief.shots and (optionally) one comprehension target in an activity.",
+          "items": {
+            "type": "object",
+            "required": ["index", "duration_s", "narration"],
+            "additionalProperties": false,
+            "properties": {
+              "index": { "type": "integer", "minimum": 0 },
+              "duration_s": { "type": "number", "minimum": 1, "maximum": 60, "description": "Predictable pacing. kathai constrains to 2-8s/scene." },
+              "narration": { "type": "string", "description": "Plain-language, present tense. kathai: <=140 chars." },
+              "caption": { "type": "string", "description": "Accessibility caption; MUST match narration when present." },
+              "setting": { "type": "string" },
+              "characters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": { "type": "string", "description": "Stable character id; ties to a video.brief.ingredients entry for cross-scene identity consistency." },
+                    "pose": { "type": "string" },
+                    "expression": { "type": "string" }
+                  }
+                }
+              },
+              "props": { "type": "array", "items": { "type": "string" } },
+              "mood": { "type": "string" }
+            }
+          }
+        },
+        "citations": {
+          "type": "array",
+          "description": "Grounding sources (pramana: every quiz/lesson clause). Empty for kathai.",
+          "items": {
+            "type": "object",
+            "required": ["framework", "clause", "ref"],
+            "additionalProperties": false,
+            "properties": {
+              "framework": { "type": "string" },
+              "clause": { "type": "string" },
+              "ref": { "type": "string" }
+            }
+          }
+        },
+        "safety": {
+          "type": "object",
+          "description": "Content-safety envelope. kathai enforces these before render.",
+          "additionalProperties": true,
+          "properties": {
+            "max_flash_hz": { "type": "number", "description": "Photosensitivity ceiling, e.g. 3." },
+            "max_scene_cuts_per_min": { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "video": {
+      "type": "object",
+      "description": "Stage 2: the generated/rendered video. provider is pluggable -- 'veo' for AI generation, 'deterministic-renderer' for kathai's matplotlib/blender safety path.",
+      "required": ["provider", "spec", "output"],
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "object",
+          "required": ["id"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "type": "string", "enum": ["veo", "deterministic-renderer", "runway", "kling"], "description": "Resolved via the wegofwd-video registry (see wegofwd_video.py). 'veo' is the default verified AI generator." },
+            "byok": { "type": "boolean", "default": true, "description": "Bring-your-own-key, matching the wegofwd-llm registry policy." }
+          }
+        },
+        "spec": {
+          "type": "object",
+          "description": "Generation parameters. One place to pin model + seed so re-runs are reproducible.",
+          "required": ["model"],
+          "additionalProperties": false,
+          "properties": {
+            "model": { "type": "string", "description": "e.g. 'veo-3.1'. Never hardcoded in app code -- resolved from the registry." },
+            "resolution": { "type": "string", "enum": ["720p", "1080p", "4k"], "default": "1080p" },
+            "aspect_ratio": { "type": "string", "enum": ["16:9", "9:16", "1:1"], "default": "16:9" },
+            "fps": { "type": "integer", "default": 24 },
+            "target_duration_s": { "type": "number" },
+            "seed": { "type": "integer", "description": "Pin for reproducibility. Required once a unit is APPROVED so re-renders stay on-model." },
+            "audio": { "type": "boolean", "default": true, "description": "Native synced audio (Veo 3.1). kathai uses gentle narration + low SFX." }
+          }
+        },
+        "brief": {
+          "$ref": "#/$defs/videoBrief"
+        },
+        "output": {
+          "type": "object",
+          "description": "The produced asset + tamper-evidence. asset_ref is a storage-agnostic pointer (pramana: S3 key on CourseVersion.video_asset_id; kathai: media/<file> on disk).",
+          "required": ["asset_ref"],
+          "additionalProperties": false,
+          "properties": {
+            "asset_ref": { "type": "string" },
+            "storage": { "type": "string", "enum": ["s3", "filesystem", "gcs"], "default": "s3" },
+            "duration_s": { "type": "number" },
+            "resolution": { "type": "string" },
+            "has_audio": { "type": "boolean" },
+            "c2pa_signed": { "type": "boolean", "description": "AI-generated provenance signature (Veo emits Google C2PA + SynthID)." },
+            "watermark": { "type": "string", "description": "e.g. 'SynthID'." }
+          }
+        },
+        "review": {
+          "type": "object",
+          "description": "Per-stage human gate. kathai REQUIRES this until automated safety is proven.",
+          "additionalProperties": false,
+          "properties": {
+            "human_required": { "type": "boolean", "default": true },
+            "status": { "type": "string", "enum": ["pending", "approved", "rejected"], "default": "pending" },
+            "reviewed_by": { "type": "string" },
+            "reviewed_at": { "type": "string", "format": "date-time" }
+          }
+        }
+      }
+    },
+
+    "activities": {
+      "type": "array",
+      "description": "Stage 3: ordered post-video activities. Polymorphic on `type`. pramana uses scored `quiz`; kathai uses `feedback-checkin` (engagement primitives, unscored).",
+      "items": { "$ref": "#/$defs/activity" }
+    },
+
+    "provenance": {
+      "type": "array",
+      "description": "One record per generated stage. Mirrors wegofwd_llm.provenance() so generation can be audited and stale content detected/regenerated.",
+      "items": {
+        "type": "object",
+        "required": ["stage", "engine", "contract_version"],
+        "additionalProperties": false,
+        "properties": {
+          "stage": { "type": "string", "enum": ["story", "video", "activities"] },
+          "engine": { "type": "string", "description": "'wegofwd-llm' | 'wegofwd-video' | 'deterministic-renderer'." },
+          "provider": { "type": "string" },
+          "model": { "type": "string" },
+          "model_verified": { "type": "boolean" },
+          "integration_version": { "type": "integer" },
+          "contract_version": { "type": ["integer", "string"] },
+          "prompt_version": { "type": "string" },
+          "seed": { "type": "integer" },
+          "generated_at": { "type": "string", "format": "date-time" },
+          "generated_by": { "type": "string" }
+        }
+      }
+    },
+
+    "governance": {
+      "type": "object",
+      "description": "Lifecycle. pramana: approval state machine; kathai: human-review gate. Both forbid self-approval of one's own generation.",
+      "required": ["workflow", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "workflow": { "type": "string", "enum": ["approval-state-machine", "human-review-gate"] },
+        "status": { "type": "string", "enum": ["DRAFT", "IN_REVIEW", "APPROVED", "PUBLISHED", "RETIRED"], "description": "kathai uses the DRAFT/IN_REVIEW/APPROVED subset; pramana uses the full machine + PUBLISHED snapshot immutability." },
+        "approvals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "actor": { "type": "string" },
+              "from": { "type": "string" },
+              "to": { "type": "string" },
+              "at": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      }
+    },
+
+    "privacy": {
+      "type": "object",
+      "description": "Required where source sensitivity is HIGH (kathai). Enforces pseudonymization + provider data guarantees BEFORE any external dispatch.",
+      "additionalProperties": false,
+      "properties": {
+        "pseudonymization": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "tokens": { "type": "object", "description": "token -> real value held ONLY at render time, never persisted in the unit. e.g. {\"CHILD\": \"<runtime>\"}.", "additionalProperties": { "type": "string" } }
+          }
+        },
+        "provider_guarantees": {
+          "type": "object",
+          "description": "Hard preconditions: dispatch is refused unless both hold.",
+          "additionalProperties": false,
+          "properties": {
+            "no_training": { "type": "boolean" },
+            "zero_retention": { "type": "boolean" }
+          }
+        },
+        "residual_identifier_check": { "type": "boolean", "description": "Hard-stop scan for leaked identifiers before dispatch." }
+      }
+    }
+  },
+
+  "$defs": {
+    "videoBrief": {
+      "type": "object",
+      "description": "The structured Veo-3.1 prompt (see veo_video_brief.template.md). Built FROM story.scenes. global_* fields hold continuity; per-shot fields hold the beat. ingredients lock identity across shots.",
+      "required": ["global_style", "shots"],
+      "additionalProperties": false,
+      "properties": {
+        "global_style": { "type": "string", "description": "Look/mood applied to every shot, e.g. 'warm 2D storybook, soft flat color, calm'." },
+        "global_negative": { "type": "string", "description": "What to avoid in every shot, e.g. 'no flashing, no text artifacts, no fast cuts, no scary imagery'." },
+        "audio_direction": { "type": "string", "description": "Global audio intent, e.g. 'gentle female narrator, slow pace, soft ambient room tone, no music'." },
+        "ingredients": {
+          "type": "array",
+          "maxItems": 4,
+          "description": "Up to 4 reference images for identity/setting consistency (Veo 3.1 Ingredients-to-Video). Each ties to a story character id or a fixed setting.",
+          "items": {
+            "type": "object",
+            "required": ["role"],
+            "additionalProperties": false,
+            "properties": {
+              "role": { "type": "string", "description": "What this reference pins: a character id, 'setting', or 'style'." },
+              "ref": { "type": "string", "description": "Asset pointer to the reference image." },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "shots": {
+          "type": "array",
+          "minItems": 1,
+          "description": "One shot per story scene (scene_index links them). Order = scene order.",
+          "items": {
+            "type": "object",
+            "required": ["scene_index", "prompt"],
+            "additionalProperties": false,
+            "properties": {
+              "scene_index": { "type": "integer", "description": "FK to story.scenes[].index." },
+              "prompt": { "type": "string", "description": "Subject + action + setting, assembled from the scene." },
+              "shot_type": { "type": "string", "description": "e.g. 'medium', 'wide establishing', 'close-up'." },
+              "camera_move": { "type": "string", "description": "e.g. 'slow push-in', 'static', 'gentle pan left'." },
+              "lighting": { "type": "string" },
+              "dialogue": { "type": "string", "description": "Spoken line (drives native audio). Usually = scene.narration." },
+              "sfx": { "type": "array", "items": { "type": "string" } },
+              "duration_s": { "type": "number" },
+              "negative": { "type": "string", "description": "Per-shot overrides on top of global_negative." }
+            }
+          }
+        }
+      }
+    },
+
+    "activity": {
+      "type": "object",
+      "required": ["id", "type", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["quiz", "comprehension-check", "reflection", "feedback-checkin", "discussion"] },
+        "title": { "type": "string" },
+        "instructions": { "type": "string" },
+        "goal_id": { "type": "string", "description": "Ties the activity to a learning/therapy goal (kathai M1 primitive)." },
+        "order": { "type": "integer" },
+        "scoring": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "scored": { "type": "boolean", "default": false },
+            "pass_threshold_pct": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "weight": { "type": "number" }
+          }
+        },
+        "gating": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "gates": { "type": ["string", "null"], "enum": ["certificate", "next-unit", null] },
+            "cooldown_s": { "type": "integer", "description": "pramana per-course retry cooldown." }
+          }
+        },
+        "payload": {
+          "description": "Type-specific body. Validators select the matching shape by `type`.",
+          "oneOf": [
+            {
+              "title": "quiz/comprehension payload",
+              "type": "object",
+              "required": ["questions"],
+              "additionalProperties": false,
+              "properties": {
+                "questions": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": ["prompt", "options", "answer_index"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "prompt": { "type": "string" },
+                      "options": { "type": "array", "minItems": 2, "items": { "type": "string" } },
+                      "answer_index": { "type": "integer", "minimum": 0 },
+                      "citation": { "type": "string", "description": "Grounding clause (pramana: required)." },
+                      "explanation": { "type": "string" },
+                      "scene_index": { "type": "integer", "description": "Optional link to the story scene this checks." }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "title": "feedback-checkin payload",
+              "type": "object",
+              "required": ["primitives"],
+              "additionalProperties": false,
+              "properties": {
+                "primitives": {
+                  "type": "array",
+                  "description": "kathai M1 quantifiable feedback. Captured per child, minimized, keyed to goal_id.",
+                  "items": { "type": "string", "enum": ["prompt_level", "mood_checkin", "completed"] }
+                }
+              }
+            },
+            {
+              "title": "reflection/discussion payload",
+              "type": "object",
+              "required": ["prompts"],
+              "additionalProperties": false,
+              "properties": {
+                "prompts": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
