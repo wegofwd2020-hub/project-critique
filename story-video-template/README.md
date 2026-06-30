@@ -14,7 +14,7 @@ library**. It is a **contract** each app implements against:
 |------|------------|
 | `story_unit.schema.json` | The data contract (JSON Schema 2020-12) for one unit: `story` + `video` + `activities` + `provenance` + `governance` + `privacy`. |
 | `veo_video_brief.template.md` | The Veo 3.1 prompt template — turns `story.scenes` into a consistent, reproducible video brief. |
-| `wegofwd_video.py` | Reference provider registry — mirrors `wegofwd-llm`'s registry so model ids live in one place, BYOK, with provenance. The natural **third shared library** (alongside `wegofwd-llm` + `wegofwd-secure`). |
+| `wegofwd_video.py` | **Pointer only** — the provider registry it sketched is now the real [`wegofwd-video`](../../wegofwd-video) library ([ADR-026](../../StudyBuddy_SelfLearner/docs/adr/ADR-026-shared-video-generation-library.md)), the third member of the `wegofwd-*` family (alongside `wegofwd-llm` + `wegofwd-secure`). |
 | `example.kathai.json` / `example.pramana.json` | Worked units proving the one contract fits both apps. |
 
 ## The pipeline
@@ -69,7 +69,7 @@ and can anchor one comprehension item in an activity (`scene_index`).
 
 ## Status / open items
 
-- `wegofwd_video.py` is a **reference sketch** — no vendor SDK wiring yet. Promote to a real `wegofwd-video` lib if/when both apps commit.
+- `wegofwd_video.py` has been **promoted** to the standalone [`wegofwd-video`](../../wegofwd-video) package (ADR-026); the file here is now just a pointer. Change the package, not this sketch, to avoid cross-repo drift.
 - **Veo 3.1**: base_url/model/capabilities verified against Google docs 2026-06-30; `model_verified=True` follows the LLM-registry convention (docs-verified) but it is **not yet live-tested** from our stack. Flip to live-tested after a first real generation.
 - `runway` / `kling` specs are **UNVERIFIED** placeholders, mirroring the LLM registry's honesty convention.
 - Validate examples with `jsonschema` once a venv is available (`pip install jsonschema`; both examples are well-formed JSON and structured to the schema).
