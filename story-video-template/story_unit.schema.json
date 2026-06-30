@@ -103,7 +103,7 @@
           "required": ["id"],
           "additionalProperties": false,
           "properties": {
-            "id": { "type": "string", "enum": ["veo", "deterministic-renderer", "runway", "kling"], "description": "Resolved via the wegofwd-video registry (see wegofwd_video.py). 'veo' is the default verified AI generator." },
+            "id": { "type": "string", "enum": ["veo", "deterministic-renderer", "runway", "kling"], "description": "Resolved via the wegofwd-video package registry (wegofwd_video/registry.py). 'veo' is the default verified AI generator." },
             "byok": { "type": "boolean", "default": true, "description": "Bring-your-own-key, matching the wegofwd-llm registry policy." }
           }
         },

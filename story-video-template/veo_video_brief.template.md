@@ -93,5 +93,6 @@ INGREDIENT[character:approver] ref=approver.png "office manager at a desk, busin
 `video.provider.id = "veo"` is the default verified generator. kathai may set
 `"deterministic-renderer"` to keep its matplotlib/blender safety path while
 reusing this same brief structure as the renderer's scene instructions. The
-provider is resolved from the registry in `wegofwd_video.py` — app code never
-hardcodes a model string, exactly as `wegofwd-llm` does for text.
+provider is resolved from the registry in the [`wegofwd-video`](../../wegofwd-video)
+package (`wegofwd_video/registry.py`) — app code never hardcodes a model string,
+exactly as `wegofwd-llm` does for text.
