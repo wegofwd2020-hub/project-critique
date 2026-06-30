@@ -1,0 +1,64 @@
+{
+  "contract_version": "1.0",
+  "unit_id": "8f3a-kathai-brushing-teeth",
+  "app": "kathai-chithiram",
+  "title": "Brushing My Teeth",
+  "locale": "en-US",
+  "audience": "special-needs child, age 4-8 (social story)",
+  "story": {
+    "source": { "kind": "free-text", "text": "CHILD walks to the sink, picks up the toothbrush, and brushes gently.", "sensitivity": "high" },
+    "scenes": [
+      { "index": 1, "duration_s": 4, "narration": "CHILD walks to the sink.", "caption": "CHILD walks to the sink.", "setting": "bathroom", "characters": [{ "id": "child", "pose": "standing", "expression": "calm" }], "props": ["sink"], "mood": "calm" },
+      { "index": 2, "duration_s": 4, "narration": "CHILD picks up the toothbrush.", "caption": "CHILD picks up the toothbrush.", "setting": "bathroom", "characters": [{ "id": "child", "pose": "reaching", "expression": "calm" }], "props": ["toothbrush"], "mood": "calm" },
+      { "index": 3, "duration_s": 5, "narration": "CHILD brushes, up and down.", "caption": "CHILD brushes, up and down.", "setting": "bathroom", "characters": [{ "id": "child", "pose": "brushing", "expression": "happy" }], "props": ["toothbrush"], "mood": "happy" }
+    ],
+    "citations": [],
+    "safety": { "max_flash_hz": 3, "max_scene_cuts_per_min": 20 }
+  },
+  "video": {
+    "provider": { "id": "deterministic-renderer", "byok": false },
+    "spec": { "model": "blender-grease-pencil-v2", "resolution": "1080p", "aspect_ratio": "16:9", "fps": 24, "target_duration_s": 13, "seed": 4412, "audio": true },
+    "brief": {
+      "global_style": "warm 2D storybook, soft flat color, rounded shapes, calm",
+      "global_negative": "no flashing, no fast cuts, no on-screen text, no scary imagery, no photorealism",
+      "audio_direction": "gentle female narrator, slow pace, soft room tone, no music",
+      "ingredients": [
+        { "role": "character:child", "ref": "media/refs/child.png", "description": "child ~6yo, blue shirt, short hair, calm smile" },
+        { "role": "setting", "ref": "media/refs/bathroom.png", "description": "bright tidy bathroom, white tiles" }
+      ],
+      "shots": [
+        { "scene_index": 1, "prompt": "child walks into the bathroom and looks at the sink", "shot_type": "medium", "camera_move": "static", "lighting": "soft morning light", "dialogue": "CHILD walks to the sink.", "duration_s": 4 },
+        { "scene_index": 2, "prompt": "child picks up the toothbrush, calm", "shot_type": "close-up", "camera_move": "slow push-in", "lighting": "soft morning light", "dialogue": "CHILD picks up the toothbrush.", "sfx": ["light tap"], "duration_s": 4 },
+        { "scene_index": 3, "prompt": "child brushes teeth gently, smiling", "shot_type": "medium", "camera_move": "static", "lighting": "soft morning light", "dialogue": "CHILD brushes, up and down.", "duration_s": 5 }
+      ]
+    },
+    "output": { "asset_ref": "media/brushing_teeth.mp4", "storage": "filesystem", "duration_s": 13, "resolution": "1080p", "has_audio": true, "c2pa_signed": false },
+    "review": { "human_required": true, "status": "approved", "reviewed_by": "therapist:rk", "reviewed_at": "2026-06-30T10:00:00Z" }
+  },
+  "activities": [
+    {
+      "id": "act-checkin-1",
+      "type": "feedback-checkin",
+      "title": "How did it go?",
+      "instructions": "Caregiver records the child's engagement after watching.",
+      "goal_id": "goal:independent-brushing",
+      "order": 1,
+      "scoring": { "scored": false },
+      "payload": { "primitives": ["prompt_level", "mood_checkin", "completed"] }
+    }
+  ],
+  "provenance": [
+    { "stage": "story", "engine": "wegofwd-llm", "provider": "anthropic", "model": "claude-sonnet-4-6", "model_verified": true, "integration_version": 1, "contract_version": 1, "prompt_version": "social-story-v3", "generated_at": "2026-06-30T09:30:00Z", "generated_by": "system" },
+    { "stage": "video", "engine": "deterministic-renderer", "provider": "deterministic-renderer", "model": "blender-grease-pencil-v2", "model_verified": true, "integration_version": 1, "contract_version": 1, "seed": 4412, "generated_at": "2026-06-30T09:45:00Z", "generated_by": "system" }
+  ],
+  "governance": {
+    "workflow": "human-review-gate",
+    "status": "APPROVED",
+    "approvals": [{ "actor": "therapist:rk", "from": "IN_REVIEW", "to": "APPROVED", "at": "2026-06-30T10:00:00Z" }]
+  },
+  "privacy": {
+    "pseudonymization": { "enabled": true, "tokens": { "CHILD": "<runtime>" } },
+    "provider_guarantees": { "no_training": true, "zero_retention": true },
+    "residual_identifier_check": true
+  }
+}

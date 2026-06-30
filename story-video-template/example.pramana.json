@@ -1,0 +1,68 @@
+{
+  "contract_version": "1.0",
+  "unit_id": "c91d-pramana-sox-expense-approval",
+  "app": "pramana",
+  "title": "Expense Approval & Segregation of Duties (SOX 404)",
+  "locale": "en-US",
+  "audience": "corporate employee, SOX in-scope",
+  "story": {
+    "source": { "kind": "reference", "ref": "docs/frameworks/framework_sox.md#section-404", "sensitivity": "internal" },
+    "scenes": [
+      { "index": 1, "duration_s": 6, "narration": "Every expense over the limit needs a second approver.", "setting": "office", "characters": [{ "id": "approver", "pose": "seated", "expression": "neutral" }], "props": ["monitor", "expense report"], "mood": "professional" },
+      { "index": 2, "duration_s": 6, "narration": "The person who submits cannot be the person who approves.", "setting": "office", "characters": [{ "id": "approver" }], "props": [], "mood": "professional" }
+    ],
+    "citations": [
+      { "framework": "sox", "clause": "404", "ref": "docs/frameworks/framework_sox.md#section-404" }
+    ],
+    "safety": {}
+  },
+  "video": {
+    "provider": { "id": "veo", "byok": true },
+    "spec": { "model": "veo-3.1", "resolution": "1080p", "aspect_ratio": "16:9", "fps": 24, "target_duration_s": 12, "seed": 9071, "audio": true },
+    "brief": {
+      "global_style": "clean corporate explainer, flat illustration, neutral palette",
+      "global_negative": "no on-screen text artifacts, no logos, no real faces",
+      "audio_direction": "clear neutral narrator, professional, light ambient office tone",
+      "ingredients": [
+        { "role": "character:approver", "ref": "s3://pramana-video-dev/refs/approver.png", "description": "office manager at a desk, business casual" }
+      ],
+      "shots": [
+        { "scene_index": 1, "prompt": "approver reviews an expense report on a monitor", "shot_type": "medium", "camera_move": "slow push-in", "lighting": "even office light", "dialogue": "Every expense over the limit needs a second approver.", "duration_s": 6 },
+        { "scene_index": 2, "prompt": "split screen showing a submitter and a separate approver, segregation of duties", "shot_type": "wide", "camera_move": "static", "lighting": "even office light", "dialogue": "The person who submits cannot be the person who approves.", "duration_s": 6 }
+      ]
+    },
+    "output": { "asset_ref": "s3://pramana-video-dev/c91d/course.mp4", "storage": "s3", "duration_s": 12, "resolution": "1080p", "has_audio": true, "c2pa_signed": true, "watermark": "SynthID" },
+    "review": { "human_required": true, "status": "approved", "reviewed_by": "compliance-officer:jt", "reviewed_at": "2026-06-30T12:00:00Z" }
+  },
+  "activities": [
+    {
+      "id": "act-quiz-1",
+      "type": "quiz",
+      "title": "Expense Approval Quiz",
+      "instructions": "Answer all questions. 80% to pass.",
+      "order": 1,
+      "scoring": { "scored": true, "pass_threshold_pct": 80 },
+      "gating": { "gates": "certificate", "cooldown_s": 86400 },
+      "payload": {
+        "questions": [
+          { "prompt": "Who may approve an over-limit expense?", "options": ["The submitter", "A second, independent approver", "Anyone in the team"], "answer_index": 1, "citation": "sox.404", "explanation": "Segregation of duties requires an independent approver.", "scene_index": 1 },
+          { "prompt": "Can the submitter also approve their own expense?", "options": ["Yes", "No"], "answer_index": 1, "citation": "sox.404", "scene_index": 2 }
+        ]
+      }
+    }
+  ],
+  "provenance": [
+    { "stage": "story", "engine": "wegofwd-llm", "provider": "anthropic", "model": "claude-sonnet-4-6", "model_verified": true, "integration_version": 1, "contract_version": 1, "prompt_version": "compliance-register-v2", "generated_at": "2026-06-30T11:00:00Z", "generated_by": "user:author-1" },
+    { "stage": "video", "engine": "wegofwd-video", "provider": "veo", "model": "veo-3.1", "model_verified": true, "integration_version": 1, "contract_version": 1, "seed": 9071, "generated_at": "2026-06-30T11:30:00Z", "generated_by": "user:author-1" },
+    { "stage": "activities", "engine": "wegofwd-llm", "provider": "anthropic", "model": "claude-sonnet-4-6", "model_verified": true, "integration_version": 1, "contract_version": 1, "prompt_version": "compliance-register-v2", "generated_at": "2026-06-30T11:05:00Z", "generated_by": "user:author-1" }
+  ],
+  "governance": {
+    "workflow": "approval-state-machine",
+    "status": "PUBLISHED",
+    "approvals": [
+      { "actor": "user:author-1", "from": "DRAFT", "to": "IN_REVIEW", "at": "2026-06-30T11:40:00Z" },
+      { "actor": "compliance-officer:jt", "from": "IN_REVIEW", "to": "APPROVED", "at": "2026-06-30T12:00:00Z" },
+      { "actor": "compliance-officer:jt", "from": "APPROVED", "to": "PUBLISHED", "at": "2026-06-30T12:05:00Z" }
+    ]
+  }
+}
