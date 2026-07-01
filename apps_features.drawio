@@ -5,7 +5,7 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 applications — feature overview (3 apps, 3 audiences) · 2026-06-23">
+        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 applications — feature overview (3 apps, 3 audiences) · 2026-07-01">
           <mxGeometry height="30" width="1000" x="30" y="20" as="geometry" />
         </mxCell>
 
@@ -45,7 +45,7 @@
         <mxCell id="k3" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Privacy &amp;amp; Data Minimization&lt;/b&gt;&lt;br&gt;• Hard-delete on request&lt;br&gt;• Name pseudonymization&lt;br&gt;• 30-day auto-deletion&lt;br&gt;• Zero-retention LLM provider">
           <mxGeometry height="124" width="450" x="510" y="444" as="geometry" />
         </mxCell>
-        <mxCell id="k4" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Rendering Engines&lt;/b&gt;&lt;br&gt;• Matplotlib stick-figure (v1)&lt;br&gt;• Blender Grease Pencil (v2)&lt;br&gt;• Stable scene-script contract">
+        <mxCell id="k4" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Rendering Engines&lt;/b&gt;&lt;br&gt;• Matplotlib stick-figure (v1)&lt;br&gt;• Blender Grease Pencil (v2)&lt;br&gt;• Stable scene-script contract&lt;br&gt;• Registry + provenance via wegofwd-video">
           <mxGeometry height="124" width="450" x="510" y="576" as="geometry" />
         </mxCell>
         <mxCell id="k5" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Visual &amp;amp; Brand System&lt;/b&gt;&lt;br&gt;• Kolam-inspired logo&lt;br&gt;• Accessible palette (no red)&lt;br&gt;• Baloo bilingual type (Tamil+Latin)&lt;br&gt;• Child &amp;amp; adult icon sets">
@@ -55,8 +55,8 @@
           <mxGeometry height="124" width="450" x="510" y="840" as="geometry" />
         </mxCell>
 
-        <!-- ============ COLUMN 3: STUDYBUDDY_SELFLEARNER / MENTIBLE (amber) ============ -->
-        <mxCell id="s-head" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d79b00;strokeColor=#a06800;fontColor=#ffffff;fontSize=12;arcSize=8;" value="&lt;b&gt;STUDYBUDDY_SELFLEARNER (Mentible)&lt;/b&gt;&lt;br&gt;Scoped query → publishable EPUB3 / PDF book&lt;br&gt;&lt;i&gt;Audience: adult self-learners &amp;amp; professionals (BYOK)&lt;/i&gt;&lt;br&gt;Stage: authoring + export shipped; accounts in flight">
+        <!-- ============ COLUMN 3: MENTIBLE (amber) ============ -->
+        <mxCell id="s-head" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d79b00;strokeColor=#a06800;fontColor=#ffffff;fontSize=12;arcSize=8;" value="&lt;b&gt;MENTIBLE&lt;/b&gt;&lt;br&gt;Scoped query → publishable EPUB3 / PDF book&lt;br&gt;&lt;i&gt;Audience: adult self-learners &amp;amp; professionals (BYOK)&lt;/i&gt;&lt;br&gt;Stage: authoring + export shipped; accounts in flight">
           <mxGeometry height="96" width="450" x="990" y="70" as="geometry" />
         </mxCell>
         <mxCell id="s1" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;arcSize=8;" value="&lt;b&gt;Book Authoring &amp;amp; Generation&lt;/b&gt;&lt;br&gt;• 6-dimension scoped query&lt;br&gt;• Free-text TOC → structure&lt;br&gt;• Lesson / explanation / quiz gen&lt;br&gt;• Regenerate-with-reason&lt;br&gt;• Topic-tree editor">
@@ -79,7 +79,7 @@
         </mxCell>
 
         <!-- Footer note -->
-        <mxCell id="foot" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" value="All three apps share the wegofwd-llm generation seam (and wegofwd-secure for key handling) — see shared_library.drawio. Dashed = planned/not-yet-built. Feature groups condensed from each repo's README/docs/ADRs.">
+        <mxCell id="foot" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" value="All three apps share the wegofwd-llm generation seam (and wegofwd-secure for key handling); pramana &amp; kathai-chithiram also share the wegofwd-video generation seam (ADR-026), with Mentible adoption planned — see shared_library.drawio. Dashed = planned/not-yet-built. Feature groups condensed from each repo's README/docs/ADRs.">
           <mxGeometry height="40" width="1410" x="30" y="972" as="geometry" />
         </mxCell>
       </root>

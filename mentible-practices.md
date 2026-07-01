@@ -1,11 +1,11 @@
-# StudyBuddy SelfLearner (Mentible) — Good Practices, Bad Practices & How to Improve
+# Mentible — Good Practices, Bad Practices & How to Improve
 
 **Document type:** Engineering practices analysis
 **Scope:** Backend (FastAPI/Python), Mobile (React Native/Expo), Compiler (TypeScript/Node), Pipeline (vendored), **the shared `wegofwd-llm` seam package**, Infrastructure
 **Last refresh:** 2026-06-09 (v2.0 — major refresh; measured on disk at `40166ee`, branch `main`. **97 commits since v1.0**; new practice surfaces: the extracted `wegofwd-llm` provider seam (ADR-012), multi-provider BYOK, the BYOK 422-scrub fix (ADR-001), per-provider token clamping.)
 **Prior refresh:** 2026-06-02 (v1.0 — first analysis, `e1c66f7`, branch `feat/authoring-regenerate-export-fixes`)
-**Repo / brand:** `wegofwd2020-hub/StudyBuddy_SelfLearner` · public brand **Mentible**
-**Related:** [studybuddy-selflearner-critique.md](studybuddy-selflearner-critique.md) · [studybuddy-selflearner-development-pattern.md](studybuddy-selflearner-development-pattern.md) · [studybuddy-selflearner-cost.md](studybuddy-selflearner-cost.md) · parent product: [studybuddy-practices.md](studybuddy-practices.md)
+**Repo / brand:** `wegofwd2020-hub/Mentible` · public brand **Mentible**
+**Related:** [mentible-critique.md](mentible-critique.md) · [mentible-development-pattern.md](mentible-development-pattern.md) · [mentible-cost.md](mentible-cost.md) · parent product: [studybuddy-practices.md](studybuddy-practices.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
 
 > A catalogue of concrete practices observed in the Mentible codebase, with fixes. The through-line holds from v1.0: **the security practices are exemplary; the discipline gaps are all about the distance between an accepted decision (or a stale frame, or a drifted version pin) and the code that exists.** v2.0 adds a whole new practice surface — a *shared package seam* — which is well-executed but introduces the first cross-repo version-coupling debt.
@@ -17,7 +17,7 @@
 - **New good practice surfaces:** the externalized `wegofwd-llm` seam (typed contract + registry + conformance loop + `py.typed`); the **BYOK 422-scrub fix** (a found key-echo leak, closed and tested); per-provider **output-token clamping** modeled as a capability, not a name-branch; the **validate→repair conformance loop** replacing blind retry; a migration-safe **multi-provider keystore**.
 - **One v1.0 bad practice partly fixed:** `tests/llm/` is no longer pure orphans — `test_config.py` (15 funcs) is now real — but stale `__pycache__/*.pyc` for *deleted* modules persists.
 - **One v1.0 bad practice persists, half-addressed:** the doc-drift (`CLAUDE.md`/`SCOPE.md`/`STATUS.md`) got ADR amendment *notes* but the stale top-of-file frames remain.
-- **One new bad practice:** **a lagging version pin** — SelfLearner pins `wegofwd-llm@v0.1.0`; the package is already at `@v0.1.1`.
+- **One new bad practice:** **a lagging version pin** — Mentible pins `wegofwd-llm@v0.1.0`; the package is already at `@v0.1.1`.
 
 ---
 
@@ -69,9 +69,9 @@ The worker routes through `generate_validated` (validate the model's JSON agains
 
 ### ⚠️ The seam version pin already lags its dependency (NEW)
 
-SelfLearner's `backend/requirements.txt` pins `wegofwd-llm[anthropic] @ git+https://...@v0.1.0`; the package is already at `@v0.1.1` (a `py.typed`/PEP 561 fix). The sole consumer is a tag behind its own dependency in the same week the seam shipped — and that will become genuine *cross-consumer* drift the moment Pramana (ADR-012's intended second consumer) wires it.
+Mentible's `backend/requirements.txt` pins `wegofwd-llm[anthropic] @ git+https://...@v0.1.0`; the package is already at `@v0.1.1` (a `py.typed`/PEP 561 fix). The sole consumer is a tag behind its own dependency in the same week the seam shipped — and that will become genuine *cross-consumer* drift the moment Pramana (ADR-012's intended second consumer) wires it.
 
-🔧 Bump SelfLearner to `@v0.1.1`, and add a lightweight cross-repo version check (or a shared constraints file) before a second consumer exists. A shared package's whole value is one source of truth — defeated the moment a consumer drifts.
+🔧 Bump Mentible to `@v0.1.1`, and add a lightweight cross-repo version check (or a shared constraints file) before a second consumer exists. A shared package's whole value is one source of truth — defeated the moment a consumer drifts.
 
 ### ⚠️ The seam is fetched from a git URL, not a registry (NEW)
 
@@ -120,7 +120,7 @@ Unchanged from v1.0; all by-design MVP omissions, all still need closing before 
 | Practice | State | Fix |
 |---|---|---|
 | Security path tested first (`test_no_key_in_logs`, 422-scrub, multi-provider error paths) | ✅ Excellent (75→96 backend tests) | — |
-| Seam package independently tested (contract/registry/conformance/clamp) | ✅ Good (48 tests in `wegofwd-llm`) | Also exercise the seam from SelfLearner's CI at the pinned tag |
+| Seam package independently tested (contract/registry/conformance/clamp) | ✅ Good (48 tests in `wegofwd-llm`) | Also exercise the seam from Mentible's CI at the pinned tag |
 | Idempotency / export / structure / compiler / mobile tests | ✅ Good (compiler 71, mobile 132 blocks) | — |
 | Per-provider clamp + validate→repair tested | ✅ Good | — |
 | Live-provider verification | ⚠️ Self-reported only | Commit-message provenance (Groq→200, Anthropic tool-use); add an opt-in live smoke test gated on a secret |
@@ -134,7 +134,7 @@ Unchanged from v1.0; all by-design MVP omissions, all still need closing before 
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  Mentible (StudyBuddy_SelfLearner) — Practices Scorecard (v2.0)       │
+│  Mentible — Practices Scorecard (v2.0)                                │
 ├──────────────────────────────────────┬───────────┬───────────────────┤
 │  Practice area                        │  Rating   │  Note (Δ vs v1.0)  │
 ├──────────────────────────────────────┼───────────┼───────────────────┤

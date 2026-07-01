@@ -1,8 +1,8 @@
-# StudyBuddy SelfLearner (Mentible) — Code Review & Critique
+# Mentible — Code Review & Critique
 
 **Reviewed:** 2026-06-09 (v2.0 — major refresh; measured on disk at branch `main` @ `40166ee`. **97 commits since v1.0**; headline shifts: LLM provider seam extracted into the installable `wegofwd-llm` package (ADR-012), Pramana in-process generation integration (ADR-011/013), multi-provider BYOK with free providers, BYOK 422-scrub security fix (ADR-001).)
 **Prior review:** 2026-06-02 (v1.0 — first review, branch `feat/authoring-regenerate-export-fixes` @ `e1c66f7`)
-**Repo:** `wegofwd2020-hub/StudyBuddy_SelfLearner` · **Public brand:** **Mentible** (tagline *"Author Yourself"*; ADR-006, name pending trademark/domain clearance — formerly "StudyBuddy Q")
+**Repo:** `wegofwd2020-hub/Mentible` · **Public brand:** **Mentible** (tagline *"Author Yourself"*; ADR-006, name pending trademark/domain clearance — formerly "StudyBuddy Q", earlier "StudyBuddy SelfLearner")
 **Phase:** Pre-deploy MVP — feature-complete in code for a now-larger MVP slice (multi-provider, books-only), **still not yet verified against a deployed backend**; some provider paths *are* now self-reported as live-verified (Groq/Anthropic) per commit messages
 **Rating key:** ✅ Strong · ⚠️ Gap / Risk · ❌ Critical Issue
 
@@ -12,7 +12,7 @@
 
 Between `e1c66f7` (2026-06-02) and `40166ee` (2026-06-09), the project landed 97 commits (228 total; first commit 2026-04-25) and grew from 6 ADRs to **13**. Four architectural shifts dominate, all on `main` now:
 
-1. **The LLM provider seam was extracted into an installable package — `wegofwd-llm` (ADR-012).** What was an inlined, per-provider provider layer is now a standalone repo (`/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy/wegofwd-llm`, **773 LOC src / 48 tests**, tags `v0.1.0`/`v0.1.1`). SelfLearner now consumes it as a dependency: `backend/requirements.txt` pulls `wegofwd-llm[anthropic] @ git+https://github.com/.../wegofwd-llm@v0.1.0`, and the backend imports `wegofwd_llm.{conformance,contract,errors,registry}` directly (`tasks.py`, `anthropic_caller.py`, `schemas.py`). ADR-012 frames the package as serving the *whole product family* (Mentible + Pramana), but **on disk the only consumer is Mentible** — a definitive grep across all three repos shows zero `wegofwd_llm` imports in the Pramana checkout (HEAD `e2958ef`, 2026-06-07). So this is real DRY-by-design with one realized consumer today; the cross-repo coupling risk (git-pin versioning, no registry) is real now, the multi-consumer DRY payoff is still pending Pramana actually wiring the seam.
+1. **The LLM provider seam was extracted into an installable package — `wegofwd-llm` (ADR-012).** What was an inlined, per-provider provider layer is now a standalone repo (`/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy/wegofwd-llm`, **773 LOC src / 48 tests**, tags `v0.1.0`/`v0.1.1`). Mentible now consumes it as a dependency: `backend/requirements.txt` pulls `wegofwd-llm[anthropic] @ git+https://github.com/.../wegofwd-llm@v0.1.0`, and the backend imports `wegofwd_llm.{conformance,contract,errors,registry}` directly (`tasks.py`, `anthropic_caller.py`, `schemas.py`). ADR-012 frames the package as serving the *whole product family* (Mentible + Pramana), but **on disk the only consumer is Mentible** — a definitive grep across all three repos shows zero `wegofwd_llm` imports in the Pramana checkout (HEAD `e2958ef`, 2026-06-07). So this is real DRY-by-design with one realized consumer today; the cross-repo coupling risk (git-pin versioning, no registry) is real now, the multi-consumer DRY payoff is still pending Pramana actually wiring the seam.
 
 2. **Multi-provider BYOK with free providers (ADR-005 → built).** ADR-005 was "accepted but unbuilt" in v1.0; it is now implemented across 5 phases. The seam ships Anthropic (native tool-use), OpenAI-compatible, and **free providers** Groq / OpenRouter / Gemini. Provider + model are a per-book `GenerationParam`; the mobile keystore is now **multi-provider** (`mobile/src/secure/keyStore.ts` — per-provider namespaced SecureStore keys); generation provenance (provider/model/fingerprint) is persisted on the saved unit. The blind-retry loop was replaced with a **validate→repair conformance loop** (`generate_validated`).
 
@@ -45,7 +45,7 @@ Other notable changes: **Books-only pivot** — the standalone Query single-less
 
 Mentible remains the **direct-to-learner answer to a GTM problem**: a thin, opinionated authoring client over the scoped-query IP, sold to adults who **bring their own key (BYOK)** so the vendor never carries a token bill, compiling generated content into a portable EPUB3/PDF book. Since v1.0 it has matured along two axes — it became **books-only** (the single-lesson Query surface removed, ADR-009) and **multi-provider** (Anthropic + OpenAI-compatible + free Groq/OpenRouter/Gemini).
 
-**The headline architectural event is the extraction of the provider seam into the installable `wegofwd-llm` package (ADR-012).** In v1.0 the multi-provider layer was an accepted-but-absent ADR and `tests/llm/` held only orphan `.pyc` files. It is now real code, in its own repo, with a typed contract (`LLMRequest`/`LLMResponse`/`Provider`), a registry, a validate→repair conformance loop, and 48 of its own tests. ADR-012 frames it as serving the whole product family, and that is the right move (package the seam, don't fork it three ways) — but the honest on-disk state is **one realized consumer (Mentible)**; the Pramana checkout imports nothing from it. The cost is **new cross-repo coupling**: the dependency is a **git URL pinned to a tag** (`@v0.1.0`), not a package on any registry, so CI and every install build it over the network from GitHub; and the pin has *already drifted* — SelfLearner pins `v0.1.0` while the package itself is at `v0.1.1` (a `py.typed` packaging fix). A consumer one tag behind its dependency is low-severity today but is exactly the failure mode a shared-package seam introduces.
+**The headline architectural event is the extraction of the provider seam into the installable `wegofwd-llm` package (ADR-012).** In v1.0 the multi-provider layer was an accepted-but-absent ADR and `tests/llm/` held only orphan `.pyc` files. It is now real code, in its own repo, with a typed contract (`LLMRequest`/`LLMResponse`/`Provider`), a registry, a validate→repair conformance loop, and 48 of its own tests. ADR-012 frames it as serving the whole product family, and that is the right move (package the seam, don't fork it three ways) — but the honest on-disk state is **one realized consumer (Mentible)**; the Pramana checkout imports nothing from it. The cost is **new cross-repo coupling**: the dependency is a **git URL pinned to a tag** (`@v0.1.0`), not a package on any registry, so CI and every install build it over the network from GitHub; and the pin has *already drifted* — Mentible pins `v0.1.0` while the package itself is at `v0.1.1` (a `py.typed` packaging fix). A consumer one tag behind its dependency is low-severity today but is exactly the failure mode a shared-package seam introduces.
 
 **The BYOK 422-scrub fix is the security highlight, and it is real.** v1.0 did not flag this leak — it was found and closed in this window. The default 422 handler would have handed the user's `sk-ant-` key straight back in an HTTP response body on a malformed-but-key-bearing request. The fix is a custom handler + `scrub_validation_errors()` that redacts both by field-name (`loc` ends in `api_key`/`authorization`) and by value-pattern, backed by an explicit test (`test_missing_field_422_does_not_echo_key`). For a product whose entire trust proposition is "we touch your key safely," catching and closing a key-echo class this subtle is exactly the discipline the product needs.
 
@@ -53,14 +53,14 @@ Mentible remains the **direct-to-learner answer to a GTM problem**: a thin, opin
 
 | Area | Rating | Key Finding |
 |---|---|---|
-| Architecture | 🟢 Strong | Four clean layers + a now-**externalized provider seam (`wegofwd-llm`)** (one realized consumer, Mentible; family-DRY by intent); typed contract + conformance loop; new risk = cross-repo git-pin coupling (SelfLearner pins `v0.1.0`, package at `v0.1.1`) |
+| Architecture | 🟢 Strong | Four clean layers + a now-**externalized provider seam (`wegofwd-llm`)** (one realized consumer, Mentible; family-DRY by intent); typed contract + conformance loop; new risk = cross-repo git-pin coupling (Mentible pins `v0.1.0`, package at `v0.1.1`) |
 | Code Quality | 🟢 Strong | `mypy`/`ruff` backend, typed TS compiler, zero committed secrets, single brand constant; multi-provider keystore namespaced cleanly; conformance/repair replaces blind retry |
 | Test Coverage | 🟡 Good | 96 backend `def test_` (was 75) + 71 compiler + 132 mobile blocks + 48 in the seam package; new live-provider self-reports (Groq/Anthropic) but **still no deployed-backend E2E**; residual `tests/llm/*.pyc` orphans |
 | Documentation | 🟡 Good | 13 ADRs (was 6) — reasoning fully legible; but `CLAUDE.md`/`SCOPE.md` header + `STATUS.md` **still stale** (v1.0 finding only half-closed); ADR-010/011 still *Proposed* |
 | Security | 🟢 Strong | BYOK Pattern B intact **+ the 422 key-echo leak found and closed (ADR-001)**; multi-provider redaction (`<redacted-provider-key>`); CORS `*` / no-auth still deferred |
 | Scalability / Ops | 🟡 Good | In-process `BackgroundTask` still the ceiling; new cross-repo build dependency (git+https, no registry) is a supply/availability coupling; still undeployed |
 
-**Top 5 actions:** (1) **Fix the `wegofwd-llm` version pin** — bump SelfLearner from `@v0.1.0` to the package's `@v0.1.1`, and decide a registry (private PyPI / GitHub Packages) so installs don't depend on a live git fetch. (2) Replace the in-process `BackgroundTask` with the planned Celery/Redis worker, or formally document the restart-data-loss window. (3) **Close the doc-drift for real** — fix the `CLAUDE.md`/`SCOPE.md` status header and refresh `docs/STATUS.md` (multi-provider, books-only, package seam, ~13k LOC); amendment notes layered over a "directory stubs only" header is not enough. (4) Deploy to Fly and run one real end-to-end BYOK generation against the deployed backend — the verification gate everything still waits on. (5) Resolve ADR-010 (narrative mode) and ADR-011 (Pramana handoff) from *Proposed* — both have prototype code ahead of a decision.
+**Top 5 actions:** (1) **Fix the `wegofwd-llm` version pin** — bump Mentible from `@v0.1.0` to the package's `@v0.1.1`, and decide a registry (private PyPI / GitHub Packages) so installs don't depend on a live git fetch. (2) Replace the in-process `BackgroundTask` with the planned Celery/Redis worker, or formally document the restart-data-loss window. (3) **Close the doc-drift for real** — fix the `CLAUDE.md`/`SCOPE.md` status header and refresh `docs/STATUS.md` (multi-provider, books-only, package seam, ~13k LOC); amendment notes layered over a "directory stubs only" header is not enough. (4) Deploy to Fly and run one real end-to-end BYOK generation against the deployed backend — the verification gate everything still waits on. (5) Resolve ADR-010 (narrative mode) and ADR-011 (Pramana handoff) from *Proposed* — both have prototype code ahead of a decision.
 
 ---
 
@@ -90,7 +90,7 @@ The IP shared with OnDemand is still the **six scope dimensions**. New in this w
 
 ### Gaps & Risks
 
-⚠️ **Cross-repo coupling via a git-pinned, registry-less dependency.** `wegofwd-llm` is pulled as `git+https://github.com/.../wegofwd-llm@v0.1.0`. There is no package registry, so every CI run and every install builds it from a live GitHub fetch (availability + supply-chain surface). More concretely, **the pin already lags the package**: SelfLearner pins `v0.1.0` while the package is at `v0.1.1` (a `py.typed`/PEP 561 fix). A consumer one tag behind its own dependency is the coupling cost made manifest in week one — and it multiplies the moment Pramana becomes a second consumer. Pin to the latest tag and publish the package somewhere resolvable.
+⚠️ **Cross-repo coupling via a git-pinned, registry-less dependency.** `wegofwd-llm` is pulled as `git+https://github.com/.../wegofwd-llm@v0.1.0`. There is no package registry, so every CI run and every install builds it from a live GitHub fetch (availability + supply-chain surface). More concretely, **the pin already lags the package**: Mentible pins `v0.1.0` while the package is at `v0.1.1` (a `py.typed`/PEP 561 fix). A consumer one tag behind its own dependency is the coupling cost made manifest in week one — and it multiplies the moment Pramana becomes a second consumer. Pin to the latest tag and publish the package somewhere resolvable.
 
 ⚠️ **The job runner is still not what the architecture says it is.** `tasks.py` is honest ("Migration to Celery for v1.1 is straightforward… a process restart loses in-flight jobs"), but for minutes-long async generation an unlucky deploy still silently drops a user's in-flight job and leaves an encrypted envelope in Redis until TTL.
 
@@ -135,7 +135,7 @@ The IP shared with OnDemand is still the **six scope dimensions**. New in this w
 
 ⚠️ **No mobile on-device E2E.** The BYOK loop UX (multi-provider key load, WebView render, minutes-long poll) is still only unit-tested.
 
-⚠️ **The seam is tested in its own repo, not here.** SelfLearner's CI installs `wegofwd-llm` from the git pin but runs none of the seam's 48 tests; a seam regression at a new tag is only caught if SelfLearner re-pins and its own tests happen to exercise the changed path.
+⚠️ **The seam is tested in its own repo, not here.** Mentible's CI installs `wegofwd-llm` from the git pin but runs none of the seam's 48 tests; a seam regression at a new tag is only caught if Mentible re-pins and its own tests happen to exercise the changed path.
 
 ⚠️ **JS counts are `it/test(` blocks, not asserted-unique cases** — treat 71/132 as upper-bound approximations; backend's 96 is an exact `def test_` count.
 
@@ -155,7 +155,7 @@ The IP shared with OnDemand is still the **six scope dimensions**. New in this w
 
 ⚠️ **`MVP_v1.md` plan still says Celery; code is still `BackgroundTask`.**
 
-⚠️ **No `CONTRIBUTING.md` / multi-repo dev runbook** — and the multi-repo story is now more complex (SelfLearner + `wegofwd-llm` + Pramana, editable-install dance noted only in a `requirements.txt` comment).
+⚠️ **No `CONTRIBUTING.md` / multi-repo dev runbook** — and the multi-repo story is now more complex (Mentible + `wegofwd-llm` + Pramana, editable-install dance noted only in a `requirements.txt` comment).
 
 ---
 
@@ -200,7 +200,7 @@ The IP shared with OnDemand is still the **six scope dimensions**. New in this w
 
 | Priority | Action | Area |
 |---|---|---|
-| P1 | **Reconcile the `wegofwd-llm` version pin** (SelfLearner `@v0.1.0` lags the package's `@v0.1.1`) and publish the seam to a resolvable registry so installs don't depend on a live git fetch | Architecture / Supply chain |
+| P1 | **Reconcile the `wegofwd-llm` version pin** (Mentible `@v0.1.0` lags the package's `@v0.1.1`) and publish the seam to a resolvable registry so installs don't depend on a live git fetch | Architecture / Supply chain |
 | P1 | Deploy backend to Fly + run one real BYOK generation against the deployed backend — the single gate everything else waits on | Verification |
 | P1 | Replace in-process `BackgroundTask` with Celery/Redis, or explicitly document the restart-data-loss window as accepted for MVP | Architecture |
 | P1 | **Actually fix the stale headers** in `CLAUDE.md`/`SCOPE.md` and refresh `docs/STATUS.md` (multi-provider, books-only, seam package, ~13k LOC) — amendment notes over a "directory stubs only" header isn't enough | Documentation |
@@ -210,9 +210,9 @@ The IP shared with OnDemand is still the **six scope dimensions**. New in this w
 | P2 | Add on-device (Detox/Maestro) E2E for the multi-provider BYOK loop, and a committed live-provider smoke test gated on an opt-in secret | Testing |
 | P2 | De-duplicate the `16384` `max_tokens` defaults now that clamping lives in the seam | Code Quality |
 | P3 | `git rm` the stale `tests/llm/__pycache__/*.pyc` orphans (the modules moved to `wegofwd-llm`) | Code Quality |
-| P3 | Add a `CONTRIBUTING.md` / multi-repo dev runbook (SelfLearner + `wegofwd-llm` + Pramana, editable installs) | Documentation |
+| P3 | Add a `CONTRIBUTING.md` / multi-repo dev runbook (Mentible + `wegofwd-llm` + Pramana, editable installs) | Documentation |
 | P3 | Note in ADR-001's threat model that the in-process `del api_key` shred is best-effort | Security |
 
 ---
 
-*This critique is a point-in-time review measured against the code on disk at `40166ee` (branch `main`, 2026-06-09), the 13 ADRs, the commit log `e1c66f7..HEAD` (97 commits), and the sibling repos `wegofwd-llm` (latest tag `v0.1.1`) and `pramana` (HEAD `e2958ef`, branch `feat/ai-drafted-approved-content`). Deployment status and on-device UX are **self-reported in `docs/STATUS.md`** (now stale) and were not verifiable from source; pytest could not be executed in the review environment (no `pytest` module installed), so the 422-scrub claim is verified by reading the handler, the `scrub_validation_errors` implementation, and the asserting test, not by a green run. The brand "Mentible" is adopted per ADR-006 pending trademark/domain clearance; the repo and some identifiers remain `StudyBuddy_SelfLearner` / `studybuddy-q` intentionally. Supersedes v1.0 (2026-06-02 @ `e1c66f7`).*
+*This critique is a point-in-time review measured against the code on disk at `40166ee` (branch `main`, 2026-06-09), the 13 ADRs, the commit log `e1c66f7..HEAD` (97 commits), and the sibling repos `wegofwd-llm` (latest tag `v0.1.1`) and `pramana` (HEAD `e2958ef`, branch `feat/ai-drafted-approved-content`). Deployment status and on-device UX are **self-reported in `docs/STATUS.md`** (now stale) and were not verifiable from source; pytest could not be executed in the review environment (no `pytest` module installed), so the 422-scrub claim is verified by reading the handler, the `scrub_validation_errors` implementation, and the asserting test, not by a green run. The brand "Mentible" is adopted per ADR-006 pending trademark/domain clearance; the repo and some identifiers remain `Mentible` / `studybuddy-q` intentionally. Supersedes v1.0 (2026-06-02 @ `e1c66f7`).*

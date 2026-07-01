@@ -12,7 +12,7 @@ that `NEW_MACHINE_SETUP.md` still describes — it is:
 ```
 ~/Documents/code/projects/AIStuff/STEM_studybuddy/   <- the hub (BASE)
   ├── project-critique/        (this repo — holds the sync scripts + ops docs)
-  ├── StudyBuddy_OnDemand/  StudyBuddy_SelfLearner/  thittam/  mambakkam-net/
+  ├── StudyBuddy_OnDemand/  Mentible/  thittam/  mambakkam-net/
   ├── pramana/  kathai-chithiram/  MarketingTools/  wegofwd-llm/
   ├── wegofwd-orchestration/   (NEW this session)
   └── dronePrjs/  (+ dronePrjs/closedSpace subdir)
@@ -44,7 +44,7 @@ project repo (a direct child of the hub).
 - The full orchestration toolkit was subsequently built on top of that init
   commit and pushed (separate from this infra work); it now syncs normally.
 
-### 3. Fixed StudyBuddy_SelfLearner-memory divergence
+### 3. Fixed Mentible-memory divergence
 - The repo was `ahead 8 / behind 1`: 8 local Stop-hook auto-snapshots vs. a
   remote `chore(memory): back up local memory` commit that had truncated
   `MEMORY.md` to a single line and deleted 3 files that were current locally.

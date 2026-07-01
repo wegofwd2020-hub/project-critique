@@ -4,7 +4,7 @@
 **Scope:** Backend (FastAPI/Python), Web (Next.js), Mobile (Kivy), Pipeline, Infrastructure
 **Period:** 2026-06-09 (v1.7 — alignment with critique v1.7: numbers re-measured on `main` @ `d50bc3e`; new practices surfaced — onboarding wizard on derived signals (no new endpoints), UI grouping that disclaims being authz, retro/refine ADR hygiene, backup restore-path fixed with tests)
 **Prior:** v1.6 June 2026 (interactive authoring studio with publish-completeness gate, one-way content-export bridge, ADR to fix product boundary) · v1.5 May 2026 (additive-RBAC via capabilities table, CONTESTED-status discipline) · v1.4 May 2026 (visual-library wave 1+2, four bug close-outs, PAI removal) · v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
-**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-development-pattern.md](studybuddy-development-pattern.md) · [studybuddy-cost.md](studybuddy-cost.md) · sibling product: [studybuddy-selflearner-practices.md](studybuddy-selflearner-practices.md)
+**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-development-pattern.md](studybuddy-development-pattern.md) · [studybuddy-cost.md](studybuddy-cost.md) · sibling product: [mentible-practices.md](mentible-practices.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
 
 > **Note (2026-06-09, v1.7):** the body below is the v1.4 record, preserved. No documented practice has been overturned. New since v1.6 (26-commit window, HEAD `d50bc3e`), worth adding to the catalogue:

@@ -80,7 +80,7 @@ One reference observer that emits structured-log lines. Consumers wire Prometheu
 
 ### ✅ Ruff config mirrors consumers
 
-`[tool.ruff] select = ["E", "W", "F", "I", "B", "C4", "UP", "S", "T20", "RUF"]` — identical to StudyBuddy_OnDemand and SelfLearner. A file passes lint identically here and in any consumer.
+`[tool.ruff] select = ["E", "W", "F", "I", "B", "C4", "UP", "S", "T20", "RUF"]` — identical to StudyBuddy_OnDemand and Mentible. A file passes lint identically here and in any consumer.
 
 ### ✅ `raise ... from None` is everywhere
 
@@ -262,7 +262,7 @@ The Groq 413 / Gemini quota notes in `registry.py` are not folklore — they cit
 
 ### ✅ ADR-012 cross-reference
 
-The README points back to the rationale doc in SelfLearner. Anyone landing in the package can trace to the design discussion.
+The README points back to the rationale doc in Mentible. Anyone landing in the package can trace to the design discussion.
 
 ### ⚠️ No CHANGELOG.md (P2)
 
@@ -286,7 +286,7 @@ All notable changes to wegofwd-llm. Format: [Keep a Changelog](https://keepachan
 
 ## [0.1.0] — 2026-06-04
 ### Added
-- Initial extract from StudyBuddy_SelfLearner pipeline/providers (ADR-012).
+- Initial extract from Mentible pipeline/providers (ADR-012).
 - LLMRequest/LLMResponse/Capabilities/Provider contract (LLM_CONTRACT_VERSION = 1).
 - Anthropic native (tool-use), OpenAI-compatible (raw httpx).
 - 9 providers registered (anthropic, openai, groq, openrouter, gemini, deepseek, qwen, gemma).
@@ -456,7 +456,7 @@ A public repo with a `Proprietary` license is the worst-of-both: legally ambiguo
 
 ### ⚠️ No PyPI release (P2)
 
-Consumers pin to `git+https://github.com/wegofwd2020-hub/wegofwd-llm@v0.1.2`. Every CI run that doesn't cache the install pulls source from GitHub. Already-flagged in `studybuddy-selflearner-critique.md` v2.0.
+Consumers pin to `git+https://github.com/wegofwd2020-hub/wegofwd-llm@v0.1.2`. Every CI run that doesn't cache the install pulls source from GitHub. Already-flagged in `mentible-critique.md` v2.0.
 
 🔧 **How to Improve:** wire a release-on-tag workflow that publishes to a private package registry (GitHub Packages, AWS CodeArtifact, or a private PyPI):
 
@@ -480,7 +480,7 @@ jobs:
       - run: # publish dist/* to your chosen registry
 ```
 
-Consumers pin `wegofwd-llm==0.1.2` instead of a git URL; CI installs are cached; SelfLearner's `v0.1.0` lag becomes a one-line bump.
+Consumers pin `wegofwd-llm==0.1.2` instead of a git URL; CI installs are cached; Mentible's `v0.1.0` lag becomes a one-line bump.
 
 ### ⚠️ Gemma is dead-on-arrival in the registry (P0 — easy fix)
 

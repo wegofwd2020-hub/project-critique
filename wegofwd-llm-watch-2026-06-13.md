@@ -28,7 +28,7 @@ No version bump in this window (current: `0.1.2`).
 - **If it's a version bump or touches `contract.py` / `registry.py` / `errors.py`:** trigger a full re-critique — re-run `wegofwd-llm-critique.md` §1–§7 against the new HEAD. Update the Snapshot table.
 - **If it only touches `tests/` or `pyproject.toml` cosmetic fields:** update test/LOC numbers in the critique's Snapshot table only; no §7 re-rank needed.
 - **If the change is large enough that the §7 priority actions move:** also refresh the README `### wegofwd-llm (shared LLM seam)` Quick Summary block.
-- **If a consumer of wegofwd-llm (StudyBuddy_OnDemand / SelfLearner / Kathai Chithiram) needs to bump its pin to ride this change:** add a note to the consumer's next critique-refresh delta noting which behaviour change is now exposed.
+- **If a consumer of wegofwd-llm (StudyBuddy_OnDemand / Mentible / Kathai Chithiram) needs to bump its pin to ride this change:** add a note to the consumer's next critique-refresh delta noting which behaviour change is now exposed.
 
 Merging this PR advances `wegofwd-llm-last-reviewed.txt` to `4e0d26d79a6846aab06fd600ebd671c665ca5ad5` — the next weekly watch will measure from this commit forward.
 

@@ -1,7 +1,7 @@
 # A Personality Review of Practice — Sivakumar (Siva) Mambakkam
 
 **Document type:** Architect practice assessment
-**Evidence base:** v2.6 portfolio — StudyBuddy_OnDemand, StudyBuddy_SelfLearner (Mentible),
+**Evidence base:** v2.6 portfolio — StudyBuddy_OnDemand, Mentible,
 Thittam, dronePrjs, MarketingTools, claude_memory tooling, and the cross-cutting
 `wegofwd-llm` shared library; ADRs across the family (30+); coding-standards repo (21
 universal rules); and the `project-critique` self-review trail
@@ -217,13 +217,13 @@ The Clean Pivot Pattern
 
 The v1.2 cycle produced a cleaner example of the same instinct, this time
 *additive* rather than corrective: the LLM provider code lived inside
-StudyBuddy_SelfLearner. When it became clear the same surface was about to be
+Mentible. When it became clear the same surface was about to be
 re-implemented in StudyBuddy_OnDemand (and would be needed by Kathai Chithiram
 shortly), the pattern was extracted into `wegofwd-llm` — a published Python
 package with a typed contract, three-axis versioning (package semver / contract
 version / per-provider integration version stamped into `provenance()`), and
 BYOK enforced at construction. ADR-012 names the rationale. Crucially, the
-SelfLearner copy was not left to drift: PRs #430/#431 re-injected the shared
+Mentible copy was not left to drift: PRs #430/#431 re-injected the shared
 package into both consumers in the same window. The pattern was lifted *and*
 the old call sites were retired in the same cycle.
 
@@ -910,7 +910,7 @@ the rest.
 ---
 
 *This assessment is based entirely on observable evidence from the v2.6 portfolio
-(StudyBuddy_OnDemand, SelfLearner/Mentible, Thittam, dronePrjs, MarketingTools, the
+(StudyBuddy_OnDemand, Mentible, Thittam, dronePrjs, MarketingTools, the
 claude_memory tooling, and the cross-cutting `wegofwd-llm` shared library) and the
 supporting standards / ADR / cost-analysis trail. It reflects practice patterns, not
 personal character — and the practice is genuinely impressive. The v1.2 refresh observes

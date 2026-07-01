@@ -27,7 +27,7 @@ This is **infrastructure/tooling**, not a product — a few-dozen-line shell hoo
 | Token scopes | `gist, project, read:org, repo, workflow` | `gh auth status` |
 | Total on-disk memory | ~236 KB, ~100 `.md` files | `du`, `find` |
 | Largest single memory file | 23 KB (`StudyBuddy-OnDemand/project_state.md`) | `find -printf` |
-| Busiest store | `studybuddy-selflearner-memory` (56 commits) | `git rev-list --count` |
+| Busiest store | `mentible-memory` (56 commits) | `git rev-list --count` |
 | Quietest stores | `thittam`, `dronePrjs`, `closedSpace` (1 commit = initial snapshot only) | same |
 | Runbook docs | `NEW_MACHINE_SETUP.md` 141 ln · `claude-memory-add-project.md` 117 ln | `wc -l` |
 

@@ -1,12 +1,12 @@
-# StudyBuddy SelfLearner (Mentible) — Scoping, Design, Architecture & Development Pattern
+# Mentible — Scoping, Design, Architecture & Development Pattern
 
 **Document type:** Development pattern analysis
 **Scope:** Full lifecycle — from advisor feedback to a multi-provider, package-seam pre-deploy MVP
 **Period:** 2026-04-25 → 2026-06-09 (~6.5 weeks, 228 commits)
 **Last refresh:** 2026-06-09 (v2.0 — major refresh; measured on disk at `40166ee`, branch `main`. **97 commits since v1.0**; headline: the LLM provider seam was *extracted into the installable `wegofwd-llm` package* (ADR-012), intended to be shared across the product family (Mentible + Pramana, ADR-011/013) — a single-repo pattern designed to become a product-family pattern, though on disk Mentible is still its only consumer.)
 **Prior refresh:** 2026-06-02 (v1.0 — first analysis, `e1c66f7`, branch `feat/authoring-regenerate-export-fixes`)
-**Repo / brand:** `wegofwd2020-hub/StudyBuddy_SelfLearner` · public brand **Mentible** (*"Author Yourself"*)
-**Related:** [studybuddy-selflearner-critique.md](studybuddy-selflearner-critique.md) · [studybuddy-selflearner-practices.md](studybuddy-selflearner-practices.md) · [studybuddy-selflearner-cost.md](studybuddy-selflearner-cost.md) · parent product: [studybuddy-development-pattern.md](studybuddy-development-pattern.md)
+**Repo / brand:** `wegofwd2020-hub/Mentible` · public brand **Mentible** (*"Author Yourself"*)
+**Related:** [mentible-critique.md](mentible-critique.md) · [mentible-practices.md](mentible-practices.md) · [mentible-cost.md](mentible-cost.md) · parent product: [studybuddy-development-pattern.md](studybuddy-development-pattern.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
 
 > This is the development-method analysis: *how* the product was scoped, designed, and built — less about bugs (see the critique), more about the decision discipline. The defining trait remains that the project is **ADR-driven and spec-first to an unusual degree**. The v2.0 story is that the same discipline scaled from "re-scope one product with ADRs" to **"extract a shared seam across three products with ADRs"** — and that the one persistent weakness (promoting decisions back into the durable top-of-funnel spec) is still only half-fixed.
@@ -64,7 +64,7 @@ The weakness the pattern still carries: those annotations are *inline notes laye
 
 **The two most instructive new ADRs are 012 and 013, read together.** They resolve a real architectural tension *on paper*: if both Mentible *and* Pramana will need to call LLMs, where does the provider code live, and where is the line between the two products? ADR-012 answers the first ("a package, not a third copy; a library, not a service"). ADR-013 answers the second ("the **artifact** is the boundary — Pramana may call an LLM in-process to *draft* a clause-grounded quiz; Mentible owns the *authored consumable*; the LLM call itself is not the dividing line"). The losing option (Pramana defers *all* generation to Mentible) is closed in writing. This is the v1.0 pattern — "close the losers explicitly" — applied to an *inter-product* boundary. The honest caveat: both ADRs are decided ahead of Pramana's code, which on disk is only a thin outbound HTTP port (`mentible_client.py`, default `NullMentibleClient`).
 
-**The risk this pattern now creates** is larger than v1.0's doc-drift: it is **cross-repo version coupling**, already visible with a single consumer. The package is at `v0.1.1` (a `py.typed` fix); SelfLearner still pins `wegofwd-llm@v0.1.0`. A consumer lagging its own dependency by a tag — before a second consumer even exists to disagree with — is ADR-velocity outrunning *version-reconciliation*, the same shape of gap as v1.0's ADR-outran-spec, one layer up the stack. It will compound the moment Pramana wires the seam.
+**The risk this pattern now creates** is larger than v1.0's doc-drift: it is **cross-repo version coupling**, already visible with a single consumer. The package is at `v0.1.1` (a `py.typed` fix); Mentible still pins `wegofwd-llm@v0.1.0`. A consumer lagging its own dependency by a tag — before a second consumer even exists to disagree with — is ADR-velocity outrunning *version-reconciliation*, the same shape of gap as v1.0's ADR-outran-spec, one layer up the stack. It will compound the moment Pramana wires the seam.
 
 ---
 
@@ -115,7 +115,7 @@ The execution gap is the same as v1.0, plus one: (a) the plan (`MVP_v1.md` "Cele
 3. **Extract a seam with its contract, not just its code.** The package shipped a typed contract, a registry, conformance tests, `py.typed`, and a mirrored lint config — so consuming it is type-safe and lint-identical.
 4. **Make even an unforeseen invariant a test.** The 422 key-echo leak was outside the original threat model; it became a custom handler *and* a locking test the day it was found.
 5. **Model provider quirks as capabilities, not name-branches.** The Groq 413 fix added `max_output_tokens` to the contract and clamped via the registry — data, not `if`.
-6. **A shared package moves the doc-drift risk up a level — to versions.** The one persistent weakness (promote decisions into the durable frame) now also means *keep the version pin current*. SelfLearner@v0.1.0 lagging the package's @v0.1.1 — with only one consumer so far — is v1.0's spec-lag failure mode, re-expressed as a dependency pin, and it will compound once Pramana becomes a second consumer.
+6. **A shared package moves the doc-drift risk up a level — to versions.** The one persistent weakness (promote decisions into the durable frame) now also means *keep the version pin current*. Mentible@v0.1.0 lagging the package's @v0.1.1 — with only one consumer so far — is v1.0's spec-lag failure mode, re-expressed as a dependency pin, and it will compound once Pramana becomes a second consumer.
 
 ---
 
