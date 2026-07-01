@@ -67,9 +67,10 @@ enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
 # Project code repos cloned flat under the hub ($BASE/<name>). The GitHub repo name
 # matches the local dir name for every project. closedSpace is a subdir of dronePrjs,
-# not its own repo, so it is not listed here. Keep this list in sync with PROJECTS in
-# github_update.sh.
-PROJECTS="StudyBuddy_OnDemand StudyBuddy_SelfLearner thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration dronePrjs"
+# not its own repo, so it is not listed here. wegofwd-video IS a project repo but has
+# no memory repo yet, so it appears in PROJECTS below but NOT in the MAP. Keep this
+# list in sync with PROJECTS in github_update.sh.
+PROJECTS="StudyBuddy_OnDemand Mentible thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video dronePrjs"
 
 echo "Project repos:"
 for n in $PROJECTS; do
@@ -84,7 +85,7 @@ echo "Memory repos:"
 # project_abs_path | memory_repo | symlink_abs_path
 MAP="
 $BASE/StudyBuddy_OnDemand|studybuddy-memory|$BASE/_claude-memory-studybuddy
-$BASE/StudyBuddy_SelfLearner|studybuddy-selflearner-memory|$BASE/_claude-memory-studybuddy-selflearner
+$BASE/Mentible|mentible-memory|$BASE/_claude-memory-mentible
 $BASE/thittam|thittam-memory|$BASE/_claude-memory-thittam
 $BASE/mambakkam-net|mambakkam-net-memory|$BASE/_claude-memory-mambakkam-net
 $BASE/pramana|pramana-memory|$BASE/_claude-memory-pramana
@@ -119,7 +120,7 @@ done
 ```bash
 PROOT="$HOME/.claude/projects"
 for enc in \
-  -home-*-StudyBuddy-OnDemand -home-*-StudyBuddy-SelfLearner -home-*-thittam \
+  -home-*-StudyBuddy-OnDemand -home-*-Mentible -home-*-thittam \
   -home-*-mambakkam-net -home-*-project-critique -home-*-MarketingTools \
   -home-*-pramana -home-*-wegofwd-llm -home-*-kathai-chithiram \
   -home-*-wegofwd-orchestration \
@@ -145,14 +146,16 @@ sh github_update.sh
 
 For every project repo *and* memory repo it skips anything dirty (never clobbers local work), does a `git pull --ff-only` on the clean ones, and reports per-repo status (`up-to-date` / `UPDATED <range>` / `DIRTY` / `MISSING` / `ERROR`). `closedSpace` is pulled as a memory-only entry, since it is a subdir of `dronePrjs` rather than its own clone. A `MISSING` line means that repo hasn't been cloned yet — run `github_checkout.sh` first (it clones both the project code repos and the memory repos).
 
-## The twelve repos
+## The twelve memory repos
 
 All symlinks live directly under the hub (`<hub>` = `~/Documents/code/projects/AIStuff/STEM_studybuddy/` on the current machine; the scripts derive it as the parent of CWD).
+
+There are **twelve memory repos** but **twelve project code repos** — the two sets don't line up one-to-one: `closedSpace` has a memory repo but no project clone (it's a subdir of `dronePrjs`), and `wegofwd-video` is a project code repo with **no memory repo yet** (so it's absent from this table and from the checkout MAP).
 
 | Project | Memory repo | Symlink |
 |---|---|---|
 | studybuddy (StudyBuddy_OnDemand) | `studybuddy-memory` | `<hub>/_claude-memory-studybuddy` |
-| studybuddy-selflearner | `studybuddy-selflearner-memory` | `<hub>/_claude-memory-studybuddy-selflearner` |
+| Mentible (formerly StudyBuddy_SelfLearner) | `mentible-memory` | `<hub>/_claude-memory-mentible` |
 | thittam | `thittam-memory` | `<hub>/_claude-memory-thittam` |
 | mambakkam-net | `mambakkam-net-memory` | `<hub>/_claude-memory-mambakkam-net` |
 | pramana | `pramana-memory` | `<hub>/_claude-memory-pramana` |
