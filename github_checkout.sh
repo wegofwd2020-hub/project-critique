@@ -24,7 +24,7 @@ echo "Memory repos:"
 # project_abs_path | memory_repo | symlink_abs_path
 MAP="
 $BASE/StudyBuddy_OnDemand|studybuddy-memory|$BASE/_claude-memory-studybuddy
-$BASE/Mentible|studybuddy-selflearner-memory|$BASE/_claude-memory-mentible
+$BASE/Mentible|mentible-memory|$BASE/_claude-memory-mentible
 $BASE/thittam|thittam-memory|$BASE/_claude-memory-thittam
 $BASE/mambakkam-net|mambakkam-net-memory|$BASE/_claude-memory-mambakkam-net
 $BASE/pramana|pramana-memory|$BASE/_claude-memory-pramana
