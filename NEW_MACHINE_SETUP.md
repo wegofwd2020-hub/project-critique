@@ -167,6 +167,30 @@ There are **twelve memory repos** but **twelve project code repos** — the two 
 | dronePrjs | `dronePrjs-memory` | `<hub>/_claude-memory-dronePrjs` |
 | closedSpace (subdir of dronePrjs) | `closedSpace-memory` | `<hub>/_claude-memory-closedSpace` |
 
+## Shared-library watch tokens (`PROJECT_CRITIQUE_PR_TOKEN`)
+
+Unlike everything above, this is **not machine-local** — it's a **GitHub repo secret** set once per watched library, and it survives machine changes. It's documented here because it's the one piece of portfolio setup that isn't captured by cloning + the Stop hook, and a fresh operator won't otherwise know it exists.
+
+Two shared libraries are under **top-level watch**: a GitHub Actions workflow in each library repo compares its HEAD to a baseline pointer in `project-critique` and, on any change, opens a dated watch-report PR **to `project-critique`**. To push a branch and open that PR cross-repo, each workflow needs a token with write access to `project-critique` (the default `GITHUB_TOKEN` is scoped to the running repo only):
+
+| Watched repo | Workflow | Baseline pointer (in project-critique) | Secret needed |
+|---|---|---|---|
+| `wegofwd-llm` | `wegofwd-llm/.github/workflows/watch.yml` | `wegofwd-llm-last-reviewed.txt` | `PROJECT_CRITIQUE_PR_TOKEN` |
+| `wegofwd-video` | `wegofwd-video/.github/workflows/watch.yml` | `wegofwd-video-last-reviewed.txt` | `PROJECT_CRITIQUE_PR_TOKEN` |
+
+**One-time setup (do once for the org, add the secret to each repo):**
+
+1. Create **one** fine-grained PAT at <https://github.com/settings/personal-access-tokens>:
+   - **Resource owner:** `wegofwd2020-hub`; **Repository access:** only `wegofwd2020-hub/project-critique`
+   - **Permissions:** `Contents` → Read and write, `Pull requests` → Read and write (Metadata read-only is automatic)
+   - **Expiration:** a date you'll actually rotate at (e.g. 1 year)
+2. Add it as a repo secret named **`PROJECT_CRITIQUE_PR_TOKEN`** on **each** watched repo (the secret is per-repo even though the token value is shared):
+   - `https://github.com/wegofwd2020-hub/wegofwd-llm/settings/secrets/actions`
+   - `https://github.com/wegofwd2020-hub/wegofwd-video/settings/secrets/actions`
+3. Verify: in each repo, **Actions → `watch` → Run workflow → `main`**. With the baseline already at HEAD it should report *"✅ no change since baseline"* and open no PR. Until the secret exists, the `watch` run fails at the *Checkout project-critique* step with `Input required and not supplied: token` — that failure is the "token pending" signal, not a bug. (The sibling `ci.yml` needs no secret and runs independently.)
+
+Full per-repo instructions and the manual fallback live in each library's `.watch/README.md`.
+
 ## Path dependency (important)
 
 The encoded path is derived from the project's **absolute path**. If the new machine uses a different username or layout (e.g. `/home/otheruser/...` or a different folder structure), the encoded dir name changes and the hook will look in a *different* place. Either (a) replicate the same absolute paths, or (b) clone each memory repo into the encoded path the new layout produces (recompute with the `enc()` helper above). The symlink targets are absolute too, so regenerate them with the block above rather than copying them verbatim.
