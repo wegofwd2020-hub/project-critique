@@ -166,6 +166,6 @@ Reference these when the conversation goes deeper.
 | Multi-tenant SaaS architecture | Thittam — tenant-per-schema PostgreSQL, gRPC microservices, NATS JetStream, Istio mTLS |
 | Compliance by design | COPPA, FERPA enforced at the database layer via PostgreSQL Row-Level Security |
 | Standards and governance | 21 codified engineering rules applied across the family (loaded into every Claude Code session via a shared standards repo); 30+ ADRs across the portfolio; doc-drift CI enforcement |
-| Shared infrastructure (proven) | `wegofwd-llm` — published Python library (BYOK, schema-agnostic, three-axis versioning); three on-disk consumers across StudyBuddy_OnDemand, SelfLearner/Mentible, Kathai Chithiram |
-| Execution velocity (measured) | Independent cost analyses (`project-critique/*-cost.md`): ~28× cheaper US / 9× blended for StudyBuddy OnDemand vs a conventional team; comparable ratios for Thittam, SelfLearner, MarketingTools |
+| Shared infrastructure (proven) | `wegofwd-llm` — published Python library (BYOK, schema-agnostic, three-axis versioning); three on-disk consumers across StudyBuddy_OnDemand, Mentible, Kathai Chithiram |
+| Execution velocity (measured) | Independent cost analyses (`project-critique/*-cost.md`): ~28× cheaper US / 9× blended for StudyBuddy OnDemand vs a conventional team; comparable ratios for Thittam, Mentible, MarketingTools |
 | Cloud breadth | AWS Certified Solutions Architect; Google Cloud Infrastructure; Azure APIM governance at UWM |

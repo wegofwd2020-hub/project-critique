@@ -89,7 +89,7 @@ The system accreted one project at a time, and the commit histories show the gro
 
 | Project (memory repo) | Commits | Note |
 |---|---|---|
-| `studybuddy-selflearner-memory` | 56 | Busiest — heaviest authoring activity |
+| `mentible-memory` | 56 | Busiest — heaviest authoring activity |
 | `studybuddy-memory` (OnDemand) | 23 | Second busiest; largest single file (23 KB `project_state.md`) |
 | `project-critique-memory` | 9 | This very project |
 | `mambakkam-net-memory` | 6 | |

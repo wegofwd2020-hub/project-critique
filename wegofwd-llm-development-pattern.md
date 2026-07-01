@@ -15,7 +15,7 @@ This file documents:
 - The **timing decision** — why the extraction happened *when* it did, not earlier or later (§2).
 - The **design choices** — three rules that shape every file (§3).
 - The **cadence** — what three commits and two patch versions reveal about the pace and the discipline (§4).
-- The **inherited patterns** — what carried over from StudyBuddy_SelfLearner and from the org-wide coding standards (§5).
+- The **inherited patterns** — what carried over from Mentible and from the org-wide coding standards (§5).
 - The **anti-patterns avoided** — what a less disciplined extraction would have shipped (§6).
 
 ---
@@ -54,7 +54,7 @@ This is the same shape as the StudyBuddy *three-runtime-context* boundary (pipel
 
 The extraction happened at a precise moment, recorded in commit `16bb0eb`:
 
-> `feat: extract the multi-provider LLM seam from StudyBuddy_SelfLearner`
+> `feat: extract the multi-provider LLM seam from Mentible`
 
 Read against the StudyBuddy_OnDemand timeline: PRs `eddf4c9` ("feat(llm): back anthropic+openai with the shared wegofwd-llm package (ADR-012)") and `36196b8` ("feat(llm): migrate google onto wegofwd-llm's gemini — finish ADR-012 consolidation") landed in the *same window*. The extraction was not speculative DRY — it was driven by an actual incoming second consumer.
 
@@ -134,7 +134,7 @@ The contrast is with most LLM "wrapper" libraries, which ship a `BaseModel`-styl
 
 | Commit | Date | Subject | Significance |
 |---|---|---|---|
-| `16bb0eb` | 2026-06-04 | feat: extract the multi-provider LLM seam from StudyBuddy_SelfLearner | v0.1.0 — initial extraction; the whole library shipped in one go |
+| `16bb0eb` | 2026-06-04 | feat: extract the multi-provider LLM seam from Mentible | v0.1.0 — initial extraction; the whole library shipped in one go |
 | `5db7c02` | 2026-06-05 | fix(packaging): ship py.typed marker (PEP 561) → v0.1.1 | Caught at the *first* consumer install; fixed within a day |
 | `4823606` | 2026-06-09 | fix(gemini): default to gemini-2.5-flash (verified live) → v0.1.2 | Caught during a live verification pass against the registered providers |
 
@@ -170,19 +170,19 @@ The development pattern: **three commits, three classes of bug, three fixes with
 | Rule: monetary precision (never float) | N/A here — no money — but the same instinct: `int` for token counts, `Decimal`-style discipline |
 | Rule: every write safe to retry | Reflected as the conformance loop's *retry the validator failure, not the network call* design |
 | Rule: typed errors, not string-matched | `LLMError` hierarchy lets callers route on type, never on message text |
-| Ruff config: `E W F I B C4 UP S T20 RUF` | Same config in `wegofwd-llm/pyproject.toml` as in StudyBuddy + SelfLearner — a file passes lint identically here and in any consumer |
+| Ruff config: `E W F I B C4 UP S T20 RUF` | Same config in `wegofwd-llm/pyproject.toml` as in StudyBuddy + Mentible — a file passes lint identically here and in any consumer |
 
-### 5.2 From StudyBuddy_SelfLearner (the parent)
+### 5.2 From Mentible (the parent)
 
 | Pattern | Carried over |
 |---|---|
 | ADR-driven decisions | The library cites **ADR-012** for its rationale; the README links back |
-| `LLM_CONTRACT_VERSION` stamped into provenance | Originally a SelfLearner concern (per-book pinning); now portfolio-wide |
+| `LLM_CONTRACT_VERSION` stamped into provenance | Originally a Mentible concern (per-book pinning); now portfolio-wide |
 | Capability-flag-driven request shaping | The `Capabilities` dataclass and its uses in `_response_format()` |
-| `tokens_estimated` honesty flag | Says "the count is a fallback, not provider-reported" — borrowed from SelfLearner's token-metering work |
-| Per-provider free-tier quirks documented inline | The Groq 413 / Gemini 2.0-flash quota notes were SelfLearner findings, preserved verbatim in the registry |
+| `tokens_estimated` honesty flag | Says "the count is a fallback, not provider-reported" — borrowed from Mentible's token-metering work |
+| Per-provider free-tier quirks documented inline | The Groq 413 / Gemini 2.0-flash quota notes were Mentible findings, preserved verbatim in the registry |
 
-The extraction was not just "move the files into a new repo." It was also a chance to *promote* SelfLearner's per-provider notes to first-class library documentation — they now apply to every consumer, not just the one that originally hit the wall.
+The extraction was not just "move the files into a new repo." It was also a chance to *promote* Mentible's per-provider notes to first-class library documentation — they now apply to every consumer, not just the one that originally hit the wall.
 
 ---
 
@@ -214,7 +214,7 @@ The `wegofwd-llm` extraction generalizes to a rule the portfolio can re-use:
 
 The same shape is visible (less crisply) in:
 
-- **StudyBuddy's `pipeline/providers/` → `wegofwd-llm`** (the extraction itself).
+- **Mentible's `pipeline/providers/` → `wegofwd-llm`** (the extraction itself).
 - **Thittam's vertical plugin system** — extracted once two verticals were under construction; not earlier when only film production existed.
 - **The `coding-standards` repo** — extracted into a separate repo only after the *third* project (Pramana) needed the same rules.
 

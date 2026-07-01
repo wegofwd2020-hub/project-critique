@@ -14,7 +14,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 |---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 | StudyBuddy_OnDemand | Y | – | – | Y | Y (49) | ADR_001 only | Y | Y | partial |
 | studybuddy-docs | Y | – | Y | – | Y (68) | – | Y | n/a | Y |
-| StudyBuddy_SelfLearner | Y | Y | – | Y | Y | Y | – | Y | – |
+| Mentible | Y | Y | – | Y | Y | Y | – | Y | – |
 | studybuddy_free | Y | Y | – | – | Y | – | – | Y | – |
 | pramana | Y | – | – | – | Y (73) | as "decisions" | Y | Y | – |
 | kathai-chithiram | Y | – | – | – | – | – | – | – | – |
@@ -36,7 +36,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 
 **Pramana** — excellent for a spec-phase project: initial analysis, resolved decisions, six regulatory framework references, an API spec area, and user-stories. *Gaps:* no `LICENSE` file despite the README declaring "Proprietary — All Rights Reserved"; no top-level `SECURITY.md`/threat model, which is notable for a *compliance* product; no `CLAUDE.md`; ADRs exist only as prose "resolved decisions," not numbered records.
 
-**StudyBuddy Q / Mentible (SelfLearner)** — appropriate for pre-MVP: README, SCOPE, MVP doc, ADR folder, CLAUDE.md, LICENSE. *Gaps:* no tests yet (expected — no code), no BYOK privacy/security note despite handling user API keys.
+**Mentible** — appropriate for pre-MVP: README, SCOPE, MVP doc, ADR folder, CLAUDE.md, LICENSE. *Gaps:* no tests yet (expected — no code), no BYOK privacy/security note despite handling user API keys.
 
 **StudyBuddy Free** — shipped product with README, LICENSE (MIT), docs, tests. *Gaps:* no `CHANGELOG` (it's a versioned, shipped app — it should have one), no `.gitignore`, no `CLAUDE.md`.
 
@@ -65,7 +65,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 
 3. **CHANGELOGs are largely absent** — only `studybuddy-docs` and `mambakkam-net` have one. Shipped/late-build products (`studybuddy_free`, `StudyBuddy_OnDemand`, `thittam`) should each maintain one.
 
-4. **ADR discipline is inconsistent** — `StudyBuddy_SelfLearner` and `thittam_docs` keep proper ADR folders; StudyBuddy's main docs, Pramana, and Thittam record decisions as prose design docs instead. Given how much you value decision records, a single ADR convention across the portfolio would pay off.
+4. **ADR discipline is inconsistent** — `Mentible` and `thittam_docs` keep proper ADR folders; StudyBuddy's main docs, Pramana, and Thittam record decisions as prose design docs instead. Given how much you value decision records, a single ADR convention across the portfolio would pay off.
 
 5. **OpenSpec/OpenAPI coverage is uneven** — you've stated a preference for OpenSpec-compliant docs; Pramana and StudyBuddy have API spec material, but it isn't a consistent, per-service artifact across Thittam's nine services or the StudyBuddy backend. (Worth a separate pass to confirm code-level docstrings meet your OpenSpec standard — this audit only covered document files.)
 

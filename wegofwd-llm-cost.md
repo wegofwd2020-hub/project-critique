@@ -19,7 +19,7 @@
 
 The compression ratio is somewhat smaller than StudyBuddy_OnDemand's headline (~28× US) — exactly because this is **specialist infrastructure work** where AI assistance compresses less than commodity feature work. The triangulation matters here: feature-counting gives the highest number because each provider integration is itself a small project; COCOMO is conservative because the SLOC is small; industry-velocity is in between. All three triangulate to a defensible ~$48k US median.
 
-A real read of the result: **the extraction labor was small. The IP being extracted had already been built (and paid for) inside StudyBuddy_SelfLearner.** This cost lens measures the *packaging-and-publication* step specifically — the contract design, the registry, the OpenAI-compatible client, the test scaffolding, the CI workflow, the README, the three-axis versioning, and the cross-portfolio re-injection. Even on that narrow scope the multipliers are real.
+A real read of the result: **the extraction labor was small. The IP being extracted had already been built (and paid for) inside Mentible.** This cost lens measures the *packaging-and-publication* step specifically — the contract design, the registry, the OpenAI-compatible client, the test scaffolding, the CI workflow, the README, the three-axis versioning, and the cross-portfolio re-injection. Even on that narrow scope the multipliers are real.
 
 ---
 
@@ -44,9 +44,9 @@ The reference deliverable for the conventional-team estimate is **the same shape
 
 What is **out of scope** for both the conventional and the actual estimate (it was already paid for elsewhere):
 
-- The design of the contract surface itself — done inside StudyBuddy_SelfLearner ahead of extraction.
-- The free-tier incident learnings (Groq 413, Gemini 2.0-flash deprecation) — paid for during SelfLearner's pipeline build.
-- ADR-012 itself — written in the SelfLearner docs, not in this repo.
+- The design of the contract surface itself — done inside Mentible ahead of extraction.
+- The free-tier incident learnings (Groq 413, Gemini 2.0-flash deprecation) — paid for during Mentible's pipeline build.
+- ADR-012 itself — written in the Mentible docs, not in this repo.
 - The downstream consumer integration in StudyBuddy_OnDemand (PRs #430/#431) — those PRs are costed under StudyBuddy's own cost analysis.
 
 This document costs **only the wegofwd-llm repo's own work**.
@@ -95,7 +95,7 @@ KSLOC^1.10 = ~1.49
 EAF (effort adjustment factor) — modernized for this kind of work:
   PREC (precedentedness): 0.88   ← shared LLM seam patterns are emerging, not novel
   FLEX (flexibility):     0.96   ← extracted from existing code, fewer requirements churns
-  RESL (risk resolution): 0.92   ← high — ADR-012 done, contract pre-validated in SelfLearner
+  RESL (risk resolution): 0.92   ← high — ADR-012 done, contract pre-validated in Mentible
   TEAM (team cohesion):   0.95   ← solo (no team friction)
   PMAT (process maturity):0.95   ← coding standards repo loaded, CI rules established
   Subtotal scale factor:  0.88 × 0.96 × 0.92 × 0.95 × 0.95 ≈ 0.70
@@ -214,7 +214,7 @@ Both effects are *informative*, not failures. They are the **expected signature 
 
 ## What the ratios do NOT capture
 
-- **The IP cost.** The contract design, the BYOK/no-leak rules, the three-axis versioning, the conformance loop pattern — none of these were invented during this 5-day window. They were paid for inside StudyBuddy_SelfLearner's earlier 97-commit build cycle. This cost analysis measures the *extraction-and-publication* labor; the *invention* labor is sunk in SelfLearner.
+- **The IP cost.** The contract design, the BYOK/no-leak rules, the three-axis versioning, the conformance loop pattern — none of these were invented during this 5-day window. They were paid for inside Mentible's earlier 97-commit build cycle. This cost analysis measures the *extraction-and-publication* labor; the *invention* labor is sunk in Mentible.
 - **The validation cost.** The fact that StudyBuddy_OnDemand consumed the package in the *same window* (PRs #430/#431) is what proves the contract was right. If the consumer had revealed contract bugs that forced a v0.2 rewrite, this cost analysis would look very different. The clean re-injection is itself evidence the design was paid for properly upstream.
 - **The maintenance tail.** Pre-1.0 libraries carry a maintenance commitment that this snapshot doesn't price. A real consumer-pinning the library accepts an implicit cost of *reading every release note*; the publisher accepts an implicit cost of *not breaking that promise*. Both are ongoing, both are small per-version but real over years.
 - **The portfolio multiplier.** Three consumers using one shared library is the structural payoff that justifies the extraction. The cost analysis here measures the cost of *producing* the library; the *value* of the library is the sum of three consumer-cost reductions that future cost analyses (StudyBuddy_OnDemand v1.8, Mentible v2.1, Kathai Chithiram v1.0) will be able to attribute.

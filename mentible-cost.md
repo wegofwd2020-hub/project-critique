@@ -1,10 +1,10 @@
-# StudyBuddy SelfLearner (Mentible) — Real-World Cost Analysis
+# Mentible — Real-World Cost Analysis
 
 **Analysed:** 2026-06-09 (v2.0 — major refresh; re-anchored to branch `main` @ `40166ee`. **97 commits since v1.0** added a multi-provider LLM seam *extracted into the installable `wegofwd-llm` package*, free-provider support, the Pramana integration boundary, an opt-in narrative mode, a books-only refactor, and a substantially expanded compiler — real new scope that raises the conventional-team estimate.)
 **Prior pass:** 2026-06-02 (v1.0 — first cost pass, branch `feat/authoring-regenerate-export-fixes` @ `e1c66f7`; figure ~$435k US / ~$151k blended at ~13 EM)
-**Repo / brand:** `wegofwd2020-hub/StudyBuddy_SelfLearner` · public brand **Mentible**
+**Repo / brand:** `wegofwd2020-hub/Mentible` · public brand **Mentible**
 **Question being answered:** if this same artifact had been built by a conventional team in the real world (not by a single founder with Claude-assisted execution), what would it have cost in money and calendar time?
-**Scope of measurement:** code on disk at `40166ee` — a **pre-deploy MVP** (feature-complete in code for a now-larger MVP slice: multi-provider, books-only; not yet deployed or run against a deployed backend). The *standalone* `wegofwd-llm` package **is** in scope this time (it is real code SelfLearner depends on; on disk Mentible is its sole consumer). The separate free reader app (ADR-004), the full managed-key layer, and the Pramana product itself remain out of both columns; the **Mentible↔Pramana integration** counts only the thin outbound HTTP port present on disk (`mentible_client.py`), not the as-yet-unwired Pramana-side generation.
+**Scope of measurement:** code on disk at `40166ee` — a **pre-deploy MVP** (feature-complete in code for a now-larger MVP slice: multi-provider, books-only; not yet deployed or run against a deployed backend). The *standalone* `wegofwd-llm` package **is** in scope this time (it is real code Mentible depends on; on disk Mentible is its sole consumer). The separate free reader app (ADR-004), the full managed-key layer, and the Pramana product itself remain out of both columns; the **Mentible↔Pramana integration** counts only the thin outbound HTTP port present on disk (`mentible_client.py`), not the as-yet-unwired Pramana-side generation.
 
 ---
 
@@ -169,7 +169,7 @@ These land in the same family as v1.0 (~17× US all-in → now ~16×) and the si
 
 - The 16 EM estimate assumes a competent team *with* both ebook-publishing and LLM-integration experience. A team learning EPUB3 or multi-provider conformance on the job burns more; an elite team that has shipped both could hit ~13 EM. Range **13–18 EM** is defensible (was 10–18).
 - This is still a **pre-deploy MVP** — never run against a deployed backend (per `docs/STATUS.md`, now stale). Both columns still owe deployment, app-store submission, and on-device verification. (Some *provider* paths are self-reported live-verified — Groq, Anthropic — but that is commit-message provenance, not a deployed E2E.)
-- The `wegofwd-llm` package **is** counted (real, shared code SelfLearner depends on). The separate free reader app (ADR-004), the full managed-key layer, and the Pramana *product* are still excluded from both columns; adding any raises both baselines.
+- The `wegofwd-llm` package **is** counted (real, shared code Mentible depends on). The separate free reader app (ADR-004), the full managed-key layer, and the Pramana *product* are still excluded from both columns; adding any raises both baselines.
 - **Reuse compounds the velocity, and is built to compound further.** The seam was vendored-then-packaged from prior OnDemand work; on disk it serves Mentible, and is designed (ADR-012) to serve Pramana next. Some of the speed is first-party reuse, not AI assistance per se — the two compound, and the package is positioned to amortize one build across multiple consumers even though only one is wired today.
 - Equity is excluded from all cash columns; a real team's total comp including equity would be ~30% higher.
 - The calendar figure overlapped with OnDemand *and* Pramana work — treat "~6.5 weeks" as wall-clock, not exclusive founder-time.
@@ -184,4 +184,4 @@ The more durable observations sharpen too. **Cost structure:** BYOK + *free* pro
 
 ---
 
-*Cost analysis is a point-in-time exercise. Loaded rates, market conditions, and AI tooling capability all evolve. This is a v2.0 pass against a pre-deploy MVP at `40166ee` (branch `main`), with the dependent `wegofwd-llm` package (latest tag `v0.1.1`, 773 LOC / 48 tests; SelfLearner pins `v0.1.0`) counted. Re-run once the product is deployed and the reader app / full managed-key layer / Pramana product are built, as each will shift the conventional-team baseline. Supersedes v1.0 (2026-06-02 @ `e1c66f7`, ~$435k US / ~$151k blended at ~13 EM).*
+*Cost analysis is a point-in-time exercise. Loaded rates, market conditions, and AI tooling capability all evolve. This is a v2.0 pass against a pre-deploy MVP at `40166ee` (branch `main`), with the dependent `wegofwd-llm` package (latest tag `v0.1.1`, 773 LOC / 48 tests; Mentible pins `v0.1.0`) counted. Re-run once the product is deployed and the reader app / full managed-key layer / Pramana product are built, as each will shift the conventional-team baseline. Supersedes v1.0 (2026-06-02 @ `e1c66f7`, ~$435k US / ~$151k blended at ~13 EM).*

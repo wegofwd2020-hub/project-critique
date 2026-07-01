@@ -15,7 +15,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 |---|---|---|---|---|---|
 | 1 | **StudyBuddy OnDemand** | `StudyBuddy_OnDemand` | Education (B2B / schools) | Python · FastAPI · Kivy · PostgreSQL | Late-build / pre-production (demo live) |
 | 2 | **StudyBuddy Free** | `studybuddy_free` | Education (B2C, standalone) | Python · Kivy · Anthropic API (BYOK) | Shipped v1.1.0 (proof-of-concept) |
-| 3 | **StudyBuddy Q** (Mentible) | `StudyBuddy_SelfLearner` | Education (B2C, self-learners) | React Native · Expo · FastAPI (BYOK) | Pre-MVP (spec + stubs) |
+| 3 | **Mentible** | `Mentible` | Education (B2C, self-learners) | React Native · Expo · FastAPI (BYOK) | Pre-MVP (spec + stubs) |
 | 4 | **Thittam** | `thittam` | Production-management SaaS | Go microservices · gRPC · NATS · Next.js | Late-build / pre-production |
 | 5 | **Pramana** | `pramana` | Compliance training & tracking | Python · FastAPI · SQLAlchemy · PostgreSQL | Spec + early data model |
 | 6 | **Kathai Chithiram** | `kathai-chithiram` | Assistive media (special needs) | Python · matplotlib/imageio · Blender | Prototype (PoC renderers) |
@@ -31,7 +31,8 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | `project-critique` | Independent code reviews, development-pattern analyses, and real-world cost estimates across the portfolio. |
 | `studybuddy-docs` | Architecture, ADRs, runbooks, and phased plans for StudyBuddy OnDemand (code lives in `StudyBuddy_OnDemand`). |
 | `thittam_docs` | Architecture, ADRs, and API specs for Thittam (code lives in `thittam`). |
-| `wegofwd-llm` | **Shared multi-provider LLM seam** (Python library, BYOK, schema-agnostic conformance loop). Consumed by StudyBuddy_OnDemand, SelfLearner/Mentible, and Kathai Chithiram. ADR-012. Critique in `project-critique/wegofwd-llm-critique.md` — under top-level watch as of v2.6. |
+| `wegofwd-llm` | **Shared multi-provider LLM seam** (Python library, BYOK, schema-agnostic conformance loop). Consumed by StudyBuddy_OnDemand, Mentible, and Kathai Chithiram. ADR-012. Critique in `project-critique/wegofwd-llm-critique.md` — under top-level watch as of v2.6. |
+| `wegofwd-video` | **Shared video-generation library** (Python), promoted to a standalone package per **ADR-026**. Registry-based provider pattern mirroring `wegofwd-llm` — supports AI video generators (Veo 3.1, Runway, Kling) and deterministic renderers, with provenance. Package `v1.0.0`; consumers pin git tag `v0.1.2`. Consumed by pramana and Kathai Chithiram; Mentible adoption planned. |
 
 ---
 
@@ -73,9 +74,9 @@ Proved the concept that OnDemand productized.
 - **Stack:** Python · Kivy 2.2 · Anthropic API (BYOK) · local JSON storage
 - **Status:** Shipped — v1.1.0 (2025-03-17), MIT licensed.
 
-### 3. StudyBuddy Q / Mentible — `StudyBuddy_SelfLearner`
+### 3. Mentible — `Mentible`
 A focused, opinionated mobile Anthropic client for **adult self-learners** (BYOK). Public
-brand **StudyBuddy Q** ("Q = scoped Query"). *"Claude Code, but for learners instead of
+brand **Mentible** (formerly **StudyBuddy Q**, where "Q = scoped Query"). *"Claude Code, but for learners instead of
 coders."* Adults-only (no COPPA/FERPA), quality-over-scale demo of the IP. This repo is also
 home to **Mentible** — the book/lesson templating layer (`mentible-professional@1.0`) that
 defines how generated content looks and reads.
@@ -98,7 +99,7 @@ in PostgreSQL. Companion docs report four verticals at GA.
 platform. v1 is single-tenant for a corporate client, scoped to SOX, with later frameworks
 (HIPAA, ISO 27001, GDPR, PCI DSS) on the roadmap. Repo currently holds locked requirements,
 a SQLAlchemy data model + Alembic baseline, and in-process quiz generation.
-- **Stack:** Python 3.12 · FastAPI · SQLAlchemy 2.x + Alembic · PostgreSQL · Celery/Redis
+- **Stack:** Python 3.12 · FastAPI · SQLAlchemy 2.x + Alembic · PostgreSQL · Celery/Redis · `wegofwd-video`
 - **Status:** Specification + early data model (no full service yet).
 - **License:** Proprietary — © WeGoFwd.
 
@@ -106,8 +107,8 @@ a SQLAlchemy data model + Alembic baseline, and in-process quiz generation.
 *Kathai Chithiram* (Tamil, "story → picture"). Turns a **parent's written story into a short,
 calm, captioned animation** designed to be understood by a child with special needs (autism
 spectrum / developmental needs) — a personalised, on-demand take on social stories. Pipeline:
-parent story → `wegofwd-llm` → structured scene script → renderer → mp4.
-- **Stack:** Python · matplotlib + imageio (v1 renderer) · Blender Grease Pencil (v2) · `wegofwd-llm`
+parent story → `wegofwd-llm` → structured scene script → renderer (`wegofwd-video`) → mp4.
+- **Stack:** Python · matplotlib + imageio (v1 renderer) · Blender Grease Pencil (v2) · `wegofwd-llm` · `wegofwd-video`
 - **Status:** Prototype — two reference renderers and a first hand-built story ("Silas Shines His Smile").
 
 ### 7. dronePrjs — `dronePrjs`
@@ -138,7 +139,7 @@ publish product demos (e.g. the Mentible demo).
 ```
 StudyBuddy family
   studybuddy_free ──(productized into)──▶ StudyBuddy_OnDemand ──(docs)──▶ studybuddy-docs
-                                          StudyBuddy_SelfLearner (StudyBuddy Q / Mentible)
+                                          Mentible (formerly StudyBuddy Q)
                                               └─ vendors prompt IP one-way from OnDemand
 
 Thittam family
@@ -163,7 +164,7 @@ All 13 repositories are present locally and synced with GitHub.
 | `pramana` | Pulled (was 34 behind) | Fast-forwarded to `0d88ebc` |
 | `thittam` | Pulled (was 22 behind) | Fast-forwarded to `c3f9078` |
 | `project-critique` | Pulled (was 10 behind) | Fast-forwarded to `ba8f9e1` |
-| `StudyBuddy_SelfLearner` | Fixed missing auth token on remote, then fetched | Up to date |
+| `Mentible` | Fixed missing auth token on remote, then fetched | Up to date |
 | `studybuddy-docs` | Cloned (was missing locally) | New |
 | `thittam_docs` | Cloned (was missing locally) | New |
 | `MarketingTools` | Cloned (was missing locally) | New |
@@ -172,5 +173,5 @@ All 13 repositories are present locally and synced with GitHub.
 
 **Notes**
 - No local repo was ahead of its remote, so every sync was a safe fast-forward — no local work was lost.
-- Two repos are checked out on feature branches (left as-is): `StudyBuddy_OnDemand` → `fix/frontend-unit-tests-363`, `StudyBuddy_SelfLearner` → `docs/adr-014-user-accounts`.
+- Two repos are checked out on feature branches (left as-is): `StudyBuddy_OnDemand` → `fix/frontend-unit-tests-363`, `Mentible` → `docs/adr-014-user-accounts`.
 - A full account-wide repo enumeration via the GitHub API/website wasn't reachable from this environment; the four cloned repos were discovered from cross-references inside your project docs. If the org has additional repos not referenced anywhere, tell me the names and I'll clone them too.
