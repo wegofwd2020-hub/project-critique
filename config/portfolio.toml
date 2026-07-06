@@ -1,0 +1,8 @@
+# Portfolio health dashboard config.
+[scan]
+root = "~/Documents/code/projects/AIStuff/STEM_studybuddy"
+exclude = ["project-critique"]   # don't scan the dashboard's own repo
+
+# Stages that are exploratory — NOT expected to be feature-complete or rigor-heavy,
+# so health rules don't mark them red for being early. Everything else "expects" rigor.
+exploratory_stages = ["passion", "prototype", "pre-mvp", "spec", "early-build", "unknown"]
