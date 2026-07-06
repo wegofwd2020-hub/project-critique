@@ -30,8 +30,8 @@ th{color:var(--mut);font-weight:500;font-size:.8rem;text-transform:uppercase}
 .sig{color:var(--mut);font-size:.85rem;margin-top:.5rem}
 .badge{font-size:.75rem;border:1px solid var(--mut);border-radius:5px;padding:0 .35rem;margin-left:.4rem;color:var(--mut)}</style></head><body>
 <div class="wrap"><h1>Portfolio Health</h1>
-<p class="sub">16 repos · generated 2026-07-06T20:32:02+00:00</p>
-<div class="grand"><div class="g">🟢 6 · 🟡 9 · 🔴 1</div><div class="g">features: 24✓ / 7⏳ / 16◻ (of 47)</div></div>
+<p class="sub">16 repos · generated 2026-07-06T20:33:46+00:00</p>
+<div class="grand"><div class="g">🟢 6 · 🟡 9 · 🔴 1</div><div class="g">features: 113✓ / 15⏳ / 31◻ (of 159)</div></div>
 <input id="q" type="search" autocomplete="off" placeholder="Filter by project, stage, status, owner…">
 <div id="none">No matching repositories.</div>
 <details class="proj"><summary><span>🟡 yellow</span><span class="name">MarketingTools</span><span class="stage">active</span><span class="counts">4✓ / 0⏳ / 1◻ · 11c/30d · 0d</span><span class="reason">missing tests</span></summary>
@@ -56,7 +56,7 @@ th{color:var(--mut);font-weight:500;font-size:.8rem;text-transform:uppercase}
 </table>
 <div class="sig">tests: yes · docs: yes · license: yes · branch: feat/help-engine-seam</div>
 </div></details>
-<details class="proj"><summary><span>🟡 yellow</span><span class="name">StudyBuddy OnDemand</span><span class="stage">late-build</span><span class="counts">8✓ / 1⏳ / 8◻ · 116c/30d · 0d</span><span class="reason">47% of features done</span></summary>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">StudyBuddy OnDemand</span><span class="stage">late-build</span><span class="counts">8✓ / 1⏳ / 8◻ · 117c/30d · 0d</span><span class="reason">47% of features done</span></summary>
 <div class="body">
 <table><tr><th>Feature</th><th>Status</th><th>ID</th></tr>
 <tr><td>Multi-Provider LLM Pipeline</td><td>done</td><td>Epic 1</td></tr>
@@ -131,8 +131,122 @@ th{color:var(--mut);font-weight:500;font-size:.8rem;text-transform:uppercase}
 <div class="body">
 <div class="sig">tests: yes · docs: yes · license: yes · branch: 1-implement-dual-os-build</div>
 </div></details>
-<details class="proj"><summary><span>🟢 green</span><span class="name">thittam<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 40c/30d · 0d</span><span class="reason">active, no feature list, tests+docs</span></summary>
+<details class="proj"><summary><span>🟢 green</span><span class="name">Thittam</span><span class="stage">late-build</span><span class="counts">89✓ / 8⏳ / 15◻ · 42c/30d · 0d</span><span class="reason">active, 79% done, tests+docs</span></summary>
 <div class="body">
+<table><tr><th>Feature</th><th>Status</th><th>ID</th></tr>
+<tr><td>chore(proto): Run buf generate and sqlc generate — shared prep work</td><td>done</td><td>#1</td></tr>
+<tr><td>feat(iam): Build IAM service — identity, auth, RBAC, tenancy</td><td>done</td><td>#2</td></tr>
+<tr><td>feat(project): Complete project-management service — repository, gRPC wiring, main.go</td><td>done</td><td>#3</td></tr>
+<tr><td>feat(budget): Complete budget-planning service — repository, gRPC wiring, main.go</td><td>done</td><td>#4</td></tr>
+<tr><td>feat(expense): Complete expense-tracking service — repository, gRPC wiring, main.go</td><td>done</td><td>#5</td></tr>
+<tr><td>feat(inventory): Complete inventory-management service — repository, gRPC wiring, main.go</td><td>done</td><td>#6</td></tr>
+<tr><td>feat(ledger): Build general-ledger service — double-entry accounting</td><td>done</td><td>#7</td></tr>
+<tr><td>feat(reporting): Complete reporting-analytics service — repository, gRPC wiring, main.go</td><td>done</td><td>#8</td></tr>
+<tr><td>feat(notifications): Build notifications service — email, SMS, push, in-app</td><td>done</td><td>#9</td></tr>
+<tr><td>feat(document): Build document service — file storage, versioning, e-signatures</td><td>done</td><td>#10</td></tr>
+<tr><td>[P0] Define proto contracts for IAM, GeneralLedger, Notifications, and Document services</td><td>done</td><td>#11</td></tr>
+<tr><td>[P0] Validate tenant ID as UUID before interpolating into SET search_path to prevent schema injection</td><td>done</td><td>#12</td></tr>
+<tr><td>[P0] Resolve contradiction between Rule #2 (env vars) and security doc (Vault for T1 secrets)</td><td>done</td><td>#13</td></tr>
+<tr><td>[P0] Design and implement saga pattern for the 9-step tenant registration pipeline</td><td>done</td><td>#14</td></tr>
+<tr><td>[P1] Document and implement reporting-analytics read model strategy</td><td>done</td><td>#15</td></tr>
+<tr><td>[P1] Add CI test suite for vertical plugin YAML schema validation</td><td>done</td><td>#16</td></tr>
+<tr><td>[P1] Raise test coverage targets: 800+ tests with per-service thresholds</td><td>done</td><td>#17</td></tr>
+<tr><td>[P1] Run critical-path E2E tests on every PR, not just nightly</td><td>done</td><td>#18</td></tr>
+<tr><td>[P1] Document NATS JetStream dead-letter strategy for financial events</td><td>done</td><td>#19</td></tr>
+<tr><td>[P2] Document vertical plugin YAML schema (JSON Schema or protobuf)</td><td>done</td><td>#20</td></tr>
+<tr><td>[P2] Implement and ship the billing service</td><td>done</td><td>#21</td></tr>
+<tr><td>[P2] Evaluate tenant-per-schema scalability ceiling and document decision for 500+ tenants</td><td>done</td><td>#22</td></tr>
+<tr><td>[P2] Add load and chaos testing for the double-entry ledger and concurrent expense approvals</td><td>done</td><td>#23</td></tr>
+<tr><td>[P2] Verify and document Istio DestinationRule ROUND_ROBIN load balancing for all gRPC service pairs</td><td>done</td><td>#24</td></tr>
+<tr><td>[P3] Replace bcrypt with argon2id or add per-IP rate limiting on auth endpoints</td><td>done</td><td>#25</td></tr>
+<tr><td>[P3] Implement automated documentation drift detection in CI (Rule #16)</td><td>done</td><td>#26</td></tr>
+<tr><td>[P3] Define and document impersonation session lifecycle, maximum duration, and revocation policy</td><td>done</td><td>#27</td></tr>
+<tr><td>[P3] Set MinIO presigned URL window dynamically based on file size</td><td>done</td><td>#28</td></tr>
+<tr><td>feat(frontend): document management UI — file browser, upload, versioning, e-signatures</td><td>done</td><td>#29</td></tr>
+<tr><td>feat(frontend): notifications inbox UI — in-app notification centre</td><td>done</td><td>#30</td></tr>
+<tr><td>feat(infra): Prometheus alert rules for all services</td><td>done</td><td>#31</td></tr>
+<tr><td>feat(infra): K8s manifests — Deployments, Services, HPA, ConfigMaps, NetworkPolicy for all 10 services</td><td>done</td><td>#32</td></tr>
+<tr><td>feat(iam): rename system roles to generic names (ADR-014 Phase 1)</td><td>done</td><td>#33</td></tr>
+<tr><td>feat(iam): add inventory_manager and project_supervisor system roles (ADR-014 Phase 1)</td><td>done</td><td>#34</td></tr>
+<tr><td>feat(vertical): add role_labels map to vertical YAML schema (ADR-014 Phase 1)</td><td>done</td><td>#35</td></tr>
+<tr><td>chore(seeds): update XYZ_CBA demo seed for new role model (ADR-014 Phase 1)</td><td>done</td><td>#36</td></tr>
+<tr><td>chore(migrations): data migration — rename system roles for existing tenants (ADR-014 Phase 1)</td><td>done</td><td>#37</td></tr>
+<tr><td>docs(security): update RBAC documentation for new role model (ADR-014 Phase 1)</td><td>done</td><td>#38</td></tr>
+<tr><td>feat(iam): add project_id scope to user_roles — schema + DB constraints (ADR-014 Phase 2)</td><td>done</td><td>#39</td></tr>
+<tr><td>feat(iam): project-scoped CheckPermission and AssignProjectRole — service + repository (ADR-014 Phase 2)</td><td>done</td><td>#40</td></tr>
+<tr><td>feat(proto): add project_id to CheckPermissionRequest and AssignProjectRole RPC (ADR-014 Phase 2)</td><td>done</td><td>#41</td></tr>
+<tr><td>feat(interceptor): project-scoped permission enforcement in gRPC interceptor (ADR-014 Phase 2)</td><td>done</td><td>#42</td></tr>
+<tr><td>feat(services): wire project_id into permission checks across project-scoped services (ADR-014 Phase 2)</td><td>done</td><td>#43</td></tr>
+<tr><td>chore(dev): separate DB lifecycle from app startup; add per-test DB scaffold</td><td>done</td><td>#44</td></tr>
+<tr><td>chore(rbac): ADR-014 cross-cutting role-name cleanup (Phase 1 leftover)</td><td>done</td><td>#45</td></tr>
+<tr><td>feat(rbac): wire IAM client into project-scoped services + PROJECT_SCOPED_RBAC rollout (ADR-014 Phase 2)</td><td>done</td><td>#46</td></tr>
+<tr><td>feat(rbac): expand RequirePermission coverage to all mutating RPCs in project-scoped services</td><td>done</td><td>#47</td></tr>
+<tr><td>test(crypto): make TestDecrypt_Tampered deterministic</td><td>done</td><td>#48</td></tr>
+<tr><td>chore(repo): gitignore service binaries left at repo root by go build</td><td>done</td><td>#49</td></tr>
+<tr><td>chore(proto): fix buf config so &#x27;buf breaking&#x27; compares correctly</td><td>done</td><td>#50</td></tr>
+<tr><td>ci: run &#x27;make test-integration&#x27; on every PR</td><td>done</td><td>#51</td></tr>
+<tr><td>verify(rbac): end-to-end dev rollout verification of PROJECT_SCOPED_RBAC</td><td>done</td><td>#52</td></tr>
+<tr><td>ci: Test &amp; Coverage job fails with &#x27;no such tool covdata&#x27; on Go 1.22 toolchain</td><td>done</td><td>#53</td></tr>
+<tr><td>ci: vuln-scan failing on Go 1.25 stdlib CVEs (GO-2026-*)</td><td>done</td><td>#54</td></tr>
+<tr><td>ci(lint): golangci-lint binary built on Go 1.24 fails on Go 1.25 target</td><td>done</td><td>#55</td></tr>
+<tr><td>ci(buf): RPC response naming warnings break the buf lint job</td><td>done</td><td>#56</td></tr>
+<tr><td>ci(doc-drift): Documentation Drift Check fails to checkout thittam_docs (404)</td><td>done</td><td>#57</td></tr>
+<tr><td>ci(lint): fix 49 findings exposed by golangci-lint v2 (errcheck + staticcheck + unused)</td><td>done</td><td>#58</td></tr>
+<tr><td>ci(deps): bump grpc + go-redis to fix remaining vuln-scan findings; document N/A vulns</td><td>done</td><td>#59</td></tr>
+<tr><td>feat(api): REST→gRPC bridge — grpc-gateway in services + Kong in local stack</td><td>in-progress</td><td>#60</td></tr>
+<tr><td>feat(onboarding): capture company address + country-driven primary currency</td><td>in-progress</td><td>#61</td></tr>
+<tr><td>feat(i18n): locale plumbing — tenant default + user override</td><td>pending</td><td>#62</td></tr>
+<tr><td>feat(a11y): surface existing dyslexia toggle + persist to user prefs</td><td>pending</td><td>#63</td></tr>
+<tr><td>feat(a11y): accessibility toggles + axe-core CI check</td><td>pending</td><td>#64</td></tr>
+<tr><td>feat(ui): adopt shadcn/ui as themeable foundation</td><td>in-progress</td><td>#65</td></tr>
+<tr><td>feat(payments): ADR + Gateway interface design (no driver yet)</td><td>done</td><td>#66</td></tr>
+<tr><td>feat(seed): add XYZ Construction demo tenant</td><td>done</td><td>#67</td></tr>
+<tr><td>docs(readme): replace upstream golang-migrate README with Thittam overview</td><td>done</td><td>#68</td></tr>
+<tr><td>feat(budget): wire REST gateways + live /budgets pages (Phase B)</td><td>done</td><td>#69</td></tr>
+<tr><td>chore(tooling): Phase 1 — Claude Code workflow improvements (epic)</td><td>in-progress</td><td>#70</td></tr>
+<tr><td>chore(tooling): §1.1 /spec-first slash command</td><td>done</td><td>#71</td></tr>
+<tr><td>chore(tooling): §1.2 plan-mode discipline for multi-file changes</td><td>in-progress</td><td>#72</td></tr>
+<tr><td>chore(tooling): §1.3 sub-agent fleet defaults</td><td>in-progress</td><td>#73</td></tr>
+<tr><td>chore(tooling): §2.2 Thittam slash commands for repeated workflows</td><td>in-progress</td><td>#74</td></tr>
+<tr><td>chore(tooling): Phase 1 — Claude Code workflow (spec-first + slash commands)</td><td>done</td><td>#75</td></tr>
+<tr><td>feat(payments): Gateway interface + stub driver (#66)</td><td>done</td><td>#76</td></tr>
+<tr><td>fix(ci): fetch full history for proto breaking-change job</td><td>done</td><td>#77</td></tr>
+<tr><td>feat(ui): wire productions pages onto live API (Phase C)</td><td>done</td><td>#78</td></tr>
+<tr><td>docs(cost): add hosting &amp; cost plan</td><td>pending</td><td>#79</td></tr>
+<tr><td>docs(roadmap): add product feature roadmap</td><td>pending</td><td>#80</td></tr>
+<tr><td>docs(ux): add UX goals + requirements spec</td><td>pending</td><td>#81</td></tr>
+<tr><td>docs(accessibility): add WCAG 2.1 AA plan + test procedure</td><td>pending</td><td>#82</td></tr>
+<tr><td>docs(requirements): add product requirements (PRD) doc</td><td>pending</td><td>#83</td></tr>
+<tr><td>docs(marketing): add pitch / investor collateral</td><td>pending</td><td>#84</td></tr>
+<tr><td>docs(testing): add load-testing procedure + SLA query runbook</td><td>pending</td><td>#85</td></tr>
+<tr><td>docs(security): add threat model paired with network security diagrams</td><td>pending</td><td>#86</td></tr>
+<tr><td>docs(integration): add &#x27;working with external services&#x27; guide</td><td>pending</td><td>#87</td></tr>
+<tr><td>feat(seed): add seeds/template/new-tenant/ scaffold</td><td>done</td><td>#88</td></tr>
+<tr><td>feat(iam): enforce UNIQUE on tenants.name — migration + service pre-check + 409 on conflict</td><td>pending</td><td>#89</td></tr>
+<tr><td>feat(iam): scheduled tenant retention pipeline — suspended → grace → deactivated → purge</td><td>pending</td><td>#90</td></tr>
+<tr><td>feat(iam): UNIQUE constraint on tenants.name (case-insensitive)</td><td>done</td><td>#91</td></tr>
+<tr><td>feat(iam): scheduled tenant retention sweeper (suspended → deactivated → purge)</td><td>in-progress</td><td>#92</td></tr>
+<tr><td>feat(project,ui): wire Phases + Crew tabs onto live API (Phase C part 2)</td><td>done</td><td>#93</td></tr>
+<tr><td>fix(ci): create local main ref so buf breaking actually finds it</td><td>done</td><td>#94</td></tr>
+<tr><td>fix(ui): replace invalid ringColor CSS prop with ring-white Tailwind class</td><td>done</td><td>#95</td></tr>
+<tr><td>feat(ui): per-production budget aggregation on detail page</td><td>done</td><td>#96</td></tr>
+<tr><td>chore(demo): preflight smoke-test for local dev stack</td><td>done</td><td>#97</td></tr>
+<tr><td>docs(commands): add Mermaid example to /new-adr template</td><td>done</td><td>#98</td></tr>
+<tr><td>feat(iam): UNIQUE constraint on tenants.name (case-insensitive)</td><td>done</td><td>#99</td></tr>
+<tr><td>feat(iam): tenant retention lifecycle sweeper (Stages 1+2 of #92)</td><td>done</td><td>#100</td></tr>
+<tr><td>Vulnerabilities detected in dependencies (2026-05-08)</td><td>done</td><td>#101</td></tr>
+<tr><td>chore(security): bump Go to 1.25.10 + x/net v0.53.0 (closes #101)</td><td>done</td><td>#102</td></tr>
+<tr><td>Vulnerabilities detected in dependencies (2026-06-03)</td><td>done</td><td>#103</td></tr>
+<tr><td>chore(security): bump Go toolchain to 1.25.11 + x/net to v0.53.0</td><td>done</td><td>#104</td></tr>
+<tr><td>chore(security): bump CI Go toolchain to 1.25.11</td><td>done</td><td>#105</td></tr>
+<tr><td>chore(infra): scrape StudyBuddy API metrics from local Prometheus</td><td>done</td><td>#106</td></tr>
+<tr><td>chore: add .claude project settings (enable frontend-design plugin)</td><td>done</td><td>#107</td></tr>
+<tr><td>feat(progress): bring thittam into agent orchestration + in-flight PROGRESS.md section</td><td>done</td><td>#108</td></tr>
+<tr><td>docs(rules): codify accessibility (WCAG 2.1 AA) as a CODING_RULES entry</td><td>done</td><td>#109</td></tr>
+<tr><td>chore(orchestration): record #109 in manifest + ledger</td><td>done</td><td>#110</td></tr>
+<tr><td>chore(orchestration): #109 re-gated to approved (diff-aware scan)</td><td>done</td><td>#111</td></tr>
+<tr><td>Vulnerabilities detected in dependencies (2026-06-26)</td><td>pending</td><td>#112</td></tr>
+</table>
 <div class="sig">tests: yes · docs: yes · license: yes · branch: main</div>
 </div></details>
 <details class="proj"><summary><span>🟢 green</span><span class="name">thittam_docs<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 8c/30d · 14d</span><span class="reason">active, no feature list, tests+docs</span></summary>
