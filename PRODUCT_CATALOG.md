@@ -21,7 +21,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | 6 | **dronePrjs** | `dronePrjs` | Robotics / drone simulation | Python · pytest | Early build (sim, Phase 3 partial) |
 | 7 | **MarketingTools** | `MarketingTools` | Internal go-to-market tooling | Python · Anthropic API · YAML | Active internal tool |
 | 8 | **mambakkam.net** | `mambakkam-net` | Company website / demo host | Astro 5 · Tailwind (AstroWind) | Live / actively published |
-| 9 | **wegofwd-expenses** | `wegofwd-expenses` | Internal finance/ops tooling | Python · Gmail API · SQLite · `wegofwd-llm` · pdfminer.six | P0 built (76/76 tests, merged); local-only; awaiting real-mailbox dry run |
+| 9 | **wegofwd-expenses** | `wegofwd-expenses` | Internal finance/ops tooling | Python · Gmail API · SQLite · `wegofwd-llm` · pdfminer.six | P0 built (76/76 tests, merged); on GitHub org (private); awaiting real-mailbox dry run |
 
 ### Archived products (no longer maintained)
 
@@ -142,7 +142,7 @@ lockfile and env→`~/.config/wegofwd/`→prompt credential loading. Money is
 `Decimal`-as-TEXT (never float); low-confidence extractions divert to a review
 queue. Built subagent-driven over 10 TDD tasks; ADRs 0001–0003.
 - **Stack:** Python 3.11 · Gmail API (OAuth) · SQLite · `wegofwd-llm` (Anthropic: haiku classify / sonnet extract) · pdfminer.six
-- **Status:** **P0 built** — 76/76 tests green, merged to `master`. **Local-only** (not yet on the GitHub org). Next step: real-mailbox dry run (live Gmail/LLM/PDF paths are the network boundary, unit-untested by design).
+- **Status:** **P0 built** — 76/76 tests green, merged to `master`; on the **GitHub org (private)**. Next step: real-mailbox dry run (live Gmail/LLM/PDF paths are the network boundary, unit-untested by design).
 - **Note:** Consumes the shared `wegofwd-llm` seam. Real Anthropic billing PDFs (home address in bill-to) live in a gitignored data dir; a hermetic golden test validates the ledger→report math against the documented totals.
 
 ---
