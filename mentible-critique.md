@@ -98,6 +98,13 @@ The IP shared with OnDemand is still the **six scope dimensions**. New in this w
 
 ⚠️ **Single-consumer compiler contract, unchanged.** `book.json` is still the unversioned contract between backend↔compiler and OnDemand↔reader. Add a `schema_version` field and validate it.
 
+### Update — 2026-07-06: a second shared-package seam, *prepped but deliberately not extracted* (Help System, `main@c67b2da`)
+
+- **The Help feature was split into an engine + content seam** (`mobile/src/help/` = product-agnostic schema/search/coverage + `HelpButton`/`HelpHint`/`HelpTopicView` render components; `mobile/src/help-content/` = Mentible's `FEATURES`/`HELP_TOPICS`/provider defs), mirroring a future `wegofwd-help` package (PR #280). The engine imports **no content** (verified across all `src/help/` files); the schema is genericized (`href`/`step`/`featureKey` → `string`) with the screen re-asserting real types via `as Href`/`as StepId` casts. Pure refactor, 408/408 mobile tests + whole-app `tsc` green — a genuinely clean boundary.
+- **The discipline that governs it is the more interesting artifact.** Unlike `wegofwd-llm` (extracted on a real second consumer), `wegofwd-help` is **held in-repo per ADR-019's "extract on the real second consumer; no speculative package."** When asked to adopt Help in the two named sibling consumers (kathai-chithiram, pramana), the investigation found **both are Python back-ends with no UI** and therefore *cannot* render an RN/web help engine — so extraction was **correctly deferred**, not forced. This is the mirror image of the `wegofwd-llm` coupling risk flagged in §1 Gaps: there, a real second consumer (Pramana) *multiplies* the git-pin cost; here, the absence of a real second consumer is what (rightly) keeps the package from being born. The team applied its own ADR discipline against its own first instinct — a good sign.
+
+⚠️ **Watch: a prepped-but-unextracted seam can rot.** `src/help/` now carries forward-looking "future `wegofwd-help`" comments and a genericized schema whose type-safety it *loses at the engine layer* (a typo'd route in content compiles, failing only at runtime — the screen casts paper over it). That cost is paid **now** for a package that may not exist for months. If a real UI second consumer never materializes, revisit whether the genericization earns its keep or should re-narrow to Mentible's own types.
+
 ---
 
 ## 2. Code Quality
@@ -156,6 +163,13 @@ The IP shared with OnDemand is still the **six scope dimensions**. New in this w
 ⚠️ **`MVP_v1.md` plan still says Celery; code is still `BackgroundTask`.**
 
 ⚠️ **No `CONTRIBUTING.md` / multi-repo dev runbook** — and the multi-repo story is now more complex (Mentible + `wegofwd-llm` + Pramana, editable-install dance noted only in a `requirements.txt` comment).
+
+### Update — 2026-07-06: in-app help is now data-authored *and CI-enforced* (Help System, `main@c67b2da`)
+
+- ✅ **Documentation-freshness is, for the first time, a build-time gate — and it directly attacks this section's own headline gap.** The Help System (proposal `docs/proposals/2026-07-05-help-system.md`; PRs #275/#277/#278/#279/#280/#281) makes help *data*: a `FEATURES` registry, a `featureKey` on each `HelpTopic`, and a **hard-fail jest coverage gate** (`mobile/__tests__/help/coverage.test.ts`, run in Mobile CI) that turns the build **red if any declared user-facing feature has no Help topic**. Backed by a **Definition-of-Done in `CLAUDE.md`** ("shipping a feature isn't done until its Help is updated") and a PR-template checkbox. Contextual `?` chips deep-link controls to their topic. This is the enforced-not-remembered version of documentation the rest of §4 keeps asking for — a feature literally cannot ship without its in-app help.
+- **It's authored once, rendered everywhere.** Topics are structured blocks (text/steps/link/defs/action) rendered to the Help tab, hints, and chips from one source — no per-surface copy-paste drift.
+
+⚠️ **The gate is scoped to in-app *help topics*, not the top-level status docs.** It enforces feature→topic coverage; it does **not** touch the doc-drift flagged above — `CLAUDE.md`'s stale "Pre-MVP / directory stubs only" header and the ~140-commit-stale `docs/STATUS.md`. The best doc-freshness mechanism in the repo guards the newest doc surface while the oldest, most-read headers stay wrong. Point the same enforcing instinct at the status headers.
 
 ---
 
