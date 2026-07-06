@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio Health</title>
+<style>:root{color-scheme:light dark;--fg:#1a1a1a;--bg:#fff;--mut:#666;--line:#e2e2e2;
+--card:#f7f7f8;--accent:#2563eb;}
+@media(prefers-color-scheme:dark){:root{--fg:#e8e8e8;--bg:#151517;--mut:#9a9a9a;
+--line:#2c2c30;--card:#1e1e22;--accent:#6ea8fe;}}
+*{box-sizing:border-box}body{margin:0;padding:2rem 1rem;background:var(--bg);color:var(--fg);
+font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1000px;margin:0 auto}h1{font-size:1.5rem;margin:0 0 .25rem}
+.sub{color:var(--mut);margin:0 0 1.25rem}
+.grand{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1rem}
+.grand .g{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.5rem .8rem}
+#q{width:100%;padding:.6rem .8rem;margin:0 0 1.25rem;font:inherit;color:var(--fg);
+background:var(--card);border:1px solid var(--line);border-radius:10px}
+#q:focus{outline:2px solid var(--accent);outline-offset:1px}
+#none{display:none;color:var(--mut);padding:2rem 0;text-align:center}
+details{border:1px solid var(--line);border-radius:10px;margin:.5rem 0;background:var(--card)}
+summary{cursor:pointer;list-style:none;padding:.7rem 1rem;display:flex;gap:1rem;
+align-items:center;flex-wrap:wrap}
+summary::-webkit-details-marker{display:none}
+.name{font-weight:600;min-width:12rem}.stage{color:var(--mut);font-size:.85rem}
+.counts{margin-left:auto;font-variant-numeric:tabular-nums;font-size:.9rem}
+.reason{color:var(--mut);font-size:.85rem;flex-basis:100%}
+.body{padding:.25rem 1rem 1rem}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:.35rem .5rem;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:500;font-size:.8rem;text-transform:uppercase}
+.sig{color:var(--mut);font-size:.85rem;margin-top:.5rem}
+.badge{font-size:.75rem;border:1px solid var(--mut);border-radius:5px;padding:0 .35rem;margin-left:.4rem;color:var(--mut)}</style></head><body>
+<div class="wrap"><h1>Portfolio Health</h1>
+<p class="sub">28 repos · generated 2026-07-06T19:49:46+00:00</p>
+<div class="grand"><div class="g">🟢 7 · 🟡 17 · 🔴 4</div><div class="g">features: 13✓ / 2⏳ / 12◻ (of 27)</div></div>
+<input id="q" type="search" autocomplete="off" placeholder="Filter by project, stage, status, owner…">
+<div id="none">No matching repositories.</div>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">MarketingTools<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 10c/30d · 8d</span><span class="reason">missing tests</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: yes · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">Mentible</span><span class="stage">pre-mvp</span><span class="counts">3✓ / 0⏳ / 2◻ · 342c/30d · 0d</span><span class="reason">60% of features done</span></summary>
+<div class="body">
+<table><tr><th>Feature</th><th>Status</th><th>ID</th></tr>
+<tr><td>ADRs + directory stubs (backend, mobile, pipeline, compiler)</td><td>done</td><td>adrs-and-directory-stubs</td></tr>
+<tr><td>Onboarding wizards (signup, LLM key, reading tour)</td><td>done</td><td>onboarding-wizards</td></tr>
+<tr><td>Read-only-until-login gate + device tracking + admin console</td><td>done</td><td>access-control</td></tr>
+<tr><td>React Native / Expo app implementation</td><td>pending</td><td>mobile-app-code</td></tr>
+<tr><td>FastAPI backend (BYOK) implementation</td><td>pending</td><td>fastapi-backend</td></tr>
+</table>
+<div class="sig">tests: yes · docs: yes · license: yes · branch: feat/help-engine-seam</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">StudyBuddy OnDemand</span><span class="stage">late-build</span><span class="counts">8✓ / 1⏳ / 8◻ · 105c/30d · 0d</span><span class="reason">47% of features done</span></summary>
+<div class="body">
+<table><tr><th>Feature</th><th>Status</th><th>ID</th></tr>
+<tr><td>Multi-Provider LLM Pipeline</td><td>done</td><td>Epic 1</td></tr>
+<tr><td>Production Launch &amp; Demo Readiness</td><td>pending</td><td>Epic 2</td></tr>
+<tr><td>Student Mobile App (Expo / React Native)</td><td>done</td><td>Epic 3</td></tr>
+<tr><td>Parent Portal</td><td>pending</td><td>Epic 4</td></tr>
+<tr><td>District Admin</td><td>pending</td><td>Epic 5</td></tr>
+<tr><td>Platform Hardening</td><td>in-progress</td><td>Epic 6</td></tr>
+<tr><td>Self-Serve Demo System</td><td>done</td><td>Epic 7</td></tr>
+<tr><td>Onboarding Completeness (Address &amp; Measurement Units)</td><td>pending</td><td>Epic 8</td></tr>
+<tr><td>Accessibility &amp; Personalization</td><td>pending</td><td>Epic 9</td></tr>
+<tr><td>Curriculum Lifecycle &amp; Governance</td><td>done</td><td>Epic 10</td></tr>
+<tr><td>Content Presentation &amp; Formatting</td><td>done</td><td>Epic 11</td></tr>
+<tr><td>Teacher Content Authoring</td><td>done</td><td>Epic 12</td></tr>
+<tr><td>Branding Refresh: STEM → Education Enhancement</td><td>done</td><td>Epic 13</td></tr>
+<tr><td>School Curriculum Backup &amp; Restore</td><td>done</td><td>Epic 15</td></tr>
+<tr><td>Public Site Redesign: School-First Marketing Pages</td><td>pending</td><td>Epic 16</td></tr>
+<tr><td>Corporate L&amp;D Fork</td><td>pending</td><td>Epic 17</td></tr>
+<tr><td>Corporate Compliance Scenario Catalog</td><td>pending</td><td>Epic 18</td></tr>
+</table>
+<div class="sig">tests: yes · docs: yes · license: yes · branch: feat/progress-json</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-MarketingTools<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 8c/30d · 8d</span><span class="reason">missing tests, docs</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🔴 red</span><span class="name">_claude-memory-closedSpace<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 0c/30d · 35d</span><span class="reason">dormant — no commits in 35d</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🔴 red</span><span class="name">_claude-memory-dronePrjs<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 0c/30d · 35d</span><span class="reason">dormant — no commits in 35d</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-kathai-chithiram<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 35c/30d · 4d</span><span class="reason">missing tests, docs</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-mambakkam-net<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 6c/30d · 25d</span><span class="reason">slowing — 25d since last commit</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-mentible<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 119c/30d · 0d</span><span class="reason">missing tests, docs</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-pramana<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 3c/30d · 27d</span><span class="reason">slowing — 27d since last commit</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-project-critique<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 30c/30d · 0d</span><span class="reason">missing tests, docs</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-studybuddy<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 22c/30d · 9d</span><span class="reason">missing tests, docs</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-thittam<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 2c/30d · 14d</span><span class="reason">missing tests, docs</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-wegofwd-llm<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 3c/30d · 27d</span><span class="reason">slowing — 27d since last commit</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">_claude-memory-wegofwd-orchestration<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 1c/30d · 14d</span><span class="reason">missing tests, docs</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🔴 red</span><span class="name">dronePrjs<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 0c/30d · 54d</span><span class="reason">dormant — no commits in 54d</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: no · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟢 green</span><span class="name">kathai-chithiram<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 194c/30d · 4d</span><span class="reason">active, no feature list, tests+docs</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: yes · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">mambakkam-net<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 46c/30d · 13d</span><span class="reason">missing tests</span></summary>
+<div class="body">
+<div class="sig">tests: no · docs: yes · license: yes · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">pramana</span><span class="stage">spec</span><span class="counts">2✓ / 1⏳ / 2◻ · 19c/30d · 9d</span><span class="reason">40% of features done</span></summary>
+<div class="body">
+<table><tr><th>Feature</th><th>Status</th><th>ID</th></tr>
+<tr><td>Locked requirements (v1 single-tenant, SOX scope)</td><td>done</td><td>locked-requirements</td></tr>
+<tr><td>SQLAlchemy 2.x data model + Alembic baseline</td><td>done</td><td>data-model</td></tr>
+<tr><td>In-process quiz generation</td><td>in-progress</td><td>quiz-generation</td></tr>
+<tr><td>FastAPI service layer</td><td>pending</td><td>fastapi-service</td></tr>
+<tr><td>wegofwd-video integration for training content</td><td>pending</td><td>wegofwd-video-integration</td></tr>
+</table>
+<div class="sig">tests: yes · docs: yes · license: yes · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">studybuddy-docs<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 1c/30d · 27d</span><span class="reason">slowing — 27d since last commit</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: no · branch: docs/2026-06-admin-menu-onboarding</div>
+</div></details>
+<details class="proj"><summary><span>🔴 red</span><span class="name">studybuddy_free<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 0c/30d · 105d</span><span class="reason">dormant — no commits in 105d</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: yes · branch: 1-implement-dual-os-build</div>
+</div></details>
+<details class="proj"><summary><span>🟢 green</span><span class="name">thittam<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 26c/30d · 0d</span><span class="reason">active, no feature list, tests+docs</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: yes · branch: feat/progress-json</div>
+</div></details>
+<details class="proj"><summary><span>🟢 green</span><span class="name">thittam_docs<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 8c/30d · 14d</span><span class="reason">active, no feature list, tests+docs</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟢 green</span><span class="name">wegofwd-expenses<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 34c/30d · 0d</span><span class="reason">active, no feature list, tests+docs</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: no · branch: master</div>
+</div></details>
+<details class="proj"><summary><span>🟢 green</span><span class="name">wegofwd-llm<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 12c/30d · 9d</span><span class="reason">active, no feature list, tests+docs</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟢 green</span><span class="name">wegofwd-orchestration<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 14c/30d · 14d</span><span class="reason">active, no feature list, tests+docs</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: yes · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">wegofwd-secure<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 1c/30d · 20d</span><span class="reason">slowing — 20d since last commit</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: no · branch: main</div>
+</div></details>
+<details class="proj"><summary><span>🟢 green</span><span class="name">wegofwd-video<span class="badge">no source</span></span><span class="stage">unknown</span><span class="counts">0✓ / 0⏳ / 0◻ · 5c/30d · 5d</span><span class="reason">active, no feature list, tests+docs</span></summary>
+<div class="body">
+<div class="sig">tests: yes · docs: yes · license: no · branch: main</div>
+</div></details>
+<script>(function(){var q=document.getElementById('q');if(!q)return;
+var rows=[].slice.call(document.querySelectorAll('details.proj'));var none=document.getElementById('none');
+function apply(){var s=q.value.trim().toLowerCase();var any=false;
+rows.forEach(function(d){var hit=!s||d.textContent.toLowerCase().indexOf(s)!==-1;
+d.style.display=hit?'':'none';if(hit)any=true;});
+if(none)none.style.display=(s&&!any)?'':'none';}
+q.addEventListener('input',apply);})();</script></div></body></html>

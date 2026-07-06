@@ -1,0 +1,970 @@
+{
+  "generated": "2026-07-06T19:49:46+00:00",
+  "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
+  "projects": [
+    {
+      "project": "MarketingTools",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 10,
+        "last_commit_age_days": 8,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests"
+      }
+    },
+    {
+      "project": "Mentible",
+      "stage": "pre-mvp",
+      "source_kind": "manifest",
+      "source_error": null,
+      "features": [
+        {
+          "id": "adrs-and-directory-stubs",
+          "name": "ADRs + directory stubs (backend, mobile, pipeline, compiler)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "onboarding-wizards",
+          "name": "Onboarding wizards (signup, LLM key, reading tour)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "access-control",
+          "name": "Read-only-until-login gate + device tracking + admin console",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "mobile-app-code",
+          "name": "React Native / Expo app implementation",
+          "status": "pending",
+          "commits": null
+        },
+        {
+          "id": "fastapi-backend",
+          "name": "FastAPI backend (BYOK) implementation",
+          "status": "pending",
+          "commits": null
+        }
+      ],
+      "counts": {
+        "total": 5,
+        "done": 3,
+        "in_progress": 0,
+        "pending": 2,
+        "implemented": 3
+      },
+      "git": {
+        "commits_30d": 342,
+        "last_commit_age_days": 0,
+        "branch": "feat/help-engine-seam"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "60% of features done"
+      }
+    },
+    {
+      "project": "StudyBuddy OnDemand",
+      "stage": "late-build",
+      "source_kind": "progress",
+      "source_error": null,
+      "features": [
+        {
+          "id": "Epic 1",
+          "name": "Multi-Provider LLM Pipeline",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "Epic 2",
+          "name": "Production Launch & Demo Readiness",
+          "status": "pending",
+          "commits": 1
+        },
+        {
+          "id": "Epic 3",
+          "name": "Student Mobile App (Expo / React Native)",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "Epic 4",
+          "name": "Parent Portal",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 5",
+          "name": "District Admin",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 6",
+          "name": "Platform Hardening",
+          "status": "in-progress",
+          "commits": 1
+        },
+        {
+          "id": "Epic 7",
+          "name": "Self-Serve Demo System",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "Epic 8",
+          "name": "Onboarding Completeness (Address & Measurement Units)",
+          "status": "pending",
+          "commits": 3
+        },
+        {
+          "id": "Epic 9",
+          "name": "Accessibility & Personalization",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 10",
+          "name": "Curriculum Lifecycle & Governance",
+          "status": "done",
+          "commits": 14
+        },
+        {
+          "id": "Epic 11",
+          "name": "Content Presentation & Formatting",
+          "status": "done",
+          "commits": 11
+        },
+        {
+          "id": "Epic 12",
+          "name": "Teacher Content Authoring",
+          "status": "done",
+          "commits": 13
+        },
+        {
+          "id": "Epic 13",
+          "name": "Branding Refresh: STEM \u2192 Education Enhancement",
+          "status": "done",
+          "commits": 3
+        },
+        {
+          "id": "Epic 15",
+          "name": "School Curriculum Backup & Restore",
+          "status": "done",
+          "commits": 4
+        },
+        {
+          "id": "Epic 16",
+          "name": "Public Site Redesign: School-First Marketing Pages",
+          "status": "pending",
+          "commits": 5
+        },
+        {
+          "id": "Epic 17",
+          "name": "Corporate L&D Fork",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 18",
+          "name": "Corporate Compliance Scenario Catalog",
+          "status": "pending",
+          "commits": 0
+        }
+      ],
+      "counts": {
+        "total": 17,
+        "done": 8,
+        "in_progress": 1,
+        "pending": 8,
+        "implemented": 9
+      },
+      "git": {
+        "commits_30d": 105,
+        "last_commit_age_days": 0,
+        "branch": "feat/progress-json"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "47% of features done"
+      }
+    },
+    {
+      "project": "_claude-memory-MarketingTools",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 8,
+        "last_commit_age_days": 8,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests, docs"
+      }
+    },
+    {
+      "project": "_claude-memory-closedSpace",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 0,
+        "last_commit_age_days": 35,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "red",
+        "reason": "dormant \u2014 no commits in 35d"
+      }
+    },
+    {
+      "project": "_claude-memory-dronePrjs",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 0,
+        "last_commit_age_days": 35,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "red",
+        "reason": "dormant \u2014 no commits in 35d"
+      }
+    },
+    {
+      "project": "_claude-memory-kathai-chithiram",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 35,
+        "last_commit_age_days": 4,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests, docs"
+      }
+    },
+    {
+      "project": "_claude-memory-mambakkam-net",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 6,
+        "last_commit_age_days": 25,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "slowing \u2014 25d since last commit"
+      }
+    },
+    {
+      "project": "_claude-memory-mentible",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 119,
+        "last_commit_age_days": 0,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests, docs"
+      }
+    },
+    {
+      "project": "_claude-memory-pramana",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 3,
+        "last_commit_age_days": 27,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "slowing \u2014 27d since last commit"
+      }
+    },
+    {
+      "project": "_claude-memory-project-critique",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 30,
+        "last_commit_age_days": 0,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests, docs"
+      }
+    },
+    {
+      "project": "_claude-memory-studybuddy",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 22,
+        "last_commit_age_days": 9,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests, docs"
+      }
+    },
+    {
+      "project": "_claude-memory-thittam",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 2,
+        "last_commit_age_days": 14,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests, docs"
+      }
+    },
+    {
+      "project": "_claude-memory-wegofwd-llm",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 3,
+        "last_commit_age_days": 27,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "slowing \u2014 27d since last commit"
+      }
+    },
+    {
+      "project": "_claude-memory-wegofwd-orchestration",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 1,
+        "last_commit_age_days": 14,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests, docs"
+      }
+    },
+    {
+      "project": "dronePrjs",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 0,
+        "last_commit_age_days": 54,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": false,
+        "has_license": false
+      },
+      "health": {
+        "status": "red",
+        "reason": "dormant \u2014 no commits in 54d"
+      }
+    },
+    {
+      "project": "kathai-chithiram",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 194,
+        "last_commit_age_days": 4,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
+      }
+    },
+    {
+      "project": "mambakkam-net",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 46,
+        "last_commit_age_days": 13,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests"
+      }
+    },
+    {
+      "project": "pramana",
+      "stage": "spec",
+      "source_kind": "manifest",
+      "source_error": null,
+      "features": [
+        {
+          "id": "locked-requirements",
+          "name": "Locked requirements (v1 single-tenant, SOX scope)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "data-model",
+          "name": "SQLAlchemy 2.x data model + Alembic baseline",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "quiz-generation",
+          "name": "In-process quiz generation",
+          "status": "in-progress",
+          "commits": null
+        },
+        {
+          "id": "fastapi-service",
+          "name": "FastAPI service layer",
+          "status": "pending",
+          "commits": null
+        },
+        {
+          "id": "wegofwd-video-integration",
+          "name": "wegofwd-video integration for training content",
+          "status": "pending",
+          "commits": null
+        }
+      ],
+      "counts": {
+        "total": 5,
+        "done": 2,
+        "in_progress": 1,
+        "pending": 2,
+        "implemented": 3
+      },
+      "git": {
+        "commits_30d": 19,
+        "last_commit_age_days": 9,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "40% of features done"
+      }
+    },
+    {
+      "project": "studybuddy-docs",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 1,
+        "last_commit_age_days": 27,
+        "branch": "docs/2026-06-admin-menu-onboarding"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "slowing \u2014 27d since last commit"
+      }
+    },
+    {
+      "project": "studybuddy_free",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 0,
+        "last_commit_age_days": 105,
+        "branch": "1-implement-dual-os-build"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "red",
+        "reason": "dormant \u2014 no commits in 105d"
+      }
+    },
+    {
+      "project": "thittam",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 26,
+        "last_commit_age_days": 0,
+        "branch": "feat/progress-json"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
+      }
+    },
+    {
+      "project": "thittam_docs",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 8,
+        "last_commit_age_days": 14,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
+      }
+    },
+    {
+      "project": "wegofwd-expenses",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 34,
+        "last_commit_age_days": 0,
+        "branch": "master"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
+      }
+    },
+    {
+      "project": "wegofwd-llm",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 12,
+        "last_commit_age_days": 9,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
+      }
+    },
+    {
+      "project": "wegofwd-orchestration",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 14,
+        "last_commit_age_days": 14,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
+      }
+    },
+    {
+      "project": "wegofwd-secure",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 1,
+        "last_commit_age_days": 20,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "slowing \u2014 20d since last commit"
+      }
+    },
+    {
+      "project": "wegofwd-video",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 5,
+        "last_commit_age_days": 5,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
+      }
+    }
+  ],
+  "summary": {
+    "projects": 28,
+    "health": {
+      "green": 7,
+      "yellow": 17,
+      "red": 4
+    },
+    "features": {
+      "total": 27,
+      "done": 13,
+      "in_progress": 2,
+      "pending": 12,
+      "implemented": 15
+    }
+  }
+}
