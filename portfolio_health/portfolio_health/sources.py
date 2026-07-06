@@ -41,10 +41,10 @@ def resolve_source(repo_dir: Path) -> dict:
             data = json.loads(pj.read_text(encoding="utf-8"))
             feats, err = _normalize(data.get("features"), "progress.json")
             return {"kind": "progress", "stage": data.get("stage"),
-                    "features": feats, "error": err}
+                    "features": feats, "error": err, "project": data.get("project")}
         except (OSError, json.JSONDecodeError, AttributeError) as e:
             return {"kind": "progress", "stage": None, "features": [],
-                    "error": f"unreadable progress.json: {e}"}
+                    "error": f"unreadable progress.json: {e}", "project": None}
 
     mf = repo_dir / "project-status.yaml"
     if mf.is_file():
@@ -52,9 +52,9 @@ def resolve_source(repo_dir: Path) -> dict:
             data = yaml.safe_load(mf.read_text(encoding="utf-8")) or {}
             feats, err = _normalize(data.get("features"), "project-status.yaml")
             return {"kind": "manifest", "stage": data.get("stage"),
-                    "features": feats, "error": err}
+                    "features": feats, "error": err, "project": data.get("project")}
         except (OSError, yaml.YAMLError, AttributeError) as e:
             return {"kind": "manifest", "stage": None, "features": [],
-                    "error": f"unreadable manifest: {e}"}
+                    "error": f"unreadable manifest: {e}", "project": None}
 
-    return {"kind": "none", "stage": None, "features": [], "error": None}
+    return {"kind": "none", "stage": None, "features": [], "error": None, "project": None}
