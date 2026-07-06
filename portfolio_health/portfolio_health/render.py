@@ -77,7 +77,7 @@ def build_html(portfolio: dict) -> str:
 
     for pr in portfolio["projects"]:
         src_badge = "" if pr["source_kind"] != "none" else '<span class="badge">no source</span>'
-        err_badge = f'<span class="badge">source error</span>' if pr["source_error"] else ""
+        err_badge = '<span class="badge">source error</span>' if pr["source_error"] else ""
         p.append('<details class="proj"><summary>'
                  f'<span>{_DOT.get(pr["health"]["status"], "")} {escape(pr["health"]["status"])}</span>'
                  f'<span class="name">{escape(pr["project"])}{src_badge}{err_badge}</span>'
