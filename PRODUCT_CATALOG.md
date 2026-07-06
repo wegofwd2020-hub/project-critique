@@ -13,7 +13,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 
 | # | Product | Repo | Category | Primary stack | Status |
 |---|---|---|---|---|---|
-| 1 | **StudyBuddy OnDemand** | `StudyBuddy_OnDemand` | Education (B2B / schools) | Python · FastAPI · Kivy · PostgreSQL | Late-build / pre-production (demo live) |
+| 1 | **StudyBuddy OnDemand** | `StudyBuddy_OnDemand` | Education (B2B / schools) | Python · FastAPI · Kivy · PostgreSQL | Active — demo live; awaiting external input (school/teacher pilots) |
 | 2 | **Mentible** | `Mentible` | Education (B2C, self-learners) | React Native · Expo · FastAPI (BYOK) | Pre-MVP (spec + stubs) |
 | 3 | **Thittam** | `thittam` | Production-management SaaS | Go microservices · gRPC · NATS · Next.js | Late-build / pre-production |
 | 4 | **Pramana** | `pramana` | Compliance training & tracking | Python · FastAPI · SQLAlchemy · PostgreSQL | Spec + early data model |
@@ -69,7 +69,7 @@ Docs report 1,500+ tests (pytest + Playwright), three-track auth (Auth0 + local 
 and a production-shaped demo deploy on Hetzner.
 - **Stack:** FastAPI backend · Kivy mobile thin-client · content pipeline · PostgreSQL
 - **Docs:** `studybuddy-docs`
-- **Status:** Late-build / pre-production; demo launched.
+- **Status:** Active — demo launched; awaiting external input (school/teacher pilots) to move to production.
 
 ### 2. Mentible — `Mentible`
 A focused, opinionated mobile Anthropic client for **adult self-learners** (BYOK). Public
