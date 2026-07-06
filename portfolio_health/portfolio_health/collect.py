@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timezone
+from fnmatch import fnmatch
 from pathlib import Path
 
 from portfolio_health.gitstats import git_stats
@@ -12,8 +13,10 @@ from portfolio_health.sources import feature_counts, resolve_source
 
 
 def _iter_repos(root: Path, exclude: list[str]):
+    # `exclude` entries are glob patterns (fnmatch), so a prefix like
+    # "_claude-memory-*" drops every matching dir without listing each.
     for child in sorted(p for p in root.iterdir() if p.is_dir()):
-        if child.name in exclude or not (child / ".git").exists():
+        if any(fnmatch(child.name, pat) for pat in exclude) or not (child / ".git").exists():
             continue
         yield child
 

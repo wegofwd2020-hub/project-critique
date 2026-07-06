@@ -1,7 +1,7 @@
 # Portfolio health dashboard config.
 [scan]
 root = "~/Documents/code/projects/AIStuff/STEM_studybuddy"
-exclude = ["project-critique"]   # don't scan the dashboard's own repo
+exclude = ["project-critique", "_claude-memory-*"]   # own repo + memory symlink dirs (glob)
 
 # Stages that are exploratory — NOT expected to be feature-complete or rigor-heavy,
 # so health rules don't mark them red for being early. Everything else "expects" rigor.
