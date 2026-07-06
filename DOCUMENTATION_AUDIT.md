@@ -15,7 +15,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 | StudyBuddy_OnDemand | Y | – | – | Y | Y (49) | ADR_001 only | Y | Y | partial |
 | studybuddy-docs | Y | – | Y | – | Y (68) | – | Y | n/a | Y |
 | Mentible | Y | Y | – | Y | Y | Y | – | Y | – |
-| studybuddy_free | Y | Y | – | – | Y | – | – | Y | – |
+| studybuddy_free *(archived)* | Y | Y | – | – | Y | – | – | Y | – |
 | pramana | Y | – | – | – | Y (73) | as "decisions" | Y | Y | – |
 | kathai-chithiram | Y | – | – | – | – | – | – | – | – |
 | thittam | Y | Y | – | Y | Y (6) | – | d | Y | Y | d |
@@ -38,7 +38,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 
 **Mentible** — appropriate for pre-MVP: README, SCOPE, MVP doc, ADR folder, CLAUDE.md, LICENSE. *Gaps:* no tests yet (expected — no code), no BYOK privacy/security note despite handling user API keys.
 
-**StudyBuddy Free** — shipped product with README, LICENSE (MIT), docs, tests. *Gaps:* no `CHANGELOG` (it's a versioned, shipped app — it should have one), no `.gitignore`, no `CLAUDE.md`.
+**StudyBuddy Free** — **archived 2026-07-06** (GitHub repo read-only, no longer maintained). Shipped product with README, LICENSE (MIT), docs, tests. Historical gaps (no `CHANGELOG`, `.gitignore`, `CLAUDE.md`) are now moot — no further doc work expected on an archived repo.
 
 **Kathai Chithiram** — **the biggest gap, and the most sensitive.** Only a README exists: no `docs/`, no `LICENSE`, no `CLAUDE.md`, no `.gitignore`, no tests, and — critically — **no privacy/data-handling or content-safety documentation** even though the product ingests *real, personal stories about real, vulnerable children* and produces media for them. It also has no written **scene-script contract**, which its own README says the architecture depends on.
 
@@ -63,7 +63,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 
 2. **No privacy / data-protection documentation where it matters most** — StudyBuddy (minors → COPPA/FERPA) and Kathai Chithiram (children's personal stories) both process sensitive data about children and neither has a privacy policy, data-handling doc, or DPA. This is the highest-risk gap in the portfolio.
 
-3. **CHANGELOGs are largely absent** — only `studybuddy-docs` and `mambakkam-net` have one. Shipped/late-build products (`studybuddy_free`, `StudyBuddy_OnDemand`, `thittam`) should each maintain one.
+3. **CHANGELOGs are largely absent** — only `studybuddy-docs` and `mambakkam-net` have one. Shipped/late-build products (`StudyBuddy_OnDemand`, `thittam`) should each maintain one. (`studybuddy_free` is now archived — excluded.)
 
 4. **ADR discipline is inconsistent** — `Mentible` and `thittam_docs` keep proper ADR folders; StudyBuddy's main docs, Pramana, and Thittam record decisions as prose design docs instead. Given how much you value decision records, a single ADR convention across the portfolio would pay off.
 
@@ -79,7 +79,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 - **Pramana:** add the `LICENSE` file the README already implies, plus a `SECURITY.md`/threat model (table stakes for a compliance product).
 
 **P1 — soon, supports the commercial bets**
-- Add `CHANGELOG.md` to `studybuddy_free`, `StudyBuddy_OnDemand`, `thittam`.
+- Add `CHANGELOG.md` to `StudyBuddy_OnDemand`, `thittam`. (`studybuddy_free` archived — dropped.)
 - **dronePrjs:** write a real `README`, replace the placeholder `CLAUDE.md`, add a safety/operating-envelope doc and the per-subproject domain docs.
 - Pick **one ADR convention** and backfill key decisions in StudyBuddy docs, Pramana, and Thittam.
 - **MarketingTools:** add `CLAUDE.md` + tests (it generates outbound copy — regression-test the generators).
