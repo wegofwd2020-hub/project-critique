@@ -223,6 +223,7 @@ The IP shared with OnDemand is still the **six scope dimensions**. New in this w
 | P2 | Pin + version the `book.json` schema and validate it on both boundaries | Architecture |
 | P2 | Add on-device (Detox/Maestro) E2E for the multi-provider BYOK loop, and a committed live-provider smoke test gated on an opt-in secret | Testing |
 | P2 | De-duplicate the `16384` `max_tokens` defaults now that clamping lives in the seam | Code Quality |
+| P2 | Point the doc-freshness *enforcing instinct* at the status headers — the Help coverage gate (2026-07-06) hard-fails CI on an undocumented feature, yet the oldest, most-read docs (`CLAUDE.md` "Pre-MVP" header, stale `docs/STATUS.md`) drift unchecked; add a lightweight staleness/assertion guard so the newest doc surface isn't the only enforced one | Documentation |
 | P3 | `git rm` the stale `tests/llm/__pycache__/*.pyc` orphans (the modules moved to `wegofwd-llm`) | Code Quality |
 | P3 | Add a `CONTRIBUTING.md` / multi-repo dev runbook (Mentible + `wegofwd-llm` + Pramana, editable installs) | Documentation |
 | P3 | Note in ADR-001's threat model that the in-process `del api_key` shred is best-effort | Security |
