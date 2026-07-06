@@ -14,14 +14,19 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | # | Product | Repo | Category | Primary stack | Status |
 |---|---|---|---|---|---|
 | 1 | **StudyBuddy OnDemand** | `StudyBuddy_OnDemand` | Education (B2B / schools) | Python · FastAPI · Kivy · PostgreSQL | Late-build / pre-production (demo live) |
-| 2 | **StudyBuddy Free** | `studybuddy_free` | Education (B2C, standalone) | Python · Kivy · Anthropic API (BYOK) | Shipped v1.1.0 (proof-of-concept) |
-| 3 | **Mentible** | `Mentible` | Education (B2C, self-learners) | React Native · Expo · FastAPI (BYOK) | Pre-MVP (spec + stubs) |
-| 4 | **Thittam** | `thittam` | Production-management SaaS | Go microservices · gRPC · NATS · Next.js | Late-build / pre-production |
-| 5 | **Pramana** | `pramana` | Compliance training & tracking | Python · FastAPI · SQLAlchemy · PostgreSQL | Spec + early data model |
-| 6 | **Kathai Chithiram** | `kathai-chithiram` | Assistive media (special needs) | Python · matplotlib/imageio · Blender | Prototype (PoC renderers) |
-| 7 | **dronePrjs** | `dronePrjs` | Robotics / drone simulation | Python · pytest | Early build (sim, Phase 3 partial) |
-| 8 | **MarketingTools** | `MarketingTools` | Internal go-to-market tooling | Python · Anthropic API · YAML | Active internal tool |
-| 9 | **mambakkam.net** | `mambakkam-net` | Company website / demo host | Astro 5 · Tailwind (AstroWind) | Live / actively published |
+| 2 | **Mentible** | `Mentible` | Education (B2C, self-learners) | React Native · Expo · FastAPI (BYOK) | Pre-MVP (spec + stubs) |
+| 3 | **Thittam** | `thittam` | Production-management SaaS | Go microservices · gRPC · NATS · Next.js | Late-build / pre-production |
+| 4 | **Pramana** | `pramana` | Compliance training & tracking | Python · FastAPI · SQLAlchemy · PostgreSQL | Spec + early data model |
+| 5 | **Kathai Chithiram** | `kathai-chithiram` | Assistive media (special needs) | Python · matplotlib/imageio · Blender | Prototype (PoC renderers) |
+| 6 | **dronePrjs** | `dronePrjs` | Robotics / drone simulation | Python · pytest | Early build (sim, Phase 3 partial) |
+| 7 | **MarketingTools** | `MarketingTools` | Internal go-to-market tooling | Python · Anthropic API · YAML | Active internal tool |
+| 8 | **mambakkam.net** | `mambakkam-net` | Company website / demo host | Astro 5 · Tailwind (AstroWind) | Live / actively published |
+
+### Archived products (no longer maintained)
+
+| Product | Repo | Category | Primary stack | Status |
+|---|---|---|---|---|
+| **StudyBuddy Free** | `studybuddy_free` | Education (B2C, standalone) | Python · Kivy · Anthropic API (BYOK) | **Archived** — shipped v1.1.0 (proof-of-concept); GitHub repo archived (read-only). Origin app for the StudyBuddy lineage. |
 
 ### Supporting repositories (not standalone products)
 
@@ -66,15 +71,7 @@ and a production-shaped demo deploy on Hetzner.
 - **Docs:** `studybuddy-docs`
 - **Status:** Late-build / pre-production; demo launched.
 
-### 2. StudyBuddy Free — `studybuddy_free`
-The original standalone Python/Kivy app for Grades 5–12 STEM. Students bring their own
-Anthropic key (called from the device), read AI-generated chapters, take adaptive quizzes
-with hints and step-by-step remediation, and manage a token balance / top-up screen.
-Proved the concept that OnDemand productized.
-- **Stack:** Python · Kivy 2.2 · Anthropic API (BYOK) · local JSON storage
-- **Status:** Shipped — v1.1.0 (2025-03-17), MIT licensed.
-
-### 3. Mentible — `Mentible`
+### 2. Mentible — `Mentible`
 A focused, opinionated mobile Anthropic client for **adult self-learners** (BYOK). Public
 brand **Mentible** (formerly **StudyBuddy Q**, where "Q = scoped Query"). *"Claude Code, but for learners instead of
 coders."* Adults-only (no COPPA/FERPA), quality-over-scale demo of the IP. This repo is also
@@ -84,7 +81,7 @@ defines how generated content looks and reads.
 - **Status:** Pre-MVP — directory stubs and ADRs; no app code yet.
 - **Note:** Shares prompt IP with OnDemand via one-way vendoring; otherwise independent.
 
-### 4. Thittam — `thittam`
+### 3. Thittam — `thittam`
 Multi-tenant SaaS for **production management** across verticals (film, construction,
 software delivery, live events). Each tenant's industry is declared in a YAML "vertical"
 file that adapts entity names, phase graphs, budget categories, and workflows. Nine Go
@@ -94,7 +91,7 @@ in PostgreSQL. Companion docs report four verticals at GA.
 - **Docs:** `thittam_docs`
 - **Status:** Late-build / pre-production on core services.
 
-### 5. Pramana — `pramana`
+### 4. Pramana — `pramana`
 *Pramāṇa* (Sanskrit, "valid means of knowledge") — a compliance **training and tracking**
 platform. v1 is single-tenant for a corporate client, scoped to SOX, with later frameworks
 (HIPAA, ISO 27001, GDPR, PCI DSS) on the roadmap. Repo currently holds locked requirements,
@@ -103,7 +100,7 @@ a SQLAlchemy data model + Alembic baseline, and in-process quiz generation.
 - **Status:** Specification + early data model (no full service yet).
 - **License:** Proprietary — © WeGoFwd.
 
-### 6. Kathai Chithiram — `kathai-chithiram`
+### 5. Kathai Chithiram — `kathai-chithiram`
 *Kathai Chithiram* (Tamil, "story → picture"). Turns a **parent's written story into a short,
 calm, captioned animation** designed to be understood by a child with special needs (autism
 spectrum / developmental needs) — a personalised, on-demand take on social stories. Pipeline:
@@ -111,14 +108,14 @@ parent story → `wegofwd-llm` → structured scene script → renderer (`wegofw
 - **Stack:** Python · matplotlib + imageio (v1 renderer) · Blender Grease Pencil (v2) · `wegofwd-llm` · `wegofwd-video`
 - **Status:** Prototype — two reference renderers and a first hand-built story ("Silas Shines His Smile").
 
-### 7. dronePrjs — `dronePrjs`
+### 6. dronePrjs — `dronePrjs`
 Umbrella for two domain-specific drone applications sharing a common engine: **closedSpace**
 (indoor / GPS-denied / collision-dense) and **openSpace** (outdoor / long-range / GPS-available).
 The engine is the contract between them; domain logic stays out of the engine.
 - **Stack:** Python · pytest · ruff/mypy (simulation-only so far)
 - **Status:** Early build — Phase 3 partial (world generator scaffold).
 
-### 8. MarketingTools — `MarketingTools`
+### 7. MarketingTools — `MarketingTools`
 Internal tooling to market the whole portfolio from **one source of truth**
 (`assets/products.yaml`). Reuses the scoped-engine pattern to turn
 `(product × audience × channel × framing)` into channel-ready copy via Claude, plus brand
@@ -126,11 +123,23 @@ rules, paste-ready templates, and a CRM-lite outreach log.
 - **Stack:** Python · Anthropic API · YAML asset library
 - **Status:** Active internal tool (landing/microsite builder still a stub).
 
-### 9. mambakkam.net — `mambakkam-net`
+### 8. mambakkam.net — `mambakkam-net`
 The company website, built on the **AstroWind** (Astro 5 + Tailwind) theme. Also used to
 publish product demos (e.g. the Mentible demo).
 - **Stack:** Astro 5 · Tailwind CSS · MDX
 - **Status:** Live / actively published.
+
+---
+
+## Archived
+
+### StudyBuddy Free — `studybuddy_free`
+The original standalone Python/Kivy app for Grades 5–12 STEM. Students bring their own
+Anthropic key (called from the device), read AI-generated chapters, take adaptive quizzes
+with hints and step-by-step remediation, and manage a token balance / top-up screen.
+Proved the concept that OnDemand productized; retained here for lineage.
+- **Stack:** Python · Kivy 2.2 · Anthropic API (BYOK) · local JSON storage
+- **Status:** **Archived** — shipped v1.1.0 (2025-03-17), MIT licensed. GitHub repo archived (read-only) 2026-07-06; no longer maintained.
 
 ---
 
