@@ -28,8 +28,8 @@ pending, who owns it, or whether a project is healthy or stalling.
 **Non-goals (v1):**
 - **No token/cost usage.** Deferred to v2 (would parse `~/.claude/projects/` and is per-machine, so it belongs in a later pass). Designed for but not built.
 - **No hosting / web server / auth.** Output is a self-contained committed HTML file + JSON.
-- **No writing back to repos.** Read-only over the repos and git; the dashboard never mutates a tracked project.
-- **No issue-tracker integration.** The manifest is the source; GitHub-issues ingestion is a possible v2.
+- **The collector is read-only.** It never mutates a tracked project at run time. (Separately and explicitly in scope: a one-time change to the two existing `generate_progress.py` scripts to *also* emit `docs/progress.json` — that is a deliverable, not the collector writing to repos.)
+- **The dashboard does not poll GitHub issues directly.** Feature data comes from `progress.json` or `project-status.yaml`. thittam's generator already derives its progress from issues into `progress.json`; a general issue-tracker adapter is a possible v2.
 - **No historical trend charts.** v1 is a current-state snapshot (each commit of `portfolio.json` is an implicit history; charts come later).
 
 ---
@@ -37,13 +37,15 @@ pending, who owns it, or whether a project is healthy or stalling.
 ## 2. Architecture
 
 A small Python tool in `project-critique/portfolio_health/`. A collector reads
-each repo, builds a per-project record, and a renderer emits a self-contained
-HTML dashboard. Both artifacts are committed to `project-critique`.
+each repo, resolves its **feature source** (see §3), builds a per-project record,
+and a renderer emits a self-contained HTML dashboard. Both artifacts are
+committed to `project-critique`.
 
 ```
 project-critique/
 ├── portfolio_health/
-│   ├── manifest.py     # load + validate project-status.yaml
+│   ├── sources.py      # resolve a repo's feature source by precedence,
+│   │                   #   normalize progress.json OR project-status.yaml → features
 │   ├── gitstats.py     # commits/30d, last-commit age, current branch
 │   ├── reposcan.py     # has tests? docs? LICENSE? (file presence)
 │   ├── health.py       # rule-based 🟢/🟡/🔴 + reason from the signals above
@@ -56,21 +58,25 @@ project-critique/
 └── config/portfolio.toml   # repos root + any per-repo overrides
 ```
 
-**Runtime deps:** Python 3.11+, `PyYAML` (manifest parsing — the one non-stdlib
-dep; YAML is chosen over TOML for human-friendly nested feature lists the team
-edits by hand). Everything else is stdlib (`subprocess` for git, `json`, `html`).
+**Runtime deps:** Python 3.11+, `PyYAML` (only needed to parse the fallback
+`project-status.yaml` manifest — YAML chosen over TOML for human-friendly nested
+feature lists edited by hand). `progress.json` and everything else is stdlib
+(`subprocess` for git, `json`, `html`).
 
 **Repo discovery:** the collector scans the portfolio root (default
 `~/Documents/code/projects/AIStuff/STEM_studybuddy`, configurable in
-`portfolio.toml`) for git repositories. A repo **with** a `project-status.yaml`
-contributes full metrics; a repo **without** one appears in the dashboard flagged
-`no manifest` (a visible nudge to add one) with only its auto-derived signals.
-This makes onboarding a repo = dropping in a manifest.
+`portfolio.toml`) for git repositories. Each repo's feature data comes from the
+first source that exists (§3); a repo with **no** source appears flagged
+`no source` (a visible nudge) with only its auto-derived signals. Onboarding a
+repo into the dashboard = it already has a progress generator, or someone drops
+in a `project-status.yaml`.
 
 ### Data flow
 
 ```
-each repo dir ──▶ manifest.py (project-status.yaml → features/stage/owners)
+each repo dir ──▶ sources.py   (docs/progress.json  → normalized features
+              │                 else project-status.yaml → normalized features
+              │                 else none)
               ├──▶ gitstats.py  (git log → commits/30d, last-commit age, branch)
               └──▶ reposcan.py  (fs → has_tests, has_docs, has_license)
                         │
@@ -79,11 +85,56 @@ each repo dir ──▶ manifest.py (project-status.yaml → features/stage/owne
                         │
                         ▼
               collect.py → portfolio.json ──▶ render.py → portfolio.html
+
+(separately, in each epic/progress repo's own nightly GitHub Action:)
+   generate_progress.py ──▶ docs/PROGRESS.md (as today)
+                        └──▶ docs/progress.json (NEW — normalized feature list)
 ```
 
 ---
 
-## 3. Manifest — `project-status.yaml`
+## 3. Feature sources (precedence)
+
+A repo's feature data resolves from the **first** source that exists, all
+normalized by `sources.py` to the same internal shape (a list of features, each
+with `name` + `status ∈ {done, in-progress, pending}`):
+
+1. **`docs/progress.json`** — emitted by the repo's own progress generator
+   (StudyBuddy_OnDemand and thittam already run `generate_progress.py` nightly
+   via GitHub Actions; they will be extended to also write this file). This is
+   the richer, already-maintained source — the dashboard reuses it rather than
+   asking those repos to duplicate their epics into a manifest.
+2. **`project-status.yaml`** — the hand-maintained manifest, for repos that have
+   **no** progress generator (most of the portfolio).
+3. **none** — the repo shows with auto-derived signals only, flagged `no source`.
+
+### 3a. `docs/progress.json` (normalized; produced by the generators)
+
+The existing `generate_progress.py` already computes an epic/feature list with a
+`**Status:**` line each; the change is to also dump it as JSON with the status
+mapped to the three canonical values:
+
+```json
+{
+  "project": "StudyBuddy_OnDemand",
+  "generated": "2026-07-06T02:00:00Z",
+  "source": "epics",
+  "stage": "late-build",
+  "features": [
+    {"id": "Epic 1",  "name": "Multi-Provider LLM Pipeline", "status": "done",        "commits": 1},
+    {"id": "Epic 6",  "name": "Platform Hardening",          "status": "in-progress", "commits": 1},
+    {"id": "Epic 4",  "name": "Parent Portal",               "status": "pending",     "commits": 0}
+  ]
+}
+```
+
+**Status mapping** (from the epic emoji/text, in the generator): `✅` → `done`;
+`🚧` → `in-progress`; `🔜` / `💭` / blank → `pending`. Each generator owns the
+mapping for its own status vocabulary (thittam's issue/scope model maps its own
+statuses to the same three values), so `progress.json` is uniform across repos
+even though the human-facing `PROGRESS.md` layouts differ.
+
+### 3b. `project-status.yaml` (manifest — fallback for repos without a generator)
 
 One file per repo, committed to that repo, maintained by its owners. Minimal and
 human-first:
@@ -145,7 +196,7 @@ thresholds live in `health.py` as named constants so they are tunable.
 RED   if age is not None and age > 30                → "dormant — no commits in {age}d"
 RED   if progress is not None and progress < 0.25
         and stage in {late-build, shipped, active}    → "only {pct}% features done at {stage} stage"
-RED   if manifest invalid or missing on a non-passion stage → "no valid status manifest"
+RED   if no feature source (no progress.json / manifest) on a non-passion stage → "no status source"
 YELLOW if age is not None and 14 < age <= 30          → "slowing — {age}d since last commit"
 YELLOW if progress is not None and progress < 0.7     → "{pct}% features done"
 YELLOW if rigor < 2                                    → "missing {tests/docs}"
@@ -196,18 +247,29 @@ diffs show status change over time and other tooling can consume it.
 - `pytest` per module; **no test touches the network or a real mailbox/remote**.
   git is exercised against tmp repos created in-test (`git init` + commits) or
   mocked; filesystem via `tmp_path`; manifests via fixture YAML.
-- Cover: manifest validation (valid, invalid status, missing field, absent file);
+- Cover: source precedence (progress.json wins over manifest over none);
+  progress.json normalization + status mapping (✅/🚧/🔜/💭 → done/in-progress/pending);
+  manifest validation (valid, invalid status, missing field, absent file);
   git stats on a tmp repo; reposcan presence/absence; each health rule branch;
-  render self-containment + filter + roll-down; empty/`no manifest` portfolios.
+  render self-containment + filter + roll-down; empty/`no source` portfolios.
+- The generator change is tested in each repo's own suite: `generate_progress.py`
+  emits a `progress.json` whose feature statuses match its `PROGRESS.md`.
 
 ---
 
 ## 9. Phasing
 
-- **v1 (this spec):** collector (manifest + git + rigor + health) + renderer +
-  committed `portfolio.json`/`portfolio.html` + cron. Seed `project-status.yaml`
-  into the existing repos (bootstrapped from `PRODUCT_CATALOG.md` /
-  `PORTFOLIO_SCORECARD.md` where possible, then owners refine).
+- **v1 (this spec):**
+  - Collector (`sources.py` precedence + git + rigor + health) + renderer +
+    committed `portfolio.json`/`portfolio.html` + cron.
+  - **Extend the two existing generators** (`StudyBuddy_OnDemand/scripts/generate_progress.py`
+    and `thittam/scripts/generate_progress.py`) to also emit `docs/progress.json`
+    with the normalized status mapping (§3a). Their nightly GitHub Actions commit
+    it. Keep `PROGRESS.md` unchanged.
+  - Seed `project-status.yaml` into repos that have **no** generator
+    (bootstrapped from `PRODUCT_CATALOG.md` / `PORTFOLIO_SCORECARD.md` where
+    possible, then owners refine). Do NOT add a manifest to repos that emit
+    `progress.json` — that would re-introduce the duplication this design avoids.
 - **v2 (design-for, don't build):** token/cost usage per project (parse
   `~/.claude/projects/` or `ccusage`); historical trend charts from the committed
   `portfolio.json` history; GitHub-issues ingestion as an alternative feature
@@ -220,5 +282,5 @@ diffs show status change over time and other tooling can consume it.
 - Health thresholds/weights in §5 (the age cutoffs, the progress bar, which
   stages "expect" rigor).
 - The default portfolio root path and any repos to exclude, in `portfolio.toml`.
-- Whether a repo with no manifest should be 🔴 or just badged (spec default:
-  badged, and 🔴 only via the §5 stage rule).
+- Whether a repo with no feature source should be 🔴 or just badged (spec
+  default: badged, and 🔴 only via the §5 stage rule).
