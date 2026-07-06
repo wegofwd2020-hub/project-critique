@@ -12,6 +12,9 @@ PY="${PYTHON:-$ROOT/portfolio_health/.venv/bin/python}"
 cd "$ROOT"
 if ! git diff --quiet portfolio.json portfolio.html; then
   git add portfolio.json portfolio.html
-  git commit -m "chore(portfolio): refresh health snapshot $(date -u +%Y-%m-%d)"
-  git push
+  # cron runs headless with no ssh-agent, so disable SSH commit-signing and push
+  # over HTTPS via the gh credential helper (both work non-interactively).
+  git -c commit.gpgsign=false \
+      commit -m "chore(portfolio): refresh health snapshot $(date -u +%Y-%m-%d)"
+  git push https://github.com/wegofwd2020-hub/project-critique.git HEAD:main
 fi
