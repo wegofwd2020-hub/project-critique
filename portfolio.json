@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-06T22:36:02+00:00",
+  "generated": "2026-07-07T11:30:10+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -48,7 +48,7 @@
       },
       "git": {
         "commits_30d": 11,
-        "last_commit_age_days": 0,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -106,8 +106,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 340,
-        "last_commit_age_days": 0,
+        "commits_30d": 341,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -297,7 +297,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 0,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -355,7 +355,7 @@
         "implemented": 4
       },
       "git": {
-        "commits_30d": 195,
+        "commits_30d": 202,
         "last_commit_age_days": 0,
         "branch": "main"
       },
@@ -415,7 +415,7 @@
       },
       "git": {
         "commits_30d": 100,
-        "last_commit_age_days": 0,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -474,7 +474,7 @@
       },
       "git": {
         "commits_30d": 25,
-        "last_commit_age_days": 0,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -502,7 +502,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 27,
+        "last_commit_age_days": 28,
         "branch": "docs/2026-06-admin-menu-onboarding"
       },
       "rigor": {
@@ -512,7 +512,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 27d since last commit"
+        "reason": "slowing \u2014 28d since last commit"
       }
     },
     {
@@ -530,7 +530,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 105,
+        "last_commit_age_days": 106,
         "branch": "1-implement-dual-os-build"
       },
       "rigor": {
@@ -540,7 +540,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 105d"
+        "reason": "dormant \u2014 no commits in 106d"
       }
     },
     {
@@ -1259,7 +1259,7 @@
       },
       "git": {
         "commits_30d": 8,
-        "last_commit_age_days": 14,
+        "last_commit_age_days": 15,
         "branch": "main"
       },
       "rigor": {
@@ -1268,8 +1268,8 @@
         "has_license": false
       },
       "health": {
-        "status": "green",
-        "reason": "active, no feature list, tests+docs"
+        "status": "yellow",
+        "reason": "slowing \u2014 15d since last commit"
       }
     },
     {
@@ -1287,7 +1287,7 @@
       },
       "git": {
         "commits_30d": 34,
-        "last_commit_age_days": 0,
+        "last_commit_age_days": 1,
         "branch": "master"
       },
       "rigor": {
@@ -1315,7 +1315,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 6,
+        "last_commit_age_days": 7,
         "branch": "main"
       },
       "rigor": {
@@ -1343,7 +1343,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 14,
+        "last_commit_age_days": 15,
         "branch": "main"
       },
       "rigor": {
@@ -1352,8 +1352,8 @@
         "has_license": true
       },
       "health": {
-        "status": "green",
-        "reason": "active, no feature list, tests+docs"
+        "status": "yellow",
+        "reason": "slowing \u2014 15d since last commit"
       }
     },
     {
@@ -1371,7 +1371,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 20,
+        "last_commit_age_days": 21,
         "branch": "main"
       },
       "rigor": {
@@ -1381,7 +1381,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 20d since last commit"
+        "reason": "slowing \u2014 21d since last commit"
       }
     },
     {
@@ -1399,7 +1399,7 @@
       },
       "git": {
         "commits_30d": 5,
-        "last_commit_age_days": 5,
+        "last_commit_age_days": 6,
         "branch": "main"
       },
       "rigor": {
@@ -1416,8 +1416,8 @@
   "summary": {
     "projects": 16,
     "health": {
-      "green": 6,
-      "yellow": 9,
+      "green": 4,
+      "yellow": 11,
       "red": 1
     },
     "features": {
