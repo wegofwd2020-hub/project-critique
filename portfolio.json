@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-07T11:30:10+00:00",
+  "generated": "2026-07-08T11:30:33+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -48,7 +48,7 @@
       },
       "git": {
         "commits_30d": 11,
-        "last_commit_age_days": 1,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -106,8 +106,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 341,
-        "last_commit_age_days": 1,
+        "commits_30d": 339,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -297,7 +297,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 1,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -355,8 +355,8 @@
         "implemented": 4
       },
       "git": {
-        "commits_30d": 202,
-        "last_commit_age_days": 0,
+        "commits_30d": 224,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -414,8 +414,8 @@
         "implemented": 5
       },
       "git": {
-        "commits_30d": 100,
-        "last_commit_age_days": 1,
+        "commits_30d": 94,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -473,8 +473,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 25,
-        "last_commit_age_days": 1,
+        "commits_30d": 15,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -502,7 +502,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 28,
+        "last_commit_age_days": 29,
         "branch": "docs/2026-06-admin-menu-onboarding"
       },
       "rigor": {
@@ -512,7 +512,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 28d since last commit"
+        "reason": "slowing \u2014 29d since last commit"
       }
     },
     {
@@ -530,7 +530,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 106,
+        "last_commit_age_days": 107,
         "branch": "1-implement-dual-os-build"
       },
       "rigor": {
@@ -540,7 +540,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 106d"
+        "reason": "dormant \u2014 no commits in 107d"
       }
     },
     {
@@ -1080,13 +1080,13 @@
         {
           "id": "#89",
           "name": "feat(iam): enforce UNIQUE on tenants.name \u2014 migration + service pre-check + 409 on conflict",
-          "status": "pending",
-          "commits": 0
+          "status": "done",
+          "commits": 9
         },
         {
           "id": "#90",
           "name": "feat(iam): scheduled tenant retention pipeline \u2014 suspended \u2192 grace \u2192 deactivated \u2192 purge",
-          "status": "pending",
+          "status": "done",
           "commits": 0
         },
         {
@@ -1098,8 +1098,8 @@
         {
           "id": "#92",
           "name": "feat(iam): scheduled tenant retention sweeper (suspended \u2192 deactivated \u2192 purge)",
-          "status": "in-progress",
-          "commits": 5
+          "status": "done",
+          "commits": 10
         },
         {
           "id": "#93",
@@ -1218,19 +1218,109 @@
         {
           "id": "#112",
           "name": "Vulnerabilities detected in dependencies (2026-06-26)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#113",
+          "name": "fix(security): bump vulnerable deps to clear GO-2026 CVEs (#112)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#114",
+          "name": "feat(iam): finish #89 \u2014 whitespace-normalized tenant-name uniqueness",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#115",
+          "name": "feat(registration): collect country/currency at signup (remove IN/INR stopgap)",
+          "status": "done",
+          "commits": 5
+        },
+        {
+          "id": "#116",
+          "name": "feat(registration): tenant-name uniqueness parity with iam (#89 follow-up)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#117",
+          "name": "feat(registration): collect country + derive currency at signup (closes #115)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#118",
+          "name": "feat(billing): on invoice.payment_failed, suspend tenant + start retention clock",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#119",
+          "name": "feat(iam): SetTenantRetention operator-override RPC (pause/extend/force-advance)",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#120",
+          "name": "epic(db): least-privilege thittam_app role \u2014 enforce audit_log append-only",
+          "status": "in-progress",
+          "commits": 4
+        },
+        {
+          "id": "#121",
+          "name": "feat(audit): Postgres audit Store + wire into retention sweeper (#92)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#122",
+          "name": "infra(db): split DATABASE_URL into migrator (owner) vs runtime (thittam_app) DSN",
+          "status": "in-progress",
+          "commits": 5
+        },
+        {
+          "id": "#123",
+          "name": "ops(db): provision thittam_app password + repoint prod Secret",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#124",
+          "name": "feat(db): least-privilege thittam_app role \u2014 audit_log append-only (#120)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#125",
+          "name": "feat(db): services connect as thittam_app \u2014 enforce audit_log append-only (#122)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#126",
+          "name": "reliability(billing): no outbox for subscription.suspended \u2014 lapsed tenant can silently skip retention",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#127",
+          "name": "feat(billing,iam): suspend tenant + start retention clock on subscription suspension (#118)",
           "status": "pending",
           "commits": 0
         }
       ],
       "counts": {
-        "total": 112,
-        "done": 89,
-        "in_progress": 8,
-        "pending": 15,
-        "implemented": 97
+        "total": 127,
+        "done": 101,
+        "in_progress": 9,
+        "pending": 17,
+        "implemented": 110
       },
       "git": {
-        "commits_30d": 42,
+        "commits_30d": 79,
         "last_commit_age_days": 0,
         "branch": "main"
       },
@@ -1241,7 +1331,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "active, 79% done, tests+docs"
+        "reason": "active, 80% done, tests+docs"
       }
     },
     {
@@ -1259,7 +1349,7 @@
       },
       "git": {
         "commits_30d": 8,
-        "last_commit_age_days": 15,
+        "last_commit_age_days": 16,
         "branch": "main"
       },
       "rigor": {
@@ -1269,7 +1359,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 15d since last commit"
+        "reason": "slowing \u2014 16d since last commit"
       }
     },
     {
@@ -1287,7 +1377,7 @@
       },
       "git": {
         "commits_30d": 34,
-        "last_commit_age_days": 1,
+        "last_commit_age_days": 2,
         "branch": "master"
       },
       "rigor": {
@@ -1315,7 +1405,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 7,
+        "last_commit_age_days": 8,
         "branch": "main"
       },
       "rigor": {
@@ -1343,7 +1433,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 15,
+        "last_commit_age_days": 16,
         "branch": "main"
       },
       "rigor": {
@@ -1353,7 +1443,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 15d since last commit"
+        "reason": "slowing \u2014 16d since last commit"
       }
     },
     {
@@ -1371,7 +1461,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 21,
+        "last_commit_age_days": 22,
         "branch": "main"
       },
       "rigor": {
@@ -1381,7 +1471,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 21d since last commit"
+        "reason": "slowing \u2014 22d since last commit"
       }
     },
     {
@@ -1399,7 +1489,7 @@
       },
       "git": {
         "commits_30d": 5,
-        "last_commit_age_days": 6,
+        "last_commit_age_days": 7,
         "branch": "main"
       },
       "rigor": {
@@ -1421,11 +1511,11 @@
       "red": 1
     },
     "features": {
-      "total": 159,
-      "done": 113,
-      "in_progress": 15,
-      "pending": 31,
-      "implemented": 128
+      "total": 174,
+      "done": 125,
+      "in_progress": 16,
+      "pending": 33,
+      "implemented": 141
     }
   }
 }
