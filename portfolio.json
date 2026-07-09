@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-08T11:30:33+00:00",
+  "generated": "2026-07-09T11:30:12+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -47,8 +47,8 @@
         "implemented": 4
       },
       "git": {
-        "commits_30d": 11,
-        "last_commit_age_days": 2,
+        "commits_30d": 19,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -106,8 +106,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 339,
-        "last_commit_age_days": 2,
+        "commits_30d": 342,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -237,7 +237,7 @@
         "implemented": 9
       },
       "git": {
-        "commits_30d": 117,
+        "commits_30d": 114,
         "last_commit_age_days": 0,
         "branch": "main"
       },
@@ -297,7 +297,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 2,
+        "last_commit_age_days": 3,
         "branch": "main"
       },
       "rigor": {
@@ -355,7 +355,7 @@
         "implemented": 4
       },
       "git": {
-        "commits_30d": 224,
+        "commits_30d": 226,
         "last_commit_age_days": 1,
         "branch": "main"
       },
@@ -414,8 +414,8 @@
         "implemented": 5
       },
       "git": {
-        "commits_30d": 94,
-        "last_commit_age_days": 2,
+        "commits_30d": 97,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -473,8 +473,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 15,
-        "last_commit_age_days": 2,
+        "commits_30d": 18,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -502,7 +502,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 29,
+        "last_commit_age_days": 30,
         "branch": "docs/2026-06-admin-menu-onboarding"
       },
       "rigor": {
@@ -512,7 +512,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 29d since last commit"
+        "reason": "slowing \u2014 30d since last commit"
       }
     },
     {
@@ -530,7 +530,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 107,
+        "last_commit_age_days": 108,
         "branch": "1-implement-dual-os-build"
       },
       "rigor": {
@@ -540,7 +540,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 107d"
+        "reason": "dormant \u2014 no commits in 108d"
       }
     },
     {
@@ -1099,7 +1099,7 @@
           "id": "#92",
           "name": "feat(iam): scheduled tenant retention sweeper (suspended \u2192 deactivated \u2192 purge)",
           "status": "done",
-          "commits": 10
+          "commits": 18
         },
         {
           "id": "#93",
@@ -1254,14 +1254,14 @@
         {
           "id": "#118",
           "name": "feat(billing): on invoice.payment_failed, suspend tenant + start retention clock",
-          "status": "pending",
-          "commits": 0
+          "status": "done",
+          "commits": 2
         },
         {
           "id": "#119",
           "name": "feat(iam): SetTenantRetention operator-override RPC (pause/extend/force-advance)",
-          "status": "pending",
-          "commits": 0
+          "status": "done",
+          "commits": 6
         },
         {
           "id": "#120",
@@ -1302,25 +1302,67 @@
         {
           "id": "#126",
           "name": "reliability(billing): no outbox for subscription.suspended \u2014 lapsed tenant can silently skip retention",
-          "status": "pending",
-          "commits": 0
+          "status": "done",
+          "commits": 8
         },
         {
           "id": "#127",
           "name": "feat(billing,iam): suspend tenant + start retention clock on subscription suspension (#118)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#128",
+          "name": "feat(iam): SetTenantRetention operator override \u2014 hold/extend suspended tenants (#119)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#129",
+          "name": "feat(iam): PurgeTenant \u2014 two-person hard-delete of purge_eligible tenants (#92)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#130",
+          "name": "reliability(billing): migrations unwired + 001 drifted from live code",
+          "status": "done",
+          "commits": 5
+        },
+        {
+          "id": "#131",
+          "name": "fix(billing): wire migrations + reconcile 001 to live schema (#130)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#132",
+          "name": "docs(infra): CLAUDE.md guardrail \u2014 never -v on infra/local for DB verification",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#133",
+          "name": "feat(billing): transactional outbox for subscription.suspended (#126)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#134",
+          "name": "observability(billing): alert on stuck/poison outbox rows + add pending gauge",
           "status": "pending",
           "commits": 0
         }
       ],
       "counts": {
-        "total": 127,
-        "done": 101,
+        "total": 134,
+        "done": 111,
         "in_progress": 9,
-        "pending": 17,
-        "implemented": 110
+        "pending": 14,
+        "implemented": 120
       },
       "git": {
-        "commits_30d": 79,
+        "commits_30d": 126,
         "last_commit_age_days": 0,
         "branch": "main"
       },
@@ -1331,7 +1373,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "active, 80% done, tests+docs"
+        "reason": "active, 83% done, tests+docs"
       }
     },
     {
@@ -1349,7 +1391,7 @@
       },
       "git": {
         "commits_30d": 8,
-        "last_commit_age_days": 16,
+        "last_commit_age_days": 17,
         "branch": "main"
       },
       "rigor": {
@@ -1359,7 +1401,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 16d since last commit"
+        "reason": "slowing \u2014 17d since last commit"
       }
     },
     {
@@ -1377,7 +1419,7 @@
       },
       "git": {
         "commits_30d": 34,
-        "last_commit_age_days": 2,
+        "last_commit_age_days": 3,
         "branch": "master"
       },
       "rigor": {
@@ -1405,7 +1447,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 8,
+        "last_commit_age_days": 9,
         "branch": "main"
       },
       "rigor": {
@@ -1433,7 +1475,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 16,
+        "last_commit_age_days": 17,
         "branch": "main"
       },
       "rigor": {
@@ -1443,7 +1485,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 16d since last commit"
+        "reason": "slowing \u2014 17d since last commit"
       }
     },
     {
@@ -1461,7 +1503,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 22,
+        "last_commit_age_days": 23,
         "branch": "main"
       },
       "rigor": {
@@ -1471,7 +1513,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 22d since last commit"
+        "reason": "slowing \u2014 23d since last commit"
       }
     },
     {
@@ -1489,7 +1531,7 @@
       },
       "git": {
         "commits_30d": 5,
-        "last_commit_age_days": 7,
+        "last_commit_age_days": 8,
         "branch": "main"
       },
       "rigor": {
@@ -1511,11 +1553,11 @@
       "red": 1
     },
     "features": {
-      "total": 174,
-      "done": 125,
+      "total": 181,
+      "done": 135,
       "in_progress": 16,
-      "pending": 33,
-      "implemented": 141
+      "pending": 30,
+      "implemented": 151
     }
   }
 }
