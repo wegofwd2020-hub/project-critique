@@ -24,7 +24,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 | dronePrjs | – | – | – | stub | – | – | – | Y | Y | – |
 | MarketingTools | Y | – | – | – | – | – | – | – | Y | – |
 | mambakkam-net | Y | Y | d | – | Y | – | – | Y | Y | Y |
-| medtracker | Y | – | – | – | Y (3) | – | n/a | Y (12) | Y | d |
+| medtracker | Y | – | – | – | Y (3) | – | n/a | Y (14) | Y | d |
 | coding-standards | Y | – | – | – | n/a | n/a | n/a | n/a | – | n/a |
 | project-critique | Y | – | – | – | n/a | n/a | n/a | n/a | – | n/a |
 
@@ -56,7 +56,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 
 ### Personal / internal tools
 
-**medtracker** — **the strongest docs-per-day ratio in the portfolio.** Built in one day (2026-07-13), it still shipped a substantial README (the refill rule, the status ladder, dose patterns), three operational runbooks (`docs/DEPLOYMENT.md`, `ADDING-A-DEVICE.md`, `ADDING-A-USER.md`), 12 test files, and a `.gitignore` whose comments *explain the reasoning* for each exclusion — the only one in the portfolio that does. *Gaps:* no `LICENSE`, no `CLAUDE.md`, no `CHANGELOG`, no ADRs, and **no CI** despite mypy and a hypothesis-based test suite that a CI job could run for free.
+**medtracker** — **the strongest docs-per-day ratio in the portfolio.** Built in one day (2026-07-13), it still shipped a substantial README (the refill rule, the status ladder, dose patterns), three operational runbooks (`docs/DEPLOYMENT.md`, `ADDING-A-DEVICE.md`, `ADDING-A-USER.md`), 14 test files, and a `.gitignore` whose comments *explain the reasoning* for each exclusion — the only one in the portfolio that does. **CI landed 2026-07-14** — pytest and mypy on two Python versions, plus a job that fails the build if a vault, `.env`, or database is ever tracked, because an ignore rule is a request and `git add -f` walks straight past it. *Gaps:* no `LICENSE`, no `CLAUDE.md`, no `CHANGELOG`, no ADRs.
 
 Because it handles personal health data, the repo is private and its **four-lens review is kept there** (`medtracker/docs/critique/`) rather than in this public repo. The one documentation gap worth naming here: its data-handling rules exist as `.gitignore` comments and prose, not as a written data-handling note. The engineering already does the right things; nothing writes down *why*, so nothing stops a future change from quietly undoing them.
 
@@ -69,7 +69,7 @@ Because it handles personal health data, the repo is private and its **four-lens
 
 1. **LICENSE files are missing almost everywhere** — absent from 9 of 13 repos, including products (`StudyBuddy_OnDemand`, `pramana`, `thittam_docs`). For the proprietary ones this should be an explicit copyright/all-rights-reserved file; for anything meant to be shared (`coding-standards`), an OSI license. Right now the legal status is ambiguous-by-omission.
 
-2. **No privacy / data-protection documentation where it matters most** — StudyBuddy (minors → COPPA/FERPA), Kathai Chithiram (children's personal stories), and now **medtracker (real medication records for identified people)** all process sensitive personal data, and none has a privacy policy, data-handling doc, or DPA. This is the highest-risk gap in the portfolio. medtracker is the sharpest case: it is the only one holding the data *today*, in production, and its safeguards are real but undocumented.
+2. **No privacy / data-protection documentation where it matters most** — StudyBuddy (minors → COPPA/FERPA) and Kathai Chithiram (children's personal stories) both process sensitive personal data, and neither has a privacy policy, data-handling doc, or DPA. This is the highest-risk *documentation* gap in the portfolio. **medtracker** is a private single-family tool rather than a product, so a DPA does not apply — but its data-handling rules should still be written down rather than living as code comments; that is tracked in its own repo.
 
 3. **CHANGELOGs are largely absent** — only `studybuddy-docs` and `mambakkam-net` have one. Shipped/late-build products (`StudyBuddy_OnDemand`, `thittam`) should each maintain one. (`studybuddy_free` is now archived — excluded.)
 
@@ -82,7 +82,7 @@ Because it handles personal health data, the repo is private and its **four-lens
 ## Prioritized fix list
 
 **P0 — do before any public launch or new build**
-- **medtracker:** write the **data-handling note** — what is stored, where, encrypted how, who can read it, how it is backed up, and how it is destroyed. It is the only repo holding real health data in production today, and those rules currently exist only as code comments. (The technical follow-ups from its review are tracked in the private repo, not listed here.)
+- **medtracker:** write the **data-handling note** — what is stored, where, encrypted how, who can read it, how it is backed up, and how it is destroyed. The rules currently exist only as code comments, so nothing stops a future change from quietly undoing them. (Tracked in its own repo; the technical follow-ups from its review are not listed here.)
 - **Kathai Chithiram:** add a privacy/data-handling doc (how parent stories and child data are stored, retained, deleted) and a content-safety guideline; add a `scene-script contract` spec; add `LICENSE`, `CLAUDE.md`, `.gitignore`.
 - **StudyBuddy:** add a child-data **privacy policy + COPPA/FERPA compliance doc** (and DPA template) to `studybuddy-docs`; add a `LICENSE` to the code repo.
 - **Pramana:** add the `LICENSE` file the README already implies, plus a `SECURITY.md`/threat model (table stakes for a compliance product).
@@ -92,7 +92,7 @@ Because it handles personal health data, the repo is private and its **four-lens
 - **dronePrjs:** write a real `README`, replace the placeholder `CLAUDE.md`, add a safety/operating-envelope doc and the per-subproject domain docs.
 - Pick **one ADR convention** and backfill key decisions in StudyBuddy docs, Pramana, and Thittam.
 - **MarketingTools:** add `CLAUDE.md` + tests (it generates outbound copy — regression-test the generators).
-- **medtracker:** add CI (it already has mypy + a hypothesis suite — a GitHub Actions job is close to free), plus `LICENSE` and `CLAUDE.md`.
+- **medtracker:** ~~add CI~~ — **done 2026-07-14.** Still open: `LICENSE` and `CLAUDE.md`.
 
 **P2 — when collaborators or open-sourcing appear**
 - `CONTRIBUTING.md` for the active code repos (only `thittam_docs` has one).
