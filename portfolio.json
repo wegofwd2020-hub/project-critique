@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T09:26:15+00:00",
+  "generated": "2026-07-14T11:11:46+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -455,7 +455,7 @@
         {
           "id": null,
           "name": "Renewal-needed flag (out of refills, or Rx expires before supply runs out)",
-          "status": "done",
+          "status": "in-progress",
           "commits": null
         },
         {
@@ -496,26 +496,32 @@
         },
         {
           "id": null,
+          "name": "CI \u2014 pytest + mypy on 3.11/3.12, plus a job that fails if a vault or .env is tracked",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
           "name": "Restore drill \u2014 recover a vault from the Drive backup onto a clean machine",
           "status": "pending",
           "commits": null
         },
         {
           "id": null,
-          "name": "CI \u2014 run pytest + mypy on push (neither is enforced anywhere today)",
+          "name": "Safe restore \u2014 pull_vault backs up before overwriting, refuses a --pull that should have been a --push, and has tests",
           "status": "pending",
           "commits": null
         }
       ],
       "counts": {
-        "total": 12,
+        "total": 13,
         "done": 10,
-        "in_progress": 0,
+        "in_progress": 1,
         "pending": 2,
-        "implemented": 10
+        "implemented": 11
       },
       "git": {
-        "commits_30d": 11,
+        "commits_30d": 18,
         "last_commit_age_days": 0,
         "branch": "main"
       },
@@ -526,7 +532,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "active, 83% done, tests+docs"
+        "reason": "active, 77% done, tests+docs"
       }
     },
     {
@@ -1654,11 +1660,11 @@
       "red": 2
     },
     "features": {
-      "total": 193,
+      "total": 194,
       "done": 145,
-      "in_progress": 16,
+      "in_progress": 17,
       "pending": 32,
-      "implemented": 161
+      "implemented": 162
     }
   }
 }
