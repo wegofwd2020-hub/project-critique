@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T16:23:43+00:00",
+  "generated": "2026-07-14T18:38:06+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -106,7 +106,7 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 417,
+        "commits_30d": 418,
         "last_commit_age_days": 0,
         "branch": "feat/open-shelves"
       },
@@ -237,7 +237,7 @@
         "implemented": 9
       },
       "git": {
-        "commits_30d": 92,
+        "commits_30d": 84,
         "last_commit_age_days": 0,
         "branch": "main"
       },
@@ -455,7 +455,7 @@
         {
           "id": null,
           "name": "Renewal-needed flag (out of refills, or Rx expires before supply runs out)",
-          "status": "in-progress",
+          "status": "done",
           "commits": null
         },
         {
@@ -521,19 +521,25 @@
         {
           "id": null,
           "name": "Key custody hardening \u2014 see the private review",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Key rotation path \u2014 MultiFernet + a key_id in the vault payload",
           "status": "pending",
           "commits": null
         }
       ],
       "counts": {
-        "total": 15,
-        "done": 12,
-        "in_progress": 1,
+        "total": 16,
+        "done": 14,
+        "in_progress": 0,
         "pending": 2,
-        "implemented": 13
+        "implemented": 14
       },
       "git": {
-        "commits_30d": 35,
+        "commits_30d": 42,
         "last_commit_age_days": 0,
         "branch": "main"
       },
@@ -544,7 +550,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "active, 80% done, tests+docs"
+        "reason": "active, 88% done, tests+docs"
       }
     },
     {
@@ -1672,11 +1678,11 @@
       "red": 2
     },
     "features": {
-      "total": 196,
-      "done": 147,
-      "in_progress": 17,
+      "total": 197,
+      "done": 149,
+      "in_progress": 16,
       "pending": 32,
-      "implemented": 164
+      "implemented": 165
     }
   }
 }
