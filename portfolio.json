@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T11:30:18+00:00",
+  "generated": "2026-07-14T16:23:43+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -106,8 +106,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 421,
-        "last_commit_age_days": 1,
+        "commits_30d": 417,
+        "last_commit_age_days": 0,
         "branch": "feat/open-shelves"
       },
       "rigor": {
@@ -502,28 +502,40 @@
         },
         {
           "id": null,
-          "name": "Restore drill \u2014 recover a vault from the Drive backup onto a clean machine",
+          "name": "Safe restore \u2014 pull_vault backs up before overwriting, refuses a --pull that should have been a --push, and has tests",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Restore drill \u2014 Drive backup downloads and decrypts with the key we hold",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Bare-metal rebuild rehearsal \u2014 provision a host from scratch and restore onto it",
           "status": "pending",
           "commits": null
         },
         {
           "id": null,
-          "name": "Safe restore \u2014 pull_vault backs up before overwriting, refuses a --pull that should have been a --push, and has tests",
+          "name": "Key custody hardening \u2014 see the private review",
           "status": "pending",
           "commits": null
         }
       ],
       "counts": {
-        "total": 13,
-        "done": 10,
+        "total": 15,
+        "done": 12,
         "in_progress": 1,
         "pending": 2,
-        "implemented": 11
+        "implemented": 13
       },
       "git": {
-        "commits_30d": 21,
+        "commits_30d": 35,
         "last_commit_age_days": 0,
-        "branch": "safe-restore"
+        "branch": "main"
       },
       "rigor": {
         "has_tests": true,
@@ -532,7 +544,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "active, 77% done, tests+docs"
+        "reason": "active, 80% done, tests+docs"
       }
     },
     {
@@ -1660,11 +1672,11 @@
       "red": 2
     },
     "features": {
-      "total": 194,
-      "done": 145,
+      "total": 196,
+      "done": 147,
       "in_progress": 17,
       "pending": 32,
-      "implemented": 162
+      "implemented": 164
     }
   }
 }
