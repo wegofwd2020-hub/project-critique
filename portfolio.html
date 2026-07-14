@@ -30,8 +30,8 @@ th{color:var(--mut);font-weight:500;font-size:.8rem;text-transform:uppercase}
 .sig{color:var(--mut);font-size:.85rem;margin-top:.5rem}
 .badge{font-size:.75rem;border:1px solid var(--mut);border-radius:5px;padding:0 .35rem;margin-left:.4rem;color:var(--mut)}</style></head><body>
 <div class="wrap"><h1>Portfolio Health</h1>
-<p class="sub">17 repos · generated 2026-07-14T11:30:18+00:00</p>
-<div class="grand"><div class="g">🟢 5 · 🟡 10 · 🔴 2</div><div class="g">features: 145✓ / 17⏳ / 32◻ (of 194)</div></div>
+<p class="sub">17 repos · generated 2026-07-14T16:23:43+00:00</p>
+<div class="grand"><div class="g">🟢 5 · 🟡 10 · 🔴 2</div><div class="g">features: 147✓ / 17⏳ / 32◻ (of 196)</div></div>
 <input id="q" type="search" autocomplete="off" placeholder="Filter by project, stage, status, owner…">
 <div id="none">No matching repositories.</div>
 <details class="proj"><summary><span>🟡 yellow</span><span class="name">MarketingTools</span><span class="stage">active</span><span class="counts">4✓ / 0⏳ / 1◻ · 14c/30d · 6d</span><span class="reason">missing tests</span></summary>
@@ -45,7 +45,7 @@ th{color:var(--mut);font-weight:500;font-size:.8rem;text-transform:uppercase}
 </table>
 <div class="sig">tests: no · docs: yes · license: no · branch: main</div>
 </div></details>
-<details class="proj"><summary><span>🟡 yellow</span><span class="name">Mentible</span><span class="stage">pre-mvp</span><span class="counts">3✓ / 0⏳ / 2◻ · 421c/30d · 1d</span><span class="reason">60% of features done</span></summary>
+<details class="proj"><summary><span>🟡 yellow</span><span class="name">Mentible</span><span class="stage">pre-mvp</span><span class="counts">3✓ / 0⏳ / 2◻ · 417c/30d · 0d</span><span class="reason">60% of features done</span></summary>
 <div class="body">
 <table><tr><th>Feature</th><th>Status</th><th>ID</th></tr>
 <tr><td>ADRs + directory stubs (backend, mobile, pipeline, compiler)</td><td>done</td><td>adrs-and-directory-stubs</td></tr>
@@ -112,7 +112,7 @@ th{color:var(--mut);font-weight:500;font-size:.8rem;text-transform:uppercase}
 </table>
 <div class="sig">tests: no · docs: yes · license: yes · branch: main</div>
 </div></details>
-<details class="proj"><summary><span>🟢 green</span><span class="name">medtracker</span><span class="stage">live</span><span class="counts">10✓ / 1⏳ / 2◻ · 21c/30d · 0d</span><span class="reason">active, 77% done, tests+docs</span></summary>
+<details class="proj"><summary><span>🟢 green</span><span class="name">medtracker</span><span class="stage">live</span><span class="counts">12✓ / 1⏳ / 2◻ · 35c/30d · 0d</span><span class="reason">active, 80% done, tests+docs</span></summary>
 <div class="body">
 <table><tr><th>Feature</th><th>Status</th><th>ID</th></tr>
 <tr><td>Encrypted JSON vault store (schema v3, migrates v1/v2 on read)</td><td>done</td><td></td></tr>
@@ -126,10 +126,12 @@ th{color:var(--mut);font-weight:500;font-size:.8rem;text-transform:uppercase}
 <tr><td>Per-member ICS calendar export of upcoming refill dates</td><td>done</td><td></td></tr>
 <tr><td>Multi-device serving — gunicorn + WhiteNoise behind tailscale serve (TLS)</td><td>done</td><td></td></tr>
 <tr><td>CI — pytest + mypy on 3.11/3.12, plus a job that fails if a vault or .env is tracked</td><td>done</td><td></td></tr>
-<tr><td>Restore drill — recover a vault from the Drive backup onto a clean machine</td><td>pending</td><td></td></tr>
-<tr><td>Safe restore — pull_vault backs up before overwriting, refuses a --pull that should have been a --push, and has tests</td><td>pending</td><td></td></tr>
+<tr><td>Safe restore — pull_vault backs up before overwriting, refuses a --pull that should have been a --push, and has tests</td><td>done</td><td></td></tr>
+<tr><td>Restore drill — Drive backup downloads and decrypts with the key we hold</td><td>done</td><td></td></tr>
+<tr><td>Bare-metal rebuild rehearsal — provision a host from scratch and restore onto it</td><td>pending</td><td></td></tr>
+<tr><td>Key custody hardening — see the private review</td><td>pending</td><td></td></tr>
 </table>
-<div class="sig">tests: yes · docs: yes · license: no · branch: safe-restore</div>
+<div class="sig">tests: yes · docs: yes · license: no · branch: main</div>
 </div></details>
 <details class="proj"><summary><span>🟡 yellow</span><span class="name">pramana</span><span class="stage">spec</span><span class="counts">2✓ / 1⏳ / 2◻ · 11c/30d · 6d</span><span class="reason">40% of features done</span></summary>
 <div class="body">
