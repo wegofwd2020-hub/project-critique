@@ -1,6 +1,7 @@
 # WeGoFwd2020 — Documentation Audit
 
-**Date:** 2026-06-11 · **Scope:** all 13 repositories · **Companion:** `PRODUCT_CATALOG.md`, `PORTFOLIO_SCORECARD.md`
+**Date:** 2026-06-11 · **Updated:** 2026-07-14 (added `medtracker`) · **Companion:** `PRODUCT_CATALOG.md`, `PORTFOLIO_SCORECARD.md`
+**Scope:** 14 of the org's 19 code repos. Not yet audited: `wegofwd-llm`, `wegofwd-video`, `wegofwd-orchestration`, `wegofwd-expenses`, `wegofwd-secure` — all added after the original 2026-06-11 pass.
 
 This audit checks each project for the documents it *should* have for its stage and type, and flags what's missing. Headline: documentation tracks commercial maturity almost perfectly — the three serious bets (StudyBuddy, Thittam, Pramana) are richly documented; the prototype/passion projects have little to nothing.
 
@@ -23,6 +24,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 | dronePrjs | – | – | – | stub | – | – | – | Y | Y | – |
 | MarketingTools | Y | – | – | – | – | – | – | – | Y | – |
 | mambakkam-net | Y | Y | d | – | Y | – | – | Y | Y | Y |
+| medtracker | Y | – | – | – | Y (3) | – | n/a | Y (12) | Y | d |
 | coding-standards | Y | – | – | – | n/a | n/a | n/a | n/a | – | n/a |
 | project-critique | Y | – | – | – | n/a | n/a | n/a | n/a | – | n/a |
 
@@ -52,6 +54,12 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 
 **dronePrjs** — `CLAUDE.md` is a **placeholder stub** (title typo "dronePrhs", literal "your frameworks here" / "the stuff you wish you'd known" prompts) and there's **no README at all**, no `docs/`, no `LICENSE`. For a robotics/drone project the absence of a **safety/operating-envelope doc** and the promised per-subproject (`closedSpace`/`openSpace`) domain docs is the notable gap. Tests and .gitignore exist.
 
+### Personal / internal tools
+
+**medtracker** — **the strongest docs-per-day ratio in the portfolio.** Built in one day (2026-07-13), it still shipped a substantial README (the refill rule, the status ladder, dose patterns), three operational runbooks (`docs/DEPLOYMENT.md`, `ADDING-A-DEVICE.md`, `ADDING-A-USER.md`), 12 test files, and a `.gitignore` whose comments *explain the reasoning* for each exclusion — the only one in the portfolio that does. *Gaps:* no `LICENSE`, no `CLAUDE.md`, no `CHANGELOG`, no ADRs, and **no CI** despite mypy and a hypothesis-based test suite that a CI job could run for free.
+
+Because it handles personal health data, the repo is private and its **four-lens review is kept there** (`medtracker/docs/critique/`) rather than in this public repo. The one documentation gap worth naming here: its data-handling rules exist as `.gitignore` comments and prose, not as a written data-handling note. The engineering already does the right things; nothing writes down *why*, so nothing stops a future change from quietly undoing them.
+
 ### Supporting repos
 `coding-standards` and `project-critique` are themselves documentation; they're fine as-is. Minor: neither has a LICENSE, which matters if `coding-standards` is meant to be reused/shared.
 
@@ -61,7 +69,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 
 1. **LICENSE files are missing almost everywhere** — absent from 9 of 13 repos, including products (`StudyBuddy_OnDemand`, `pramana`, `thittam_docs`). For the proprietary ones this should be an explicit copyright/all-rights-reserved file; for anything meant to be shared (`coding-standards`), an OSI license. Right now the legal status is ambiguous-by-omission.
 
-2. **No privacy / data-protection documentation where it matters most** — StudyBuddy (minors → COPPA/FERPA) and Kathai Chithiram (children's personal stories) both process sensitive data about children and neither has a privacy policy, data-handling doc, or DPA. This is the highest-risk gap in the portfolio.
+2. **No privacy / data-protection documentation where it matters most** — StudyBuddy (minors → COPPA/FERPA), Kathai Chithiram (children's personal stories), and now **medtracker (real medication records for identified people)** all process sensitive personal data, and none has a privacy policy, data-handling doc, or DPA. This is the highest-risk gap in the portfolio. medtracker is the sharpest case: it is the only one holding the data *today*, in production, and its safeguards are real but undocumented.
 
 3. **CHANGELOGs are largely absent** — only `studybuddy-docs` and `mambakkam-net` have one. Shipped/late-build products (`StudyBuddy_OnDemand`, `thittam`) should each maintain one. (`studybuddy_free` is now archived — excluded.)
 
@@ -74,6 +82,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 ## Prioritized fix list
 
 **P0 — do before any public launch or new build**
+- **medtracker:** write the **data-handling note** — what is stored, where, encrypted how, who can read it, how it is backed up, and how it is destroyed. It is the only repo holding real health data in production today, and those rules currently exist only as code comments. (The technical follow-ups from its review are tracked in the private repo, not listed here.)
 - **Kathai Chithiram:** add a privacy/data-handling doc (how parent stories and child data are stored, retained, deleted) and a content-safety guideline; add a `scene-script contract` spec; add `LICENSE`, `CLAUDE.md`, `.gitignore`.
 - **StudyBuddy:** add a child-data **privacy policy + COPPA/FERPA compliance doc** (and DPA template) to `studybuddy-docs`; add a `LICENSE` to the code repo.
 - **Pramana:** add the `LICENSE` file the README already implies, plus a `SECURITY.md`/threat model (table stakes for a compliance product).
@@ -83,6 +92,7 @@ Legend: **Y** = present · **d** = present but lives in a `docs/` subfolder or c
 - **dronePrjs:** write a real `README`, replace the placeholder `CLAUDE.md`, add a safety/operating-envelope doc and the per-subproject domain docs.
 - Pick **one ADR convention** and backfill key decisions in StudyBuddy docs, Pramana, and Thittam.
 - **MarketingTools:** add `CLAUDE.md` + tests (it generates outbound copy — regression-test the generators).
+- **medtracker:** add CI (it already has mypy + a hypothesis suite — a GitHub Actions job is close to free), plus `LICENSE` and `CLAUDE.md`.
 
 **P2 — when collaborators or open-sourcing appear**
 - `CONTRIBUTING.md` for the active code repos (only `thittam_docs` has one).

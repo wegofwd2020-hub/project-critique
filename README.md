@@ -1,9 +1,9 @@
 # Project Critique — WeGoFwd2020
 
-Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thittam, dronePrjs, MarketingTools, and the claude_memory tooling.
+Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thittam, dronePrjs, MarketingTools, medtracker, and the claude_memory tooling.
 
-**Reviewed:** 2026-07-01 (v2.7 — **wegofwd-video admitted to the critique suite (full four-lens first review v1.0)**: the shared video-generation seam is the **second** cross-cutting shared dependency in the set, load-bearing for pramana (AI Veo path) and Kathai Chithiram (deterministic-renderer path); first review flags a provenance-integrity gap — `veo` stamps `model_verified=True` with no live call ever made — and no in-repo CI/watch yet)
-**Prior:** 2026-06-13 v2.6 (**wegofwd-llm admitted to the watch set**, critique v1.0 — the first cross-cutting shared dependency; load-bearing for StudyBuddy_OnDemand, Mentible, and Kathai Chithiram) · 2026-06-09 v2.5 (StudyBuddy OnDemand → v1.7 on `main` @ `d50bc3e`; Mentible → v2.0 on `main` @ `40166ee` with the `wegofwd-llm` extraction itself; new four-lens sets for MarketingTools and claude_memory) · 2026-06-02 v2.4 (StudyBuddy OnDemand → critique v1.6 Authoring Studio/Epic 12; new project Mentible v1.0) · May 2026 v2.3 (all three re-measured on disk: StudyBuddy v1.5, Thittam v1.3, dronePrjs v1.1) · v2.2 (adds dronePrjs first-review; StudyBuddy v1.4; Thittam v1.2) · v2.1 (StudyBuddy visual-library wave 1+2) · April 2026 v2 (proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
+**Reviewed:** 2026-07-14 (v2.8 — **medtracker admitted to the critique suite (full four-lens first review v1.0)**: the portfolio's first *deployed-and-in-daily-use* product, and its only one with **no LLM at runtime** — it runs at $0/month and was built in a single day, which makes it the control case for what the shared-engine thesis is actually worth. Because it handles personal health data in production, **its four documents are held in the private `medtracker` repo** (`docs/critique/`) and are not published here. The review was not a clean bill of health; its findings are tracked privately)
+**Prior:** 2026-07-01 v2.7 (**wegofwd-video admitted to the critique suite (full four-lens first review v1.0)**: the shared video-generation seam is the **second** cross-cutting shared dependency in the set, load-bearing for pramana (AI Veo path) and Kathai Chithiram (deterministic-renderer path); first review flags a provenance-integrity gap — `veo` stamps `model_verified=True` with no live call ever made — and no in-repo CI/watch yet) · 2026-06-13 v2.6 (**wegofwd-llm admitted to the watch set**, critique v1.0 — the first cross-cutting shared dependency; load-bearing for StudyBuddy_OnDemand, Mentible, and Kathai Chithiram) · 2026-06-09 v2.5 (StudyBuddy OnDemand → v1.7 on `main` @ `d50bc3e`; Mentible → v2.0 on `main` @ `40166ee` with the `wegofwd-llm` extraction itself; new four-lens sets for MarketingTools and claude_memory) · 2026-06-02 v2.4 (StudyBuddy OnDemand → critique v1.6 Authoring Studio/Epic 12; new project Mentible v1.0) · May 2026 v2.3 (all three re-measured on disk: StudyBuddy v1.5, Thittam v1.3, dronePrjs v1.1) · v2.2 (adds dronePrjs first-review; StudyBuddy v1.4; Thittam v1.2) · v2.1 (StudyBuddy visual-library wave 1+2) · April 2026 v2 (proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
 **Reviewer:** Claude (Anthropic)
 **Scope:** Architecture, code quality, test coverage, documentation, security, scalability
 
@@ -39,11 +39,20 @@ Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thitta
 | [dronePrjs-cost.md](dronePrjs-cost.md) | dronePrjs | Real-world cost analysis — conventional robotics team would have spent (~$522k US / $179k blended) |
 | [MarketingTools-cost.md](MarketingTools-cost.md) | MarketingTools | Real-world cost analysis — conventional team would have spent (~$33k US / proportionate) |
 | [claude-memory-cost.md](claude-memory-cost.md) | claude_memory (tooling) | Real-world cost analysis — ~4 senior infra/DX engineer-days (~$6–7k US) |
-| [NEW_MACHINE_SETUP.md](NEW_MACHINE_SETUP.md) | claude_memory (tooling) | Runbook — restore the per-project memory system on a fresh machine (10 repos) |
+| [NEW_MACHINE_SETUP.md](NEW_MACHINE_SETUP.md) | claude_memory (tooling) | Runbook — restore the per-project memory system on a fresh machine (13 repos) |
 | [claude-memory-add-project.md](claude-memory-add-project.md) | claude_memory (tooling) | Runbook — wire a new project into git-backed memory + verify the auto-push |
 | [elevator-pitch.md](elevator-pitch.md) | Siva Mambakkam | Elevator pitch for employers and consulting clients |
 | [personality-review.md](personality-review.md) | Siva Mambakkam | Practice personality review — strengths, blind spots, and improvement plan |
 | [linkedin-posts.md](linkedin-posts.md) | Siva Mambakkam | Five LinkedIn posts — thought leadership, compliance, standards, availability |
+
+> **medtracker — reviewed, but held privately.** medtracker runs in production with real personal
+> health data, so its repo is private and its full four-lens set (critique · practices · cost ·
+> development-pattern, 2026-07-14) lives **there**, at `medtracker/docs/critique/`, rather than in
+> this public repo. Publishing a line-referenced weakness list for a live service holding real health
+> records would be the one place in this portfolio where an honest critique does more harm than good.
+> What is safe to say here: it is the **only product with no LLM at runtime**, it costs **$0/month to
+> run**, and it was built in **one day** — the portfolio's control case for what the shared-engine
+> thesis is actually worth.
 
 ---
 

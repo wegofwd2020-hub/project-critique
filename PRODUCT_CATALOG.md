@@ -1,8 +1,10 @@
 # WeGoFwd2020 — Product Catalog
 
 **Owner:** WeGoFwd2020 (`github.com/wegofwd2020-hub`)
-**Generated:** 2026-06-11
-**Scope:** All 13 repositories in the GitHub organization, cloned and synced into this folder.
+**Generated:** 2026-06-11 · **Last updated:** 2026-07-14 (added `medtracker`)
+**Scope:** All 19 code repositories in the GitHub organization, cloned and synced into this
+folder. (The 13 `*-memory` repos — portable Claude memory, one per project — are excluded;
+see `claude-memory-add-project.md`.)
 
 This catalog is auto-derived from each repository's README, `CLAUDE.md`, and design
 docs. Status reflects what the repos themselves claim as of their latest synced commit.
@@ -22,6 +24,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | 7 | **MarketingTools** | `MarketingTools` | Internal go-to-market tooling | Python · Anthropic API · YAML | Active internal tool |
 | 8 | **mambakkam.net** | `mambakkam-net` | Company website / demo host | Astro 5 · Tailwind (AstroWind) | Live / actively published |
 | 9 | **wegofwd-expenses** | `wegofwd-expenses` | Internal finance/ops tooling | Python · Gmail API · SQLite · `wegofwd-llm` · pdfminer.six | P0 built (76/76 tests, merged); on GitHub org (private); awaiting real-mailbox dry run |
+| 10 | **medtracker** | `medtracker` | Personal/family health ops | Django 5 · django-allauth (Google) · `cryptography` (encrypted JSON vaults) · gunicorn · Tailscale | v0.2.0 — **deployed and in daily use** (tailnet-only, real family data); on GitHub org (private) since 2026-07-14 |
 
 ### Archived products (no longer maintained)
 
@@ -145,6 +148,21 @@ queue. Built subagent-driven over 10 TDD tasks; ADRs 0001–0003.
 - **Status:** **P0 built** — 76/76 tests green, merged to `master`; on the **GitHub org (private)**. Next step: real-mailbox dry run (live Gmail/LLM/PDF paths are the network boundary, unit-untested by design).
 - **Note:** Consumes the shared `wegofwd-llm` seam. Real Anthropic billing PDFs (home address in bill-to) live in a gitignored data dir; a hermetic golden test validates the ledger→report math against the documented totals.
 
+### 10. medtracker — `medtracker`
+Family **medication refill tracker**. A Django app that answers one question per
+medication — *when must this be requested so it never runs out?* — from the rule
+`request_by = last_filled + day_supply − (lead_time_days + buffer_days)`, driving the
+status ladder `OK → DUE SOON → REQUEST NOW → OVERDUE` (plus `REQUESTED`, `Paused`,
+and a `Renewal needed` flag when refills run out or the prescription expires before
+the supply does). Medication data is **deliberately kept out of the database**: each
+family member's records live in a schema-versioned, `cryptography`-encrypted JSON
+**vault file**, with SQLite holding only Django auth. Encrypted vaults are optionally
+backed up to the super admin's Google Drive. Access is Google sign-in via allauth,
+gated by a super-admin list plus a per-vault email allowlist (`MEDTRACKER_RESTRICT_SIGNIN`).
+- **Stack:** Python 3.11 · Django 5 · django-allauth (Google OAuth) · `cryptography` · SQLite (auth only) · gunicorn + WhiteNoise · Tailscale
+- **Status:** **v0.2.0 — deployed and in daily use.** Built in a single day (10 commits, 2026-07-13); pushed to the **GitHub org (private)** 2026-07-14. Runs as a local `systemd --user` gunicorn service behind `tailscale serve` (Let's Encrypt TLS) — reachable on the private tailnet only, never the public internet.
+- **Note:** The **only product in the portfolio with no LLM seam** — no `wegofwd-llm`, no inference cost, no AI at runtime. AI was used to *build* it, not to *run* it, which makes it the portfolio's control case for what the shared-engine thesis is actually worth. Because it handles personal health information, the **code repo is private and every data file is kept out of git by design**, and the full four-lens review (critique · practices · cost · development-pattern) is held **in that private repo** under `docs/critique/` rather than published here.
+
 ---
 
 ## Archived
@@ -174,9 +192,12 @@ Shared scoped-retrieval engine / wegofwd-llm seam
   StudyBuddy ─ MarketingTools ─ Kathai Chithiram   (same pattern, different scope vector)
   wegofwd-expenses ──(consumes)──▶ wegofwd-llm   (classify + extract stages)
 
+Standalone (no shared-library dependency)
+  medtracker   ─ no wegofwd-llm, no wegofwd-video; the only product with no LLM at runtime
+
 Cross-cutting
   coding-standards ─▶ applies to all projects (Claude Code global rules)
-  project-critique ─▶ reviews StudyBuddy, Thittam, dronePrjs, MarketingTools, claude-memory
+  project-critique ─▶ reviews StudyBuddy, Thittam, dronePrjs, MarketingTools, medtracker, claude-memory
 ```
 
 ---

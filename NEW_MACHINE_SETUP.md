@@ -67,10 +67,10 @@ enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
 # Project code repos cloned flat under the hub ($BASE/<name>). The GitHub repo name
 # matches the local dir name for every project. closedSpace is a subdir of dronePrjs,
-# not its own repo, so it is not listed here. wegofwd-video IS a project repo but has
-# no memory repo yet, so it appears in PROJECTS below but NOT in the MAP. Keep this
-# list in sync with PROJECTS in github_update.sh.
-PROJECTS="StudyBuddy_OnDemand Mentible thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video dronePrjs"
+# not its own repo, so it is not listed here. wegofwd-video, wegofwd-expenses, and
+# wegofwd-secure ARE project repos but have no memory repo, so they appear in PROJECTS
+# below but NOT in the MAP. Keep this list in sync with PROJECTS in github_update.sh.
+PROJECTS="StudyBuddy_OnDemand Mentible thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video wegofwd-expenses wegofwd-secure dronePrjs medtracker"
 
 echo "Project repos:"
 for n in $PROJECTS; do
@@ -96,6 +96,7 @@ $BASE/wegofwd-llm|wegofwd-llm-memory|$BASE/_claude-memory-wegofwd-llm
 $BASE/wegofwd-orchestration|wegofwd-orchestration-memory|$BASE/_claude-memory-wegofwd-orchestration
 $BASE/dronePrjs|dronePrjs-memory|$BASE/_claude-memory-dronePrjs
 $BASE/dronePrjs/closedSpace|closedSpace-memory|$BASE/_claude-memory-closedSpace
+$BASE/medtracker|medtracker-memory|$BASE/_claude-memory-medtracker
 "
 
 echo "$MAP" | while IFS='|' read -r proj repo sym; do
@@ -111,7 +112,7 @@ echo "$MAP" | while IFS='|' read -r proj repo sym; do
 done
 ```
 
-> Verified end-to-end in a temp dir on 2026-06-01 (original 8 repos). Re-verified 2026-06-23 on this machine: all 12 memory repos clone over SSH and their symlinks resolve under the hub (now `~/Documents/code/projects/AIStuff/STEM_studybuddy/`, derived as the parent of CWD). The `mkdir -p` above is required — without it `ln` fails if the workspace parent dir isn't present yet.
+> Verified end-to-end in a temp dir on 2026-06-01 (original 8 repos). Re-verified 2026-06-23 on this machine: all 12 memory repos clone over SSH and their symlinks resolve under the hub (now `~/Documents/code/projects/AIStuff/STEM_studybuddy/`, derived as the parent of CWD). The `mkdir -p` above is required — without it `ln` fails if the workspace parent dir isn't present yet. `medtracker-memory` (13th) was added 2026-07-14; its GitHub repo exists and its symlink resolves, but a clean-machine clone of it has not been re-run.
 >
 > ⚠ `set -e` gotcha: if a project is registered in the MAP before its `<name>-memory` GitHub repo exists, the failed clone aborts the **whole loop**, silently skipping every repo listed after it. Create the GitHub repo(s) first (see *Adding a new project later*).
 
@@ -123,7 +124,7 @@ for enc in \
   -home-*-StudyBuddy-OnDemand -home-*-Mentible -home-*-thittam \
   -home-*-mambakkam-net -home-*-project-critique -home-*-MarketingTools \
   -home-*-pramana -home-*-wegofwd-llm -home-*-kathai-chithiram \
-  -home-*-wegofwd-orchestration \
+  -home-*-wegofwd-orchestration -home-*-medtracker \
   -home-*-STEM-studybuddy-dronePrjs -home-*-STEM-studybuddy-dronePrjs-closedSpace ; do
   for M in "$PROOT"/$enc/memory; do
     [ -d "$M/.git" ] && echo "OK  $(git -C "$M" log -1 --format='%h %s')  <- $M"

@@ -9,7 +9,7 @@ enc() { echo "$1" | sed 's|[/_]|-|g'; }
 # matches the local dir name for every project. closedSpace is a subdir of dronePrjs,
 # not its own repo, so it is not listed here. Keep this list in sync with PROJECTS in
 # github_update.sh.
-PROJECTS="StudyBuddy_OnDemand Mentible thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video dronePrjs"
+PROJECTS="StudyBuddy_OnDemand Mentible thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video wegofwd-expenses wegofwd-secure dronePrjs medtracker"
 
 echo "Project repos:"
 for n in $PROJECTS; do
@@ -35,6 +35,7 @@ $BASE/wegofwd-llm|wegofwd-llm-memory|$BASE/_claude-memory-wegofwd-llm
 $BASE/wegofwd-orchestration|wegofwd-orchestration-memory|$BASE/_claude-memory-wegofwd-orchestration
 $BASE/dronePrjs|dronePrjs-memory|$BASE/_claude-memory-dronePrjs
 $BASE/dronePrjs/closedSpace|closedSpace-memory|$BASE/_claude-memory-closedSpace
+$BASE/medtracker|medtracker-memory|$BASE/_claude-memory-medtracker
 "
 
 echo "$MAP" | while IFS='|' read -r proj repo sym; do

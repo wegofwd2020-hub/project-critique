@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T11:30:09+00:00",
+  "generated": "2026-07-14T09:26:15+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -48,7 +48,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 5,
+        "last_commit_age_days": 6,
         "branch": "main"
       },
       "rigor": {
@@ -106,7 +106,7 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 405,
+        "commits_30d": 421,
         "last_commit_age_days": 1,
         "branch": "feat/open-shelves"
       },
@@ -237,8 +237,8 @@
         "implemented": 9
       },
       "git": {
-        "commits_30d": 103,
-        "last_commit_age_days": 0,
+        "commits_30d": 91,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -297,7 +297,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 7,
+        "last_commit_age_days": 8,
         "branch": "main"
       },
       "rigor": {
@@ -355,8 +355,8 @@
         "implemented": 4
       },
       "git": {
-        "commits_30d": 223,
-        "last_commit_age_days": 5,
+        "commits_30d": 213,
+        "last_commit_age_days": 6,
         "branch": "main"
       },
       "rigor": {
@@ -415,7 +415,7 @@
       },
       "git": {
         "commits_30d": 93,
-        "last_commit_age_days": 2,
+        "last_commit_age_days": 3,
         "branch": "main"
       },
       "rigor": {
@@ -426,6 +426,107 @@
       "health": {
         "status": "yellow",
         "reason": "missing tests"
+      }
+    },
+    {
+      "project": "medtracker",
+      "stage": "live",
+      "source_kind": "manifest",
+      "source_error": null,
+      "features": [
+        {
+          "id": null,
+          "name": "Encrypted JSON vault store (schema v3, migrates v1/v2 on read)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Refill schedule engine \u2014 request_by = last_filled + day_supply - (lead_time + buffer)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Status ladder \u2014 OK / DUE SOON / REQUEST NOW / OVERDUE / REQUESTED / Paused",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Renewal-needed flag (out of refills, or Rx expires before supply runs out)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Google sign-in (allauth) + access control \u2014 super admins & per-vault email allowlist",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Medication types & dose patterns (tablet, injection, liquid, inhaler, patch, ...)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Refill request tracking, stale-request expiry, stop/unstop a medication",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Encrypted-vault backup to the super admin's Google Drive",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Per-member ICS calendar export of upcoming refill dates",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Multi-device serving \u2014 gunicorn + WhiteNoise behind tailscale serve (TLS)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Restore drill \u2014 recover a vault from the Drive backup onto a clean machine",
+          "status": "pending",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "CI \u2014 run pytest + mypy on push (neither is enforced anywhere today)",
+          "status": "pending",
+          "commits": null
+        }
+      ],
+      "counts": {
+        "total": 12,
+        "done": 10,
+        "in_progress": 0,
+        "pending": 2,
+        "implemented": 10
+      },
+      "git": {
+        "commits_30d": 11,
+        "last_commit_age_days": 0,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, 83% done, tests+docs"
       }
     },
     {
@@ -474,7 +575,7 @@
       },
       "git": {
         "commits_30d": 11,
-        "last_commit_age_days": 5,
+        "last_commit_age_days": 6,
         "branch": "main"
       },
       "rigor": {
@@ -502,7 +603,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 34,
+        "last_commit_age_days": 35,
         "branch": "docs/2026-06-admin-menu-onboarding"
       },
       "rigor": {
@@ -512,7 +613,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 34d"
+        "reason": "dormant \u2014 no commits in 35d"
       }
     },
     {
@@ -530,7 +631,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 112,
+        "last_commit_age_days": 113,
         "branch": "1-implement-dual-os-build"
       },
       "rigor": {
@@ -540,7 +641,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 112d"
+        "reason": "dormant \u2014 no commits in 113d"
       }
     },
     {
@@ -1362,8 +1463,8 @@
         "implemented": 120
       },
       "git": {
-        "commits_30d": 161,
-        "last_commit_age_days": 4,
+        "commits_30d": 160,
+        "last_commit_age_days": 5,
         "branch": "feat/ledger-authz-149"
       },
       "rigor": {
@@ -1391,7 +1492,7 @@
       },
       "git": {
         "commits_30d": 8,
-        "last_commit_age_days": 21,
+        "last_commit_age_days": 22,
         "branch": "main"
       },
       "rigor": {
@@ -1401,7 +1502,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 21d since last commit"
+        "reason": "slowing \u2014 22d since last commit"
       }
     },
     {
@@ -1419,7 +1520,7 @@
       },
       "git": {
         "commits_30d": 34,
-        "last_commit_age_days": 7,
+        "last_commit_age_days": 8,
         "branch": "master"
       },
       "rigor": {
@@ -1446,8 +1547,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 11,
-        "last_commit_age_days": 13,
+        "commits_30d": 10,
+        "last_commit_age_days": 14,
         "branch": "main"
       },
       "rigor": {
@@ -1475,7 +1576,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 21,
+        "last_commit_age_days": 22,
         "branch": "main"
       },
       "rigor": {
@@ -1485,7 +1586,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 21d since last commit"
+        "reason": "slowing \u2014 22d since last commit"
       }
     },
     {
@@ -1503,7 +1604,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 27,
+        "last_commit_age_days": 28,
         "branch": "main"
       },
       "rigor": {
@@ -1513,7 +1614,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 27d since last commit"
+        "reason": "slowing \u2014 28d since last commit"
       }
     },
     {
@@ -1531,7 +1632,7 @@
       },
       "git": {
         "commits_30d": 5,
-        "last_commit_age_days": 12,
+        "last_commit_age_days": 13,
         "branch": "main"
       },
       "rigor": {
@@ -1546,18 +1647,18 @@
     }
   ],
   "summary": {
-    "projects": 16,
+    "projects": 17,
     "health": {
-      "green": 4,
+      "green": 5,
       "yellow": 10,
       "red": 2
     },
     "features": {
-      "total": 181,
-      "done": 135,
+      "total": 193,
+      "done": 145,
       "in_progress": 16,
-      "pending": 30,
-      "implemented": 151
+      "pending": 32,
+      "implemented": 161
     }
   }
 }

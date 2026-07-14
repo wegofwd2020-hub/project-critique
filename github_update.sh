@@ -18,8 +18,10 @@ BASE="$(dirname "$PWD")"          # one level above CWD = the hub folder
 PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
-# project subdirs that are each their own git repo
-PROJECTS="StudyBuddy_OnDemand Mentible thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video dronePrjs"
+# project subdirs that are each their own git repo. Not every one has a memory repo —
+# wegofwd-expenses, wegofwd-secure, and wegofwd-video are code-only, so they appear here
+# but not in MEM_PATHS below.
+PROJECTS="StudyBuddy_OnDemand Mentible thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video wegofwd-expenses wegofwd-secure dronePrjs medtracker"
 
 # absolute project paths whose memory repo should be pulled
 MEM_PATHS="
@@ -35,6 +37,7 @@ $BASE/wegofwd-llm
 $BASE/wegofwd-orchestration
 $BASE/dronePrjs
 $BASE/dronePrjs/closedSpace
+$BASE/medtracker
 "
 
 upd() {  # $1 = repo dir, $2 = label
