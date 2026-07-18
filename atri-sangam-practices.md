@@ -51,9 +51,9 @@ Step (jumps), CUSUM (slow walks), staleness (silence) is a genuine taxonomy, not
 ### ✅ Good — No fabricated data, ever
 Failed collectors raise typed exceptions; a void (`V`) GPS fix returns `[]` rather than a fake zero (`collectors/gps.py:51-52`); silence is caught by staleness. The design commitment "a monitor that invents readings is worse than none" is actually enforced.
 
-### ❌ Critical — SNTP client has no packet-origin or replay validation
-`collectors/ntp.py:83-124`: the socket is never `connect()`-ed; `recvfrom()`'s source address is discarded; the response's originate timestamp is never checked against the request; LI/VN/Mode/stratum are never validated. For a tool built to detect spoofing, the reference time channel is itself trivially spoofable by off-path UDP.
-🔧 **How to improve:** `connect()` the socket (kernel drops foreign-source replies), echo-verify the originate timestamp against the transmitted value, validate mode=4/stratum, and reject early packets. Run ≥2 servers and cross-check (the README already recommends this operationally — enforce it in code).
+### ✅ Fixed 2026-07-18 (`be19c81`) — SNTP reply validation (was: no packet-origin or replay validation)
+`collectors/ntp.py`: `query()` now rejects a reply (`NtpQueryError`) unless mode == 4, leap ≠ 3, stratum ∈ 1–15, **and the originate timestamp echoes the request's transmit timestamp** — the echo check defeats off-path injection (an attacker who can't see the request can't forge the 64-bit timestamp). +5 regression tests. *Was:* the client discarded `recvfrom()`'s source address, never verified the originate echo, and never validated mode/stratum/leap, so the time channel meant to catch spoofing was itself off-path-spoofable.
+🔧 **Remaining (defence-in-depth, optional):** source-IP filtering via `connect()` (kernel drops foreign-source replies) was not added — the originate-echo check already closes the primary off-path threat. Operationally, still run ≥2 NTP servers and cross-check (the README recommends this).
 
 ### ⚠️ Bad — NMEA lat/lon parsed without range validation
 `_parse_latlon` (`collectors/nmea.py:62-79`) checks hemisphere and `minutes < 60` but not the degrees bound. `"9130.0000,N"` (checksum-valid) parses to 91.5° without error and flows into `haversine_m()`.
