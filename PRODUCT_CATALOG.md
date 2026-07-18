@@ -1,7 +1,7 @@
 # WeGoFwd2020 — Product Catalog
 
 **Owner:** WeGoFwd2020 (`github.com/wegofwd2020-hub`)
-**Generated:** 2026-06-11 · **Last updated:** 2026-07-14 (added `medtracker`)
+**Generated:** 2026-06-11 · **Last updated:** 2026-07-18 (added `atri-sangam`)
 **Scope:** All 19 code repositories in the GitHub organization, cloned and synced into this
 folder. (The 13 `*-memory` repos — portable Claude memory, one per project — are excluded;
 see `claude-memory-add-project.md`.)
@@ -25,6 +25,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | 8 | **mambakkam.net** | `mambakkam-net` | Company website / demo host | Astro 5 · Tailwind (AstroWind) | Live / actively published |
 | 9 | **wegofwd-expenses** | `wegofwd-expenses` | Internal finance/ops tooling | Python · Gmail API · SQLite · `wegofwd-llm` · pdfminer.six | P0 built (76/76 tests, merged); on GitHub org (private); awaiting real-mailbox dry run |
 | 10 | **medtracker** | `medtracker` | Personal/family health ops | Django 5 · django-allauth (Google) · `cryptography` (encrypted JSON vaults) · gunicorn · Tailscale | v0.2.0 — **deployed and in daily use** (tailnet-only, real family data); on GitHub org (private) since 2026-07-14 |
+| 11 | **Atri Sangam** | `atri-sangam` | GNSS/PNT integrity monitoring | Python 3.10+ (stdlib-only core) · Dash (optional) · SQLite | Alpha `v0.1.0` — detection library + red-team simulator; no runner/daemon yet |
 
 ### Archived products (no longer maintained)
 
@@ -162,6 +163,22 @@ gated by a super-admin list plus a per-vault email allowlist (`MEDTRACKER_RESTRI
 - **Stack:** Python 3.11 · Django 5 · django-allauth (Google OAuth) · `cryptography` · SQLite (auth only) · gunicorn + WhiteNoise · Tailscale
 - **Status:** **v0.2.0 — deployed and in daily use.** Built in a single day (10 commits, 2026-07-13); pushed to the **GitHub org (private)** 2026-07-14. Runs as a local `systemd --user` gunicorn service behind `tailscale serve` (Let's Encrypt TLS) — reachable on the private tailnet only, never the public internet.
 - **Note:** The **only product in the portfolio with no LLM seam** — no `wegofwd-llm`, no inference cost, no AI at runtime. AI was used to *build* it, not to *run* it, which makes it the portfolio's control case for what the shared-engine thesis is actually worth. Because it handles personal health information, the **code repo is private and every data file is kept out of git by design**, and the full four-lens review (critique · practices · cost · development-pattern) is held **in that private repo** under `docs/critique/` rather than published here.
+
+---
+
+### 11. Atri Sangam — `atri-sangam`
+Fixed-site **GPS/PNT integrity monitor**. Cross-checks a GPS receiver (NMEA RMC/GGA)
+against independent references — SNTP time, local-clock holdover, and celestial (solar)
+prediction — and raises explainable alarms when the channels stop agreeing: jamming,
+spoofing, or outage. Three detector layers — `step` (jumps), two-sided tabular `CUSUM`
+(slow walks), `staleness` (silence) — and every alarm carries provenance (channel,
+detector, value, threshold). The core is **stdlib-only by design** so it runs in the
+degraded / air-gapped environments it exists to monitor; SQLite store; optional Dash
+dashboard. Ships a **deterministic-by-seed NMEA attack simulator** that triples as mock
+test data, demo driver, and red-team tool.
+- **Stack:** Python 3.10+ (stdlib-only core) · Dash/Plotly (optional dashboard) · SQLite · pytest
+- **Status:** **Alpha `v0.1.0`, MIT.** Detection logic, collectors, persistence, simulator, and dashboard are built and tested (66 tests, 90 % coverage, 6 OpenSpec contracts, CI on Python 3.10 + 3.12). **No runner/daemon yet** — a well-tested detection *library* + red-team simulator, not yet a deployable monitor. Reviewed 2026-07-18 (four-lens first review v1.0).
+- **Note:** First product reviewed under the **public/private documentation split** — its critique · development-pattern · practices are public in `project-critique`; the **cost analysis is held privately** in `wegofwd-private-docs` (per-engineer rate assumptions are internal). Headline finding: the SNTP reference channel lacks anti-spoofing origin/replay validation — the channel meant to catch spoofing is itself spoofable.
 
 ---
 
