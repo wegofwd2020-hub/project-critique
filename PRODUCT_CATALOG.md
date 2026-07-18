@@ -25,7 +25,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | 8 | **mambakkam.net** | `mambakkam-net` | Company website / demo host | Astro 5 · Tailwind (AstroWind) | Live / actively published |
 | 9 | **wegofwd-expenses** | `wegofwd-expenses` | Internal finance/ops tooling | Python · Gmail API · SQLite · `wegofwd-llm` · pdfminer.six | P0 built (76/76 tests, merged); on GitHub org (private); awaiting real-mailbox dry run |
 | 10 | **medtracker** | `medtracker` | Personal/family health ops | Django 5 · django-allauth (Google) · `cryptography` (encrypted JSON vaults) · gunicorn · Tailscale | v0.2.0 — **deployed and in daily use** (tailnet-only, real family data); on GitHub org (private) since 2026-07-14 |
-| 11 | **Atri Sangam** | `atri-sangam` | GNSS/PNT integrity monitoring | Python 3.10+ (stdlib-only core) · Dash (optional) · SQLite | Alpha `v0.1.0` — detection library + red-team simulator; no runner/daemon yet |
+| 11 | **Atri Sangam** | `atri-sangam` | GNSS/PNT integrity monitoring | Python 3.10+ (stdlib-only core) · Dash (optional) · SQLite | Alpha `v0.1.0` — detection library + red-team simulator; no runner/daemon yet; on GitHub org (private) since 2026-07-18 |
 
 ### Archived products (no longer maintained)
 
@@ -177,7 +177,7 @@ degraded / air-gapped environments it exists to monitor; SQLite store; optional 
 dashboard. Ships a **deterministic-by-seed NMEA attack simulator** that triples as mock
 test data, demo driver, and red-team tool.
 - **Stack:** Python 3.10+ (stdlib-only core) · Dash/Plotly (optional dashboard) · SQLite · pytest
-- **Status:** **Alpha `v0.1.0`, MIT.** Detection logic, collectors, persistence, simulator, and dashboard are built and tested (66 tests, 90 % coverage, 6 OpenSpec contracts, CI on Python 3.10 + 3.12). **No runner/daemon yet** — a well-tested detection *library* + red-team simulator, not yet a deployable monitor. Reviewed 2026-07-18 (four-lens first review v1.0).
+- **Status:** **Alpha `v0.1.0`, MIT.** Detection logic, collectors, persistence, simulator, and dashboard are built and tested (66 tests, 90 % coverage, 6 OpenSpec contracts, CI on Python 3.10 + 3.12). **No runner/daemon yet** — a well-tested detection *library* + red-team simulator, not yet a deployable monitor. Reviewed 2026-07-18 (four-lens first review v1.0, from a source snapshot). Pushed to the **GitHub org (private)** 2026-07-18.
 - **Note:** First product reviewed under the **public/private documentation split** — its critique · development-pattern · practices are public in `project-critique`; the **cost analysis is held privately** in `wegofwd-private-docs` (per-engineer rate assumptions are internal). Headline finding: the SNTP reference channel lacks anti-spoofing origin/replay validation — the channel meant to catch spoofing is itself spoofable.
 
 ---
