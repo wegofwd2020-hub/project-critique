@@ -5,7 +5,7 @@
 **Period:** May 2026 (8 commits on 2026-05-13 within ~1h 45m wall-time; ~2 weeks of work including pre-commit scoping + ISA drafting)
 **Last refresh:** 2026-05-24 (v1.1 — alignment with critique v1.1: Phase 6 CI added, Phase 3 partial scaffolded, ISC-28 done, D1/D2 ratified)
 **Prior:** v1.0 May 2026 (first review at commit `5c45c9e`, 6 commits, Phase 0–5)
-**Related:** [dronePrjs-critique.md](dronePrjs-critique.md) · [dronePrjs-practices.md](dronePrjs-practices.md) · [dronePrjs-cost.md](dronePrjs-cost.md)
+**Related:** [dronePrjs-critique.md](dronePrjs-critique.md) · [dronePrjs-practices.md](dronePrjs-practices.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
 **Note:** The repo is now 8 commits old, all landed on 2026-05-13 within ~1h 45m. Everything below documents a single concentrated window of activity rather than a multi-year arc.
 
@@ -17,8 +17,7 @@
 > - **The Gazebo/SITL tier is deliberately deferred from `make all`.** Phase 3 partial scaffolded `engine/sim_gazebo/` with the heavy Docker build kept out of the default quality gate (NS-3.1b is a manual task). This is a pattern worth documenting: **fidelity tiers each have their own quality-gate window**; the cheap tier runs every commit, the expensive tier runs on demand.
 > - **The 8-commits-in-1h-45m datum is itself a development-pattern observation.** When the system-of-record (ISA) is written first and well, the commit burst is small. Commits are checkpoints on already-thought work, not the thinking itself.
 >
-> Re-measured: 114 test functions / ~133 collected (was 100), coverage 95.3% (was 97%), source LOC corrected to 3,548 (v1.0 over-counted at ~5,010 by including tests), 35 of 44 ISCs complete (was 29/44). Still open + load-bearing: ISC-15 (link-loss RTH) and openSpace becoming a real second engine consumer. See [dronePrjs-cost.md](dronePrjs-cost.md) for the real-world cost-of-time-and-money analysis of the patterns documented below.
-
+> Re-measured: 114 test functions / ~133 collected (was 100), coverage 95.3% (was 97%), source LOC corrected to 3,548 (v1.0 over-counted at ~5,010 by including tests), 35 of 44 ISCs complete (was 29/44). Still open + load-bearing: ISC-15 (link-loss RTH) and openSpace becoming a real second engine consumer.
 ---
 
 ## Table of Contents

@@ -5,7 +5,7 @@
 **Reviewed:** 2026-06-09 (v1.0 — first review, measured on disk at branch `main` @ `76addee`)
 **Repo:** `MarketingTools` (`/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy/MarketingTools`)
 **Author:** Claude (Anthropic)
-**Related:** [MarketingTools-critique.md](MarketingTools-critique.md) · [MarketingTools-development-pattern.md](MarketingTools-development-pattern.md) · [MarketingTools-cost.md](MarketingTools-cost.md)
+**Related:** [MarketingTools-critique.md](MarketingTools-critique.md) · [MarketingTools-development-pattern.md](MarketingTools-development-pattern.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
 
 > A catalogue of concrete practices observed in the MarketingTools codebase, with fixes. The through-line: **the data-design and documentation practices are strong for the scale; the gaps are all engineering-hygiene** — no tests, a split/incomplete dependency manifest, and a couple of small one-source-of-truth violations (a hardcoded email, the deck-deps living in prose). None are architectural mistakes; nearly all are an hour or less to close.

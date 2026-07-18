@@ -5,7 +5,7 @@
 **Period:** 2025–2026
 **Last refresh:** 2026-05-24 (v1.3 — alignment with critique v1.3: first refresh measured against on-disk code; registration saga, reporting read-model, impersonation lifecycle confirmed implemented; schema-injection + T1 fixes verified in source)
 **Prior:** v1.2 April 2026 (proto completion, T1 secret fix, schema injection fix, shadcn/ui adoption, XYZ Construction demo)
-**Related:** [thittam-critique.md](thittam-critique.md) · [thittam-practices.md](thittam-practices.md) · [thittam-cost.md](thittam-cost.md)
+**Related:** [thittam-critique.md](thittam-critique.md) · [thittam-practices.md](thittam-practices.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
 
 > **Note (2026-05-24):** the body below is the v1.2 record (April 2026), preserved. No documented development-pattern claim has been overturned by the v1.3 refresh — but **the refresh revealed a methodological gap worth naming**: prior reviews were inferred from docs + commit history (the sibling `thittam_docs` repo and PROGRESS files), and the v1.3 pass against actual on-disk source found that **three "open" items were already implemented but undocumented in the public-facing surface**. New since v1.2, worth noting:
@@ -16,8 +16,7 @@
 > - **Bounded impersonation as a discipline.** 4h cap + background expiry ticker + `impersonation.start` / `.end` audit actions. Sets the template for any time-bounded privilege elevation.
 > - **The `thittam_docs` repo unverifiability is now a method-level caveat.** The "71 docs / 13 ADRs (010/011 gap)" claim from earlier cycles cannot be checked from the code repo. Future review cadence should either check both repos or scope claims to one.
 >
-> Re-measured: 1,715 proto LOC (was 1,659), 1,203 Go test functions across 86 files (was 1,150 / 80). `audit_log` REVOKE remains the one open P0 — append-only is still enforced by convention, not by DB grant. See [thittam-cost.md](thittam-cost.md) for the real-world cost-of-time-and-money analysis of the patterns documented below.
-
+> Re-measured: 1,715 proto LOC (was 1,659), 1,203 Go test functions across 86 files (was 1,150 / 80). `audit_log` REVOKE remains the one open P0 — append-only is still enforced by convention, not by DB grant.
 ---
 
 ## Table of Contents

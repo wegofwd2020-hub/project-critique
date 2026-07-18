@@ -4,7 +4,7 @@
 **Reviewer:** Claude (Anthropic)
 **Document type:** Engineering/operational practices analysis (for tooling/infra)
 **Scope:** The Stop hook, the encoded-path convention, the per-repo durability model, the symlink view, the two runbooks, and the operational habits around them.
-**Related:** [claude-memory-critique.md](claude-memory-critique.md) · [claude-memory-development-pattern.md](claude-memory-development-pattern.md) · [claude-memory-cost.md](claude-memory-cost.md)
+**Related:** [claude-memory-critique.md](claude-memory-critique.md) · [claude-memory-development-pattern.md](claude-memory-development-pattern.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice / risk · 🔧 How to improve
 
 ---

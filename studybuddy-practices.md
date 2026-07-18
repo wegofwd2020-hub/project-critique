@@ -4,7 +4,7 @@
 **Scope:** Backend (FastAPI/Python), Web (Next.js), Mobile (Kivy), Pipeline, Infrastructure
 **Period:** 2026-06-09 (v1.7 — alignment with critique v1.7: numbers re-measured on `main` @ `d50bc3e`; new practices surfaced — onboarding wizard on derived signals (no new endpoints), UI grouping that disclaims being authz, retro/refine ADR hygiene, backup restore-path fixed with tests)
 **Prior:** v1.6 June 2026 (interactive authoring studio with publish-completeness gate, one-way content-export bridge, ADR to fix product boundary) · v1.5 May 2026 (additive-RBAC via capabilities table, CONTESTED-status discipline) · v1.4 May 2026 (visual-library wave 1+2, four bug close-outs, PAI removal) · v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
-**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-development-pattern.md](studybuddy-development-pattern.md) · [studybuddy-cost.md](studybuddy-cost.md) · sibling product: [mentible-practices.md](mentible-practices.md)
+**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-development-pattern.md](studybuddy-development-pattern.md) · sibling product: [mentible-practices.md](mentible-practices.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
 
 > **Note (2026-06-09, v1.7):** the body below is the v1.4 record, preserved. No documented practice has been overturned. New since v1.6 (26-commit window, HEAD `d50bc3e`), worth adding to the catalogue:
@@ -16,8 +16,7 @@
 > - **⚠️ New watch-item — `purge_account.py` (#416) is a super-admin hard-delete marked test-only.** Convenient for teardown, but a hard-delete of a school account must be provably un-runnable against production data before launch. *Gate destructive scripts behind an environment assertion, not a comment.*
 > - **✅ Carried forward — zero TODO/FIXME/XXX in `backend/src` + `pipeline` + web.** Holds at **1,085 backend tests / 77 files**. Verified at the precise code-comment scope this cycle.
 >
-> Re-measured 2026-06-09: 1,085 backend tests / 77 files, 17 Playwright specs / 2,779 LOC, 60 migrations (latest 0060 — no schema change this window), 4 ADRs (ADR-005/006 added). See [studybuddy-cost.md](studybuddy-cost.md) for the real-world cost analysis.
->
+> Re-measured 2026-06-09: 1,085 backend tests / 77 files, 17 Playwright specs / 2,779 LOC, 60 migrations (latest 0060 — no schema change this window), 4 ADRs (ADR-005/006 added).>
 > **Note (2026-06-02, v1.6):** the body below is the v1.4 record, preserved. No documented practice has been overturned. New since v1.5, worth adding to the catalogue:
 >
 > - **✅ New good practice — publish-completeness gate on generated content (#401/#402).** `publish()` used to gate only on existing versions being *accepted*, so a unit whose generation had failed published silently with holes (a real book shipped missing 3 lessons / 2 tutorials / 1 quiz). The fix requires every unit to have an active version per expected content type per language and returns **409 "incomplete"** enumerating the missing pieces — with an explicit `allow_incomplete=True` escape hatch. Practice: *fail loud on incompleteness; make the override deliberate and named.*
@@ -26,8 +25,7 @@
 > - **✅ New good practice — settle a product-scope question with an ADR that closes the losers (ADR-004).** The standalone author-a-book product was assigned to the sibling repo and OnDemand's own ADR-002/ADR-003 were **closed without merge** — the rejected options are explicitly retired, not left ambiguous.
 > - **✅ Carried forward — zero TODO/FIXME/XXX in `backend/src` + `pipeline` + web.** Holds at **1,081 backend tests / 78 files**. Verified at the precise code-comment scope this cycle.
 >
-> Re-measured 2026-06-02: 1,081 backend tests / 78 files, 17 Playwright specs / 2,779 LOC, 60 migrations (latest 0060). See [studybuddy-cost.md](studybuddy-cost.md) for the real-world cost analysis.
->
+> Re-measured 2026-06-02: 1,081 backend tests / 78 files, 17 Playwright specs / 2,779 LOC, 60 migrations (latest 0060).>
 > **Note (2026-05-24, v1.5):** the v1.5 additions (preserved below):
 >
 > - **✅ New good practice — additive-RBAC via a dedicated capabilities table.** `teacher_capabilities` (#358, migration 0059, RLS) extends RBAC by *adding* an authoritative table with a two-gate read/act model rather than mutating existing role-grant logic. Same PR also fixed school uploads to write `owner_type='school'` (was defaulting to platform). Pattern reusable for future capability classes.
@@ -37,8 +35,7 @@
 > - **⚠️ Carried forward — visual-library promotion CI still gated on AWS secrets.** Library content is seeded locally via `seed_library_local.py` rather than the production path. Fine for resolver evaluation; a divergence to retire before launch.
 > - **⚠️ Carried forward — `APP_ENV` not asserted against a valid enum at startup, slowapi/Redis limiter coexistence, pool-arithmetic warn-not-assert, absent load/perf tests, a11y-weighted E2E.** None touched in the v1.4 → v1.5 window.
 >
-> Re-measured: 1,030 backend tests / 73 files, 17 Playwright specs / 2,781 LOC, 59 migrations (latest 0059). See [studybuddy-cost.md](studybuddy-cost.md) for the real-world cost-of-time-and-money analysis of the practices catalogued below.
-
+> Re-measured: 1,030 backend tests / 73 files, 17 Playwright specs / 2,781 LOC, 59 migrations (latest 0059).
 ---
 
 ## Table of Contents

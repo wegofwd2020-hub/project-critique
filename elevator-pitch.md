@@ -4,7 +4,7 @@
 **Author:** Sivakumar (Siva) Mambakkam  
 **Date:** 2026-06-13 (v1.2 — refreshed after the shared `wegofwd-llm` LLM-seam extraction proved the *one IP, many products* claim; refresh adds cost-evidence numbers and consolidates the rule count to 21)  
 **Prior:** April 2026 (v1.1 — post StudyBuddy Epic 10/11 + Thittam proto completion)  
-**Contact:** siva.mambakkam@gmail.com | linkedin.com/in/sivamambakkam | +1 (734) 560-0202
+**Contact:** siva.mambakkam@gmail.com | linkedin.com/in/sivamambakkam
 
 ---
 

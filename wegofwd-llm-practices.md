@@ -578,4 +578,4 @@ The headline: **the design discipline is excellent and the test discipline lags 
 
 ---
 
-*Companion files: [wegofwd-llm-critique.md](wegofwd-llm-critique.md) for the point-in-time code review, [wegofwd-llm-development-pattern.md](wegofwd-llm-development-pattern.md) for the scoping/timing/cadence analysis, [wegofwd-llm-cost.md](wegofwd-llm-cost.md) for the real-world cost analysis.*
+*Companion files: [wegofwd-llm-critique.md](wegofwd-llm-critique.md) for the point-in-time code review, [wegofwd-llm-development-pattern.md](wegofwd-llm-development-pattern.md) for the scoping/timing/cadence analysis.*

@@ -5,7 +5,7 @@
 **Last refresh:** 2026-06-09 (v2.0 — major refresh; measured on disk at `40166ee`, branch `main`. **97 commits since v1.0**; new practice surfaces: the extracted `wegofwd-llm` provider seam (ADR-012), multi-provider BYOK, the BYOK 422-scrub fix (ADR-001), per-provider token clamping.)
 **Prior refresh:** 2026-06-02 (v1.0 — first analysis, `e1c66f7`, branch `feat/authoring-regenerate-export-fixes`)
 **Repo / brand:** `wegofwd2020-hub/Mentible` · public brand **Mentible**
-**Related:** [mentible-critique.md](mentible-critique.md) · [mentible-development-pattern.md](mentible-development-pattern.md) · [mentible-cost.md](mentible-cost.md) · parent product: [studybuddy-practices.md](studybuddy-practices.md)
+**Related:** [mentible-critique.md](mentible-critique.md) · [mentible-development-pattern.md](mentible-development-pattern.md) · parent product: [studybuddy-practices.md](studybuddy-practices.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
 
 > A catalogue of concrete practices observed in the Mentible codebase, with fixes. The through-line holds from v1.0: **the security practices are exemplary; the discipline gaps are all about the distance between an accepted decision (or a stale frame, or a drifted version pin) and the code that exists.** v2.0 adds a whole new practice surface — a *shared package seam* — which is well-executed but introduces the first cross-repo version-coupling debt.

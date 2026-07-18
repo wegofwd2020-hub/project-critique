@@ -185,4 +185,4 @@ The thesis, then, is a qualified success. `wegofwd-video` shows the portfolio ca
 
 ---
 
-*Companion files: [wegofwd-video-critique.md](wegofwd-video-critique.md) for the point-in-time code review · [wegofwd-video-practices.md](wegofwd-video-practices.md) for the good/bad catalogue · [wegofwd-video-cost.md](wegofwd-video-cost.md) for the real-world cost analysis.*
+*Companion files: [wegofwd-video-critique.md](wegofwd-video-critique.md) for the point-in-time code review · [wegofwd-video-practices.md](wegofwd-video-practices.md) for the good/bad catalogue.*

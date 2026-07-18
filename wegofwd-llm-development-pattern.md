@@ -224,4 +224,4 @@ The architectural cost of getting this wrong is the same as the cost of getting 
 
 ---
 
-*Companion files: [wegofwd-llm-critique.md](wegofwd-llm-critique.md) for the point-in-time code review, [wegofwd-llm-practices.md](wegofwd-llm-practices.md) for the good/bad catalogue, [wegofwd-llm-cost.md](wegofwd-llm-cost.md) for the real-world cost analysis.*
+*Companion files: [wegofwd-llm-critique.md](wegofwd-llm-critique.md) for the point-in-time code review, [wegofwd-llm-practices.md](wegofwd-llm-practices.md) for the good/bad catalogue.*

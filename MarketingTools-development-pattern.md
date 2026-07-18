@@ -6,7 +6,7 @@
 **Reviewed:** 2026-06-09 (v1.0 — first review, measured on disk at branch `main` @ `76addee`)
 **Repo:** `MarketingTools` (`/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy/MarketingTools`)
 **Author:** Claude (Anthropic)
-**Related:** [MarketingTools-critique.md](MarketingTools-critique.md) · [MarketingTools-practices.md](MarketingTools-practices.md) · [MarketingTools-cost.md](MarketingTools-cost.md)
+**Related:** [MarketingTools-critique.md](MarketingTools-critique.md) · [MarketingTools-practices.md](MarketingTools-practices.md)
 
 > This is the development-method analysis: *how* the toolkit was scoped, designed, and built — less about bugs (see the critique), more about the decision discipline visible in 2.3k LOC and 4 commits. The defining trait is **pattern reuse as a deliberate framing**: the toolkit doesn't invent a marketing system, it *re-points the products' own "scoped-retrieval" engine pattern at marketing*, and it scopes itself subtractively (build copy + decks + a log; explicitly **defer** landing pages).
 
@@ -54,7 +54,7 @@ The README's "What's here" table is the development plan, and it scopes by **exp
 
 The instructive choice is `landing/`: rather than build a half-baked site generator, `landing/README.md` ships a **plan and a today-workaround** ("Until the builder exists, you can already generate the hero text: `python ../generate.py --product pramana --audience L&D_leads --channel landing_hero`"). The deferral is *named, justified, and given an interim path*, not silently skipped. That is the same "scope subtractively, name what you're not building" discipline visible in the larger sibling projects, applied at small scale.
 
-A second subtractive signal: the `decks/` engine ships exactly the decks that were *needed* (three Mentible audiences that a real investor/architect/author conversation requires, one Pramana buyer deck for a named pilot — [redacted-name], per `campaigns.csv`), not a generic deck framework. The brand engine generalizes (`set_brand`), but the *content* is built to the actual outreach in flight.
+A second subtractive signal: the `decks/` engine ships exactly the decks that were *needed* (three Mentible audiences that a real investor/architect/author conversation requires, one Pramana buyer deck for a named pilot), not a generic deck framework. The brand engine generalizes (`set_brand`), but the *content* is built to the actual outreach in flight.
 
 ---
 

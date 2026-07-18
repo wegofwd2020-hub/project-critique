@@ -4,7 +4,7 @@
 **Scope:** Go microservices, gRPC, NATS JetStream, PostgreSQL, Istio, Kong, Vertical Plugin System, shadcn/ui web tier
 **Period:** 2026-05-24 (v1.3 — alignment with critique v1.3: first refresh measured against on-disk code; saga / reporting / impersonation practices verified real in source)
 **Prior:** v1.2 April 2026 (proto completion, T1 secret fix, schema injection fix, test expansion, multi-tenant demo expansion)
-**Related:** [thittam-critique.md](thittam-critique.md) · [thittam-development-pattern.md](thittam-development-pattern.md) · [thittam-cost.md](thittam-cost.md)
+**Related:** [thittam-critique.md](thittam-critique.md) · [thittam-development-pattern.md](thittam-development-pattern.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · ❌ Critical issue · 🔧 How to improve
 
 > **Note (2026-05-24):** the body below is the v1.2 record, preserved. The v1.3 refresh measured against on-disk source for the first time and revealed that several practices the v1.2 catalogue flagged as **aspirational or absent are now real**. Updates to the catalogue:
@@ -18,8 +18,7 @@
 > - **⚠️ Still open — circuit-breaker policy across service boundaries; tenant-per-schema scalability past 500 tenants.**
 > - **🔧 New methodological practice — "verify against on-disk source" as part of review cadence.** The v1.2 → v1.3 delta is mostly *practices that already existed but were not documented*, not new practices. Future reviews should not skip the on-disk verification pass.
 >
-> Re-measured: 1,715 proto LOC (was 1,659), 1,203 Go test functions / 86 files (was 1,150 / 80), 80 SQL migration files / 2,076 LOC. The "71 docs / 13 ADRs (010/011 gap)" claim is **unverifiable** from the code repo — the sibling `thittam_docs` repo is not checked out locally. See [thittam-cost.md](thittam-cost.md) for the real-world cost-of-time-and-money analysis of the practices catalogued below.
-
+> Re-measured: 1,715 proto LOC (was 1,659), 1,203 Go test functions / 86 files (was 1,150 / 80), 80 SQL migration files / 2,076 LOC. The "71 docs / 13 ADRs (010/011 gap)" claim is **unverifiable** from the code repo — the sibling `thittam_docs` repo is not checked out locally.
 ---
 
 ## Table of Contents

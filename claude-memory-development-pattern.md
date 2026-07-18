@@ -4,7 +4,7 @@
 **Reviewer:** Claude (Anthropic)
 **Document type:** Development-pattern analysis (how this *tooling* was designed and evolved)
 **Scope:** The problem it solves (Claude context loss across sessions/machines), the encoded-path convention, the hook-driven sync pattern, the growth to 10 repos, and the diagnose-twice-misdiagnosed history.
-**Related:** [claude-memory-critique.md](claude-memory-critique.md) · [claude-memory-practices.md](claude-memory-practices.md) · [claude-memory-cost.md](claude-memory-cost.md)
+**Related:** [claude-memory-critique.md](claude-memory-critique.md) · [claude-memory-practices.md](claude-memory-practices.md)
 **Sources:** `~/.claude/settings.json` (the Stop hook), the ten `~/.claude/projects/<encoded-path>/memory` repos, the runbooks `NEW_MACHINE_SETUP.md` + `claude-memory-add-project.md`, and the reference memory `reference_claude_memory_git_setup.md`.
 
 ---

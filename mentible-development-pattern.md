@@ -6,7 +6,7 @@
 **Last refresh:** 2026-06-09 (v2.0 — major refresh; measured on disk at `40166ee`, branch `main`. **97 commits since v1.0**; headline: the LLM provider seam was *extracted into the installable `wegofwd-llm` package* (ADR-012), intended to be shared across the product family (Mentible + Pramana, ADR-011/013) — a single-repo pattern designed to become a product-family pattern, though on disk Mentible is still its only consumer.)
 **Prior refresh:** 2026-06-02 (v1.0 — first analysis, `e1c66f7`, branch `feat/authoring-regenerate-export-fixes`)
 **Repo / brand:** `wegofwd2020-hub/Mentible` · public brand **Mentible** (*"Author Yourself"*)
-**Related:** [mentible-critique.md](mentible-critique.md) · [mentible-practices.md](mentible-practices.md) · [mentible-cost.md](mentible-cost.md) · parent product: [studybuddy-development-pattern.md](studybuddy-development-pattern.md)
+**Related:** [mentible-critique.md](mentible-critique.md) · [mentible-practices.md](mentible-practices.md) · parent product: [studybuddy-development-pattern.md](studybuddy-development-pattern.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
 
 > This is the development-method analysis: *how* the product was scoped, designed, and built — less about bugs (see the critique), more about the decision discipline. The defining trait remains that the project is **ADR-driven and spec-first to an unusual degree**. The v2.0 story is that the same discipline scaled from "re-scope one product with ADRs" to **"extract a shared seam across three products with ADRs"** — and that the one persistent weakness (promoting decisions back into the durable top-of-funnel spec) is still only half-fixed.

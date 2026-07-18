@@ -4,7 +4,7 @@
 **Scope:** Python 3.10+ (closedSpace + engine), shared umbrella, openSpace (stub)
 **Period:** 2026-05-24 (v1.1 — alignment with critique v1.1: Phase 6 CI now real, ISC-28 map-signature check now real, D1/D2 ratified in ISA)
 **Prior:** v1.0 May 2026 (first review at commit `5c45c9e`, 6 commits, Phase 0–5)
-**Related:** [dronePrjs-critique.md](dronePrjs-critique.md) · [dronePrjs-development-pattern.md](dronePrjs-development-pattern.md) · [dronePrjs-cost.md](dronePrjs-cost.md)
+**Related:** [dronePrjs-critique.md](dronePrjs-critique.md) · [dronePrjs-development-pattern.md](dronePrjs-development-pattern.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · ❌ Critical issue · 🔧 How to improve
 
 > **Note (2026-05-24):** the body below is the v1.0 record, preserved. The v1.1 cycle (HEAD `5e38a44`, 6 → 8 commits) closed three of v1.0's flagged practice gaps and validated the documented good practices held across two more phase deliveries. Updates to the catalogue:
@@ -19,8 +19,7 @@
 > - **⚠️ Still open — openSpace as a stub.** `openSpace/CLAUDE.md` only; no `ISA.md`, no source, no `GPSProvider` / `SimGPS` reference impl. The engine Protocol contract is single-consumer (closedSpace only) until this changes. **Priority #1 in the v1.1 critique.**
 > - **🔧 New practice for D3 (flight stack) ratification.** Apply the D1/D2 mechanism (ISA DECIDE entry with criteria + alternatives + decision + reversal-cost) before Phase 8 starts. Don't let D3 deferral pile up into the hardware-procurement window.
 >
-> Re-measured: 114 test functions / ~133 collected (was 100), coverage 95.3% (was 97%), source LOC corrected to 3,548 (v1.0 over-counted at ~5,010 by including tests), 35 of 44 ISCs complete (was 29/44). All 8 commits landed on 2026-05-13 within ~1h 45m. See [dronePrjs-cost.md](dronePrjs-cost.md) for the real-world cost-of-time-and-money analysis of the practices catalogued below.
-
+> Re-measured: 114 test functions / ~133 collected (was 100), coverage 95.3% (was 97%), source LOC corrected to 3,548 (v1.0 over-counted at ~5,010 by including tests), 35 of 44 ISCs complete (was 29/44). All 8 commits landed on 2026-05-13 within ~1h 45m.
 ---
 
 ## Table of Contents

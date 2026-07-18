@@ -254,4 +254,4 @@ For honesty, this is a **first review based on the source at HEAD `233f248`**. T
 ---
 
 *Point-in-time review. `wegofwd-video` is admitted to the four-lens watch set as of this file. Companion files to follow:*
-[development-pattern](wegofwd-video-development-pattern.md) · [practices](wegofwd-video-practices.md) · [cost](wegofwd-video-cost.md)
+[development-pattern](wegofwd-video-development-pattern.md) · [practices](wegofwd-video-practices.md)

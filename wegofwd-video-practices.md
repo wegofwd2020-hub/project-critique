@@ -263,4 +263,4 @@ The headline: **the design and test discipline are both strong — the video lib
 
 ---
 
-*Companion files: [critique](wegofwd-video-critique.md) · [development-pattern](wegofwd-video-development-pattern.md) · [cost](wegofwd-video-cost.md).*
+*Companion files: [critique](wegofwd-video-critique.md) · [development-pattern](wegofwd-video-development-pattern.md).*

@@ -5,7 +5,7 @@
 **Period:** 2025–2026
 **Last refresh:** 2026-06-09 (v1.6 — alignment with critique v1.7: numbers re-measured on `main` @ `d50bc3e`; school onboarding wizard as a self-service-enablement milestone; "Administration" menu as UI-grouping discipline; ADR-005/006 as retro/refine decision-record hygiene; backup restore-path hardening)
 **Prior:** v1.5 June 2026 (alignment with critique v1.6: Curriculum Authoring Studio (Epic 12) as a method milestone; ADR-004 product-boundary decision; book-export as a one-way content bridge) · v1.4 May 2026 (alignment with critique v1.5: numbers re-measured, `teacher_capabilities`, CONTESTED-status discipline) · v1.3 May 2026 (visual-library wave cadence + Pivot 7 helpers-toolkit + resolver-eval feedback loop) · v1.2 April 2026 (Epic 10 governance, Epic 11 content formatting, Streams registry, Playwright persona expansion)
-**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-practices.md](studybuddy-practices.md) · [studybuddy-cost.md](studybuddy-cost.md) · sibling product: [mentible-development-pattern.md](mentible-development-pattern.md)
+**Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-practices.md](studybuddy-practices.md) · sibling product: [mentible-development-pattern.md](mentible-development-pattern.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
 
 > **Note (2026-06-09, v1.6):** the body below is the v1.3 record, preserved; nothing in the method has been overturned. New since v1.5 (26-commit window, HEAD `d50bc3e`), worth adding to the documented pattern:
@@ -32,8 +32,7 @@
 > - **CONTESTED epics as a discipline.** Epic 17 (corporate-L&D fork) was stamped `CONTESTED` after advisor pushback rather than silently dropped. Healthy pattern — speculative epics get a status stamp instead of disappearing. Recommend adding `CONTESTED` to the formal epic-status vocabulary alongside DELIVERED / IN-PROGRESS / DEFERRED.
 > - **Backlog correction as a first-class operation.** Epic 10 L-7/L-8 were listed open in v1.3 but were already shipped per current `CLAUDE.md`. The v1.4 cycle treated this as a real correction (not a footnote) — sign that the engineering log is the source of truth, not the critique doc.
 >
-> Re-measured: 1,030 backend tests / 73 files (was 914), 59 migrations (latest 0059), 17 Playwright specs / 2,781 LOC. Zero TODO/FIXME holds. See [studybuddy-cost.md](studybuddy-cost.md) for the real-world cost-of-time-and-money analysis of the patterns documented below.
-
+> Re-measured: 1,030 backend tests / 73 files (was 914), 59 migrations (latest 0059), 17 Playwright specs / 2,781 LOC. Zero TODO/FIXME holds.
 ---
 
 ## Table of Contents

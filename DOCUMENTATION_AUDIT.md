@@ -1,6 +1,6 @@
 # WeGoFwd2020 — Documentation Audit
 
-**Date:** 2026-06-11 · **Updated:** 2026-07-14 (added `medtracker`) · **Companion:** `PRODUCT_CATALOG.md`, `PORTFOLIO_SCORECARD.md`
+**Date:** 2026-06-11 · **Updated:** 2026-07-14 (added `medtracker`) · **Companion:** `PRODUCT_CATALOG.md`
 **Scope:** 14 of the org's 19 code repos. Not yet audited: `wegofwd-llm`, `wegofwd-video`, `wegofwd-orchestration`, `wegofwd-expenses`, `wegofwd-secure` — all added after the original 2026-06-11 pass.
 
 This audit checks each project for the documents it *should* have for its stage and type, and flags what's missing. Headline: documentation tracks commercial maturity almost perfectly — the three serious bets (StudyBuddy, Thittam, Pramana) are richly documented; the prototype/passion projects have little to nothing.
