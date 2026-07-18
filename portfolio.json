@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18T19:16:49+00:00",
+  "generated": "2026-07-18T19:43:32+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -111,9 +111,9 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 359,
+        "commits_30d": 254,
         "last_commit_age_days": 0,
-        "branch": "feat/open-shelves"
+        "branch": "fix/topic-sanitizer-hardening"
       },
       "rigor": {
         "has_tests": true,
@@ -126,7 +126,7 @@
       },
       "staleness": {
         "reviewed_sha": "40166ee4caa20efe18cdfa6f0db9e18a20ed99a5",
-        "commits_behind": 522,
+        "commits_behind": 417,
         "status": "stale"
       }
     },
@@ -280,9 +280,9 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 4,
+        "commits_30d": 5,
         "last_commit_age_days": 0,
-        "branch": "main"
+        "branch": "feat/multi-ntp-consensus"
       },
       "rigor": {
         "has_tests": true,
@@ -358,9 +358,9 @@
         "reason": "0% of features done"
       },
       "staleness": {
-        "reviewed_sha": "5e38a4454cfdf65d4ae939cbc16cc2378a40d830",
-        "commits_behind": 1,
-        "status": "stale"
+        "reviewed_sha": "de3d9fa243f1ad4e0f7763cee50693d12e9b270d",
+        "commits_behind": 0,
+        "status": "fresh"
       }
     },
     {
@@ -1796,8 +1796,8 @@
       "red": 2
     },
     "staleness": {
-      "fresh": 2,
-      "stale": 4,
+      "fresh": 3,
+      "stale": 3,
       "unknown": 12
     },
     "features": {

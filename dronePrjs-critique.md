@@ -1,6 +1,6 @@
 # dronePrjs — Code Review & Critique
 
-**Reviewed:** 2026-05-24 (v1.1 — refresh against HEAD `5e38a44`: Phase 6 CI + Phase 3 partial; ISC-28 done, D1/D2 ratified) · May 2026 (v1.0 — first review, commit `5c45c9e`)
+**Reviewed:** 2026-07-18 (anchor re-confirmed at `de3d9fa` — the only commit since v1.1 adds a `project-status.yaml` manifest for the health dashboard; no code change, findings unchanged) · 2026-05-24 (v1.1 — refresh against HEAD `5e38a44`: Phase 6 CI + Phase 3 partial; ISC-28 done, D1/D2 ratified) · May 2026 (v1.0 — first review, commit `5c45c9e`)
 **Repo:** `dronePrjs` (local, `main`)
 **Phase:** Early-build / pre-simulator. Phases 0–5 of an 8-phase roadmap complete; the in-process kinematic sim drives the test suite end-to-end. No higher-fidelity simulator (Gazebo/PX4 SITL) and no hardware yet.
 **Scope:** Umbrella for two domain apps — `closedSpace` (indoor GPS-denied warehouse inventory) and `openSpace` (outdoor, stub only) — over a shared `engine/` Protocol layer.
