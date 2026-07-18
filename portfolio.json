@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18T19:01:41+00:00",
+  "generated": "2026-07-18T19:16:49+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -711,39 +711,6 @@
       "health": {
         "status": "red",
         "reason": "dormant \u2014 no commits in 39d"
-      },
-      "staleness": {
-        "reviewed_sha": null,
-        "commits_behind": null,
-        "status": "unknown"
-      }
-    },
-    {
-      "project": "studybuddy_free",
-      "stage": "unknown",
-      "source_kind": "none",
-      "source_error": null,
-      "features": [],
-      "counts": {
-        "total": 0,
-        "done": 0,
-        "in_progress": 0,
-        "pending": 0,
-        "implemented": 0
-      },
-      "git": {
-        "commits_30d": 0,
-        "last_commit_age_days": 117,
-        "branch": "1-implement-dual-os-build"
-      },
-      "rigor": {
-        "has_tests": true,
-        "has_docs": true,
-        "has_license": true
-      },
-      "health": {
-        "status": "red",
-        "reason": "dormant \u2014 no commits in 117d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1822,16 +1789,16 @@
     }
   ],
   "summary": {
-    "projects": 19,
+    "projects": 18,
     "health": {
       "green": 4,
       "yellow": 12,
-      "red": 3
+      "red": 2
     },
     "staleness": {
       "fresh": 2,
       "stale": 4,
-      "unknown": 13
+      "unknown": 12
     },
     "features": {
       "total": 197,
