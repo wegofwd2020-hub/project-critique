@@ -62,8 +62,12 @@ def build_html(portfolio: dict) -> str:
     p.append(f'<p class="sub">{s["projects"]} repos · generated '
              f'{escape(portfolio["generated"])}</p>')
     h = s["health"]; f = s["features"]
+    stg = s.get("staleness")
+    stale_chip = (f'<div class="g">reviews: {stg["fresh"]}✓ fresh / {stg["stale"]}⟲ stale / '
+                  f'{stg["unknown"]}? unknown</div>') if stg else ""
     p.append('<div class="grand">'
              f'<div class="g">🟢 {h["green"]} · 🟡 {h["yellow"]} · 🔴 {h["red"]}</div>'
+             f'{stale_chip}'
              f'<div class="g">features: {f["done"]}✓ / {f["in_progress"]}⏳ / {f["pending"]}◻ '
              f'(of {f["total"]})</div></div>')
 
@@ -78,9 +82,16 @@ def build_html(portfolio: dict) -> str:
     for pr in portfolio["projects"]:
         src_badge = "" if pr["source_kind"] != "none" else '<span class="badge">no source</span>'
         err_badge = '<span class="badge">source error</span>' if pr["source_error"] else ""
+        st = pr.get("staleness") or {}
+        if st.get("status") == "stale":
+            stale_badge = f'<span class="badge">⟲ {st["commits_behind"]} behind</span>'
+        elif st.get("status") == "fresh":
+            stale_badge = '<span class="badge">✓ reviewed</span>'
+        else:
+            stale_badge = ""
         p.append('<details class="proj"><summary>'
                  f'<span>{_DOT.get(pr["health"]["status"], "")} {escape(pr["health"]["status"])}</span>'
-                 f'<span class="name">{escape(pr["project"])}{src_badge}{err_badge}</span>'
+                 f'<span class="name">{escape(pr["project"])}{src_badge}{err_badge}{stale_badge}</span>'
                  f'<span class="stage">{escape(pr["stage"])}</span>'
                  f'<span class="counts">{_counts_str(pr["counts"])} · '
                  f'{pr["git"]["commits_30d"] if pr["git"]["commits_30d"] is not None else "–"}c/30d · '
@@ -99,6 +110,15 @@ def build_html(portfolio: dict) -> str:
                  f'docs: {"yes" if r["has_docs"] else "no"} · '
                  f'license: {"yes" if r["has_license"] else "no"} · '
                  f'branch: {escape(str(pr["git"]["branch"] or "–"))}</div>')
+        if st:
+            if st.get("status") == "unknown":
+                rev = "review: no anchor (add <repo>-last-reviewed.txt)"
+            else:
+                sha7 = (st.get("reviewed_sha") or "")[:7]
+                behind = st.get("commits_behind")
+                rev = (f"review: reviewed at {sha7} · "
+                       + ("up to date" if behind == 0 else f"{behind} commit(s) behind"))
+            p.append(f'<div class="sig">{escape(rev)}</div>')
         if pr["source_error"]:
             p.append(f'<div class="sig">source error: {escape(pr["source_error"])}</div>')
         p.append("</div></details>")

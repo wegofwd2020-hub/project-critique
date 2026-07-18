@@ -34,6 +34,24 @@ def test_escapes_and_lists_features(tmp_path):
     assert "Epic 1" in html
 
 
+def test_shows_staleness_when_present():
+    port = {"generated": "t", "root": "/x",
+            "projects": [{**PORT["projects"][0],
+                          "staleness": {"reviewed_sha": "abcdef1234567",
+                                        "commits_behind": 5, "status": "stale"}}],
+            "summary": {**PORT["summary"],
+                        "staleness": {"fresh": 0, "stale": 1, "unknown": 0}}}
+    html = build_html(port)
+    assert "5 behind" in html          # per-project actionable badge
+    assert "abcdef1" in html           # short reviewed SHA in the body
+    assert "stale" in html
+
+
+def test_no_staleness_key_does_not_crash():
+    html = build_html(PORT)            # PORT has no staleness key
+    assert html.strip().startswith("<!doctype html>")
+
+
 def test_empty_portfolio_message():
     html = build_html({"generated": "t", "root": "/x", "projects": [],
                        "summary": {"projects": 0, "health": {"green": 0, "yellow": 0, "red": 0},

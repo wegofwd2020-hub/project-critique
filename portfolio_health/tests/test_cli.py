@@ -28,3 +28,22 @@ def test_cli_writes_json_and_html(tmp_path):
     data = json.loads(outj.read_text())
     assert data["summary"]["projects"] == 1
     assert outh.read_text().strip().startswith("<!doctype html>")
+
+
+def test_cli_staleness_via_reviewed_dir(tmp_path):
+    _repo(tmp_path, "alpha")
+    head = subprocess.run(["git", "-C", str(tmp_path / "alpha"), "rev-parse", "HEAD"],
+                          capture_output=True, text=True).stdout.strip()
+    reviewed = tmp_path / "rev"; reviewed.mkdir()
+    (reviewed / "alpha-last-reviewed.txt").write_text(head)
+    cfg = tmp_path / "portfolio.toml"
+    cfg.write_text(f'[scan]\nroot = "{tmp_path}"\nexclude = ["rev"]\n'
+                   'exploratory_stages = ["unknown"]\n')
+    outj = tmp_path / "p.json"; outh = tmp_path / "p.html"
+    rc = main(["--config", str(cfg), "--json", str(outj), "--html", str(outh),
+               "--reviewed-dir", str(reviewed)])
+    assert rc == 0
+    data = json.loads(outj.read_text())
+    a = next(p for p in data["projects"] if p["project"] == "alpha")
+    assert a["staleness"]["status"] == "fresh"
+    assert data["summary"]["staleness"]["fresh"] == 1

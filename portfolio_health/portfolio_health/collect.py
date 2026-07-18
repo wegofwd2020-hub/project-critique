@@ -10,6 +10,7 @@ from portfolio_health.gitstats import git_stats
 from portfolio_health.health import assess
 from portfolio_health.reposcan import scan_repo
 from portfolio_health.sources import feature_counts, resolve_source
+from portfolio_health.staleness import assess_staleness, reviewed_sha
 
 
 def _iter_repos(root: Path, exclude: list[str]):
@@ -22,11 +23,18 @@ def _iter_repos(root: Path, exclude: list[str]):
 
 
 def collect(root: Path, exclude: list[str], exploratory_stages: list[str],
-            today: date | None = None) -> dict:
-    """Scan every git repo under `root` (minus `exclude`) into a Portfolio."""
+            today: date | None = None, reviewed_dir: Path | None = None) -> dict:
+    """Scan every git repo under `root` (minus `exclude`) into a Portfolio.
+
+    `reviewed_dir` is where the ``<repo>-last-reviewed.txt`` anchors live (the
+    project-critique root); when given, each project gets a `staleness` record
+    of how far its code has drifted past the commit its critique was reviewed
+    at. With no anchor (or `reviewed_dir` None) a project is `unknown`.
+    """
     root = Path(root).expanduser()
     today = today or datetime.now(timezone.utc).date()
     projects, health_tally = [], {"green": 0, "yellow": 0, "red": 0}
+    stale_tally = {"fresh": 0, "stale": 0, "unknown": 0}
     totals = {"total": 0, "done": 0, "in_progress": 0, "pending": 0, "implemented": 0}
 
     for repo in _iter_repos(root, exclude):
@@ -37,16 +45,19 @@ def collect(root: Path, exclude: list[str], exploratory_stages: list[str],
         stage = src["stage"] or "unknown"
         health = assess(counts, git, rigor, stage, src["kind"], exploratory_stages)
         health_tally[health["status"]] += 1
+        staleness = assess_staleness(repo, reviewed_sha(reviewed_dir, repo.name))
+        stale_tally[staleness["status"]] += 1
         for k in totals:
             totals[k] += counts[k]
         projects.append({
             "project": src["project"] or repo.name, "stage": stage, "source_kind": src["kind"],
             "source_error": src["error"], "features": src["features"],
             "counts": counts, "git": git, "rigor": rigor, "health": health,
+            "staleness": staleness,
         })
 
     return {"generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "root": str(root),
             "projects": projects,
             "summary": {"projects": len(projects), "health": health_tally,
-                        "features": totals}}
+                        "staleness": stale_tally, "features": totals}}

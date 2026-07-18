@@ -33,6 +33,34 @@ def test_collect_two_repos(tmp_path):
     assert port["summary"]["features"]["total"] == 2
 
 
+def test_collect_attaches_staleness_and_summary(tmp_path):
+    reviewed = tmp_path / "critique"; reviewed.mkdir()
+    r = _make_repo(tmp_path, "gamma", progress={
+        "stage": "late-build", "features": [{"name": "A", "status": "done"}]})
+    head = subprocess.run(["git", "-C", str(r), "rev-parse", "HEAD"],
+                          capture_output=True, text=True).stdout.strip()
+    (reviewed / "gamma-last-reviewed.txt").write_text(head + "\n")
+    port = collect(tmp_path, exclude=[], exploratory_stages=["unknown"],
+                   today=date(2026, 7, 6), reviewed_dir=reviewed)
+    g = next(p for p in port["projects"] if p["project"] == "gamma")
+    assert g["staleness"]["status"] == "fresh" and g["staleness"]["commits_behind"] == 0
+    assert port["summary"]["staleness"]["fresh"] == 1
+
+
+def test_collect_staleness_unknown_without_anchor(tmp_path):
+    _make_repo(tmp_path, "delta")
+    port = collect(tmp_path, exclude=[], exploratory_stages=["unknown"],
+                   today=date(2026, 7, 6), reviewed_dir=tmp_path / "nope")
+    assert port["projects"][0]["staleness"]["status"] == "unknown"
+    assert port["summary"]["staleness"]["unknown"] == 1
+
+
+def test_collect_staleness_defaults_to_unknown(tmp_path):
+    _make_repo(tmp_path, "eps")
+    port = collect(tmp_path, exclude=[], exploratory_stages=["unknown"], today=date(2026, 7, 6))
+    assert port["projects"][0]["staleness"]["status"] == "unknown"
+
+
 def test_repo_without_source_flagged(tmp_path):
     _make_repo(tmp_path, "beta")  # no progress.json, no manifest
     port = collect(tmp_path, exclude=[], exploratory_stages=["unknown"], today=date(2026, 7, 6))

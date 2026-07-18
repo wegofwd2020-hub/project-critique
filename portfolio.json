@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18T11:30:30+00:00",
+  "generated": "2026-07-18T19:01:41+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -59,6 +59,11 @@
       "health": {
         "status": "yellow",
         "reason": "missing tests"
+      },
+      "staleness": {
+        "reviewed_sha": "76addee7704271e9bdfde9f10fe2119b9711b6b1",
+        "commits_behind": 16,
+        "status": "stale"
       }
     },
     {
@@ -106,7 +111,7 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 369,
+        "commits_30d": 359,
         "last_commit_age_days": 0,
         "branch": "feat/open-shelves"
       },
@@ -118,6 +123,11 @@
       "health": {
         "status": "yellow",
         "reason": "60% of features done"
+      },
+      "staleness": {
+        "reviewed_sha": "40166ee4caa20efe18cdfa6f0db9e18a20ed99a5",
+        "commits_behind": 522,
+        "status": "stale"
       }
     },
     {
@@ -249,6 +259,44 @@
       "health": {
         "status": "yellow",
         "reason": "47% of features done"
+      },
+      "staleness": {
+        "reviewed_sha": "d50bc3ef78c77f0cd8cd415e4c5782647de62bd0",
+        "commits_behind": 138,
+        "status": "stale"
+      }
+    },
+    {
+      "project": "atri-sangam",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 4,
+        "last_commit_age_days": 0,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -308,6 +356,11 @@
       "health": {
         "status": "yellow",
         "reason": "0% of features done"
+      },
+      "staleness": {
+        "reviewed_sha": "5e38a4454cfdf65d4ae939cbc16cc2378a40d830",
+        "commits_behind": 1,
+        "status": "stale"
       }
     },
     {
@@ -367,6 +420,11 @@
       "health": {
         "status": "yellow",
         "reason": "60% of features done"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -414,8 +472,8 @@
         "implemented": 5
       },
       "git": {
-        "commits_30d": 123,
-        "last_commit_age_days": 1,
+        "commits_30d": 129,
+        "last_commit_age_days": 0,
         "branch": "main"
       },
       "rigor": {
@@ -426,6 +484,11 @@
       "health": {
         "status": "yellow",
         "reason": "missing tests"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -551,6 +614,11 @@
       "health": {
         "status": "green",
         "reason": "active, 88% done, tests+docs"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -610,6 +678,11 @@
       "health": {
         "status": "yellow",
         "reason": "40% of features done"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -638,6 +711,11 @@
       "health": {
         "status": "red",
         "reason": "dormant \u2014 no commits in 39d"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -666,6 +744,11 @@
       "health": {
         "status": "red",
         "reason": "dormant \u2014 no commits in 117d"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -1499,6 +1582,11 @@
       "health": {
         "status": "green",
         "reason": "active, 83% done, tests+docs"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -1527,6 +1615,11 @@
       "health": {
         "status": "yellow",
         "reason": "slowing \u2014 26d since last commit"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -1555,6 +1648,11 @@
       "health": {
         "status": "green",
         "reason": "active, no feature list, tests+docs"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -1583,6 +1681,11 @@
       "health": {
         "status": "yellow",
         "reason": "slowing \u2014 18d since last commit"
+      },
+      "staleness": {
+        "reviewed_sha": "3b08f4422ee003ee764303161b5c4ce9d236216a",
+        "commits_behind": 0,
+        "status": "fresh"
       }
     },
     {
@@ -1611,6 +1714,44 @@
       "health": {
         "status": "yellow",
         "reason": "slowing \u2014 26d since last commit"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
+      }
+    },
+    {
+      "project": "wegofwd-private-docs",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 6,
+        "last_commit_age_days": 0,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -1639,6 +1780,11 @@
       "health": {
         "status": "red",
         "reason": "dormant \u2014 no commits in 32d"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
       }
     },
     {
@@ -1667,15 +1813,25 @@
       "health": {
         "status": "yellow",
         "reason": "slowing \u2014 17d since last commit"
+      },
+      "staleness": {
+        "reviewed_sha": "837dfb50e0e2b3329d59ecad41d17e1c9f37841d",
+        "commits_behind": 0,
+        "status": "fresh"
       }
     }
   ],
   "summary": {
-    "projects": 17,
+    "projects": 19,
     "health": {
-      "green": 3,
-      "yellow": 11,
+      "green": 4,
+      "yellow": 12,
       "red": 3
+    },
+    "staleness": {
+      "fresh": 2,
+      "stale": 4,
+      "unknown": 13
     },
     "features": {
       "total": 197,
