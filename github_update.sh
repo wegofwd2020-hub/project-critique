@@ -19,9 +19,9 @@ PROOT="$HOME/.claude/projects"
 enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
 # project subdirs that are each their own git repo. Not every one has a memory repo —
-# wegofwd-expenses, wegofwd-secure, and wegofwd-video are code-only, so they appear here
-# but not in MEM_PATHS below.
-PROJECTS="StudyBuddy_OnDemand Mentible thittam mambakkam-net pramana kathai-chithiram project-critique MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video wegofwd-expenses wegofwd-secure dronePrjs medtracker"
+# wegofwd-expenses, wegofwd-secure, wegofwd-video, wegofwd-private-docs, and atri-sangam
+# are code/docs-only, so they appear here but not in MEM_PATHS below.
+PROJECTS="StudyBuddy_OnDemand Mentible thittam mambakkam-net pramana kathai-chithiram project-critique wegofwd-private-docs MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video wegofwd-expenses wegofwd-secure dronePrjs medtracker atri-sangam"
 
 # absolute project paths whose memory repo should be pulled
 MEM_PATHS="
