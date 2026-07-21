@@ -1,5 +1,16 @@
 # Atri Sangam — Scoping, Design, Architecture & Development Pattern
 
+> ⚠️ **STALE — superseded in part, 2026-07-21.** This document analyses the
+> **v0.1.0 source snapshot of 2026-07-18** and its central thesis — "a
+> detection library and red-team simulator, not a deployable monitor" — is
+> **no longer true**. In the three days after it was written, 126 commits added
+> a runner, a systemd unit, WWVB and Roughtime channels, C/N₀ analysis, a
+> TimescaleDB backend and a live dashboard. Read it as a record of how the
+> project scoped its *first* release; do not read its present-tense claims
+> about what exists as current. Current state:
+> [atri-sangam-critique.md](atri-sangam-critique.md) (v2.0, `d953201`).
+
+
 **Document type:** Development pattern analysis
 **Scope:** Design & scoping methodology of a stdlib-only GPS/PNT integrity-monitoring library + red-team simulator
 **Period:** Source snapshot dated 2026-07-18 — **no git history in the reviewed artifact**, so this document analyzes the *design methodology visible in the code and specs*, not a commit arc (contrast dronePrjs, whose pattern was read off an 8-commit burst)
