@@ -1,110 +1,159 @@
 # Atri Sangam — Code Review & Critique
 
-**Reviewed:** 2026-07-18 (v1.0 — first review, against the extracted source snapshot dated 2026-07-18)
-**Repo:** `atri-sangam` (source snapshot; no git history in the reviewed artifact)
-**Phase:** Alpha library + red-team simulator. `Development Status :: 3 - Alpha`, `v0.1.0`. Detection logic, collectors, persistence, simulator, and dashboard are built and tested; **no live runner/daemon exists** — the shipped artifact is a well-tested library plus a batch/demo driver, not yet a deployable monitor.
-**Scope:** Fixed-site GPS/PNT integrity monitor — cross-checks a GPS receiver (NMEA RMC/GGA) against independent references (SNTP, local-clock holdover, solar prediction) and raises explainable step/CUSUM/staleness alarms on jamming, spoofing, or outage. Python 3.10+, stdlib-only core; Dash/Plotly an optional extra.
+**Reviewed:** 2026-07-21 (v2.0 — second review, against `main` at `d953201`)
+**Anchor:** `b5329dd` — advanced past the reviewed SHA by one commit, a
+README-only docs fix (removing a pinned version number) that touches no code
+and changes no finding below.
+**Previous:** v1.0, 2026-07-18, against the v0.1.0 source snapshot
+**Repo:** `atri-sangam` (private, GitHub org)
+**Phase:** Alpha (`Development Status :: 3 - Alpha`, `pyproject` version `0.1.7`). **Now a deployable monitor, not just a library** — daemon, systemd unit, six live channels, two storage backends, live dashboard.
+**Scope:** Fixed-site GPS/PNT integrity monitor — cross-checks a GPS receiver (NMEA RMC/GGA/GSV) against independent references (NTP with Byzantine consensus, Roughtime with Ed25519 verification, WWVB radio, local-clock holdover, C/N₀ uniformity) and raises explainable step/CUSUM/staleness alarms on jamming, spoofing, or outage. Python 3.10+, stdlib-only core.
 **Rating key:** ✅ Strong · ⚠️ Gap / Risk · ❌ Critical Issue
 **Related:** [atri-sangam-development-pattern.md](atri-sangam-development-pattern.md) · [atri-sangam-practices.md](atri-sangam-practices.md)
 
 ---
 
+## What changed since v1.0
+
+**126 commits on `main` in three days.** The v1.0 review is comprehensively out of date; treat any of its claims not restated here as void.
+
+| v1.0 finding | Status at `d953201` |
+|---|---|
+| ❌ **No runner / scheduler / daemon exists** — "library + batch driver, not a monitor" | ✅ **Resolved.** `src/atri_sangam/runner/` — `cli.py`, `monitor.py`, `sources.py`, `config.py`, plus a systemd unit. `atri-sangam-run --source sim\|gpsd\|serial` |
+| ⚠️ Dashboard re-derives a binary status from unbounded alarm history; `"stale"` colour unreachable | ⚠️ **Partly resolved** — see §7. The dashboard now reads the engine's published three-way verdict, and `stale` renders. **The alarm latch itself was not fixed** and has moved, not gone |
+| ⚠️ "Live" dashboard is a static replay | ✅ **Resolved.** Opens the store read-only and polls; the daemon writes concurrently under WAL |
+| ⚠️ No concurrency model — unlocked dict, single connection, no WAL | ✅ **Resolved.** `Monitor` serialises every engine/store touch under one `threading.Lock`; store opens `check_same_thread=False` with `journal_mode=WAL`; `test_store_threadsafe.py` covers it |
+| ⚠️ `DiscrepancyEngine.status()` has zero unit coverage | ✅ **Resolved.** Referenced in 21 test assertions |
+| ⚠️ SNTP single-server, spoofable | ✅ **Resolved** (was already closed in v1.0) and extended: `MultiNtpCollector` agrees a Marzullo consensus and emits `ntp_consensus_spread` |
+| ❌ No lat/lon range validation in `_parse_latlon` | ❌ **Still open.** Unchanged (§2) |
+| ⚠️ No sentence-length cap before checksum — *"latent (no serial transport exists yet)"* | ⚠️ **Escalated — no longer latent** (§5). The transport now exists |
+| ⚠️ `ingest()` not transactional against store failures | ⚠️ **Still open.** Unchanged (§2) |
+| ⚠️ No lint/type gate | ⚠️ **Still open.** No ruff, no mypy, CI runs pytest only |
+| ⚠️ `samples_from_rmc` has no direct unit test | ⚠️ **Still open.** Still only exercised via the engine |
+| ⚠️ Solar channel is math-only | ⚠️ **Still open.** `predictors/solar.py` is not wired into the daemon; `runner/cli.py` imports no solar collector |
+
 ## Executive Summary
 
-Atri Sangam is an unusually well-engineered **detection-logic library** for GPS/PNT integrity monitoring at a fixed site. The core thesis — a "sangam" of independent channels (GPS, NTP, holdover, celestial) whose disagreement is the alarm signal — is realised cleanly: pure-transformer collectors, a central `DiscrepancyEngine` referee, three complementary detector layers (step for jumps, CUSUM for slow walks, staleness for silence), and provenance-carrying alarms. The engineering discipline is real and verified against the code: **stdlib-only core** (`dependencies = []`), **everything injectable** (sockets, clocks, stores are constructor parameters), **fail-loud config validation** at construction, **6 OpenSpec contracts** whose numeric scenarios are mirrored by the acceptance tests, and a **deterministic-by-seed simulator** that triples as mock data, demo driver, and red-team tool. 66 tests pass at 90 % coverage, with real hand-derived assertions rather than smoke checks.
+Three days turned a well-engineered detection library into a monitor you could actually deploy. Source grew 1,961 → **5,469 LOC**, tests 66 → **323**, OpenSpec contracts 6 → **12**, and the channel set went from four to nine — adding cryptographically-verified Roughtime time (Ed25519, Merkle proofs, multi-server Byzantine consensus), WWVB radio time decoded from GPIO edges, and C/N₀ uniformity from GSV sentences, which is a genuine spoofing tell. A TimescaleDB backend landed behind the same `Store` protocol. The discipline held at speed: still `dependencies = []` in the core, still zero TODO/FIXME, still specs-as-contracts with numeric scenarios mirrored by tests.
 
-The gap between what it *is* and what it *claims to protect* is the story of this review. It is a library, not a monitor: **there is no continuous collection loop, scheduler, serial/gpsd runner, or daemon anywhere in the source** — `check_staleness()` must be called by something that does not exist yet. And its one security-sensitive external surface, the **SNTP client, has no anti-spoofing protection** — it never verifies the response's source address or echoed originate timestamp, so the reference channel meant to *catch* spoofing is itself trivially spoofable by off-path UDP. For a product whose entire premise is detecting deception, that is the finding to fix first.
+The engineering judgement on display is good and occasionally excellent. Marzullo interval intersection for both NTP and Roughtime consensus is the correct algorithm rather than an averaging shortcut, and it emits the disagreement *as its own integrity channel* instead of hiding it. The runner keeps every step body single-threaded and unit-testable, with the thread wrapper as a thin loop. `Store` is a `@runtime_checkable` Protocol, so a backend implementing half the contract fails `isinstance` — a real gate, not a comment.
 
-**Verdict:** Strong bones, honest scoping, exemplary test discipline for a v0.1.0. Not deployable as a monitor yet — and the NTP channel needs origin/replay validation before it can be trusted as an independent reference.
+What has not moved is the small set of correctness gaps v1.0 already named. `_parse_latlon` still accepts 91° latitude. `ingest()` still advances in-memory state before persisting, so the evidence trail can diverge on exactly the storage failure the persistence spec cares about. There is still no lint or type gate. And one v1.0 finding has **got worse without changing a line**: the unbounded NMEA sentence scan was excused as latent because no serial transport existed. `GpsdSource` and `SerialSource` now exist, and neither bounds line length.
+
+The new finding of this review is that the **alarm state latches forever** (§7). A channel that alarms once reports `alarm` until the process restarts, because `status()` derives it from a cumulative counter that is never reset. The recent dashboard work correctly removed the *viewer's* duplicate status rule — but it made the engine's rule authoritative rather than correcting it, and that rule has the same defect. For a monitor whose pitch is explainable, actionable alarms, a pill that can never go green is the finding to fix first.
+
+**Verdict:** Genuinely deployable now, and the growth was disciplined rather than frantic. Two input-validation gaps on the one untrusted surface, one latching-state defect, and no lint gate are what stand between this and something you would leave running unattended at a site that matters.
 
 ## Snapshot
 
-| Dimension | Reading |
-|---|---|
-| Source LOC | **1,961** (23 files); tests **719** (7 files) |
-| Tests | **66**, all passing, **90 % coverage** (675 stmts, 66 missed) |
-| Dependencies | **Core: none** (stdlib only). `[dashboard]`: dash/plotly. `[dev]`: pytest/pytest-cov |
-| Specs | **6 OpenSpec contracts** (anomaly-detection, nmea-ingestion, ntp-time, persistence, simulation, solar-prediction) |
-| CI | ✅ Real — GitHub Actions, Python 3.10 + 3.12, `pytest --cov`, plus a dashboard-extra import job |
-| Lint/type gate | ⚠️ **None** — no ruff, no mypy config (contrast dronePrjs's `mypy --strict` + ruff) |
-| TODO/FIXME in source | **0** |
-| Runnable monitor? | ❌ **No** — no runner/daemon/serial loop; library + demo replay only |
+| Dimension | v1.0 (2026-07-18) | v2.0 (`d953201`) |
+|---|---|---|
+| Source LOC | 1,961 (23 files) | **5,469** (42 files) |
+| Test LOC | 719 (7 files) | **4,104** (35 files) |
+| Tests | 66 | **323, all passing** (verified locally) |
+| Coverage | 90 % | **not re-measured this pass** — `pytest-cov` absent from the local env; CI runs `--cov` |
+| Channels | 4 | **9** (+ WWVB, Roughtime, C/N₀ spread, consensus-spread channels) |
+| Specs | 6 | **12** |
+| Dependencies | core: none | **core: none** (`dependencies = []`); extras: dashboard, roughtime, serial, gpio, timescale |
+| CI | pytest, 3.10 + 3.12 | pytest, 3.10 + 3.12 (unchanged) |
+| Lint/type gate | ⚠️ none | ⚠️ **still none** |
+| TODO/FIXME | 0 | **0** |
+| Runnable monitor? | ❌ no | ✅ **yes** — daemon + systemd unit |
 
 ## 1. Architecture
 
 ### Strengths
-- ✅ **Clean fan-out referee.** Independent channels emit frozen `Sample(channel, timestamp, value)` objects into one `DiscrepancyEngine`, which lazily builds a per-channel step+CUSUM detector pair and health record on first sample (`discrepancy/engine.py:54-64`). Unknown channel names auto-register against a `FALLBACK_DETECTOR` (`config.py:150-153`) — a real extensibility seam that lets a third party add a WWVB or star-tracker channel without editing the package.
-- ✅ **Collectors are pure transformers.** `GpsSampleFactory.samples_from_rmc` (`collectors/gps.py:29-64`) turns a sentence + local time into 0–2 samples with no I/O; SNTP, holdover likewise take their sockets/clocks by injection. This is what makes the whole suite deterministic and offline.
-- ✅ **Three-layer detection maps to a real threat taxonomy** — step catches jumps (crude spoofing/glitches), CUSUM catches sub-threshold slow walks (sophisticated spoofing), staleness catches silence (jamming/outage). The CUSUM is textbook-correct two-sided tabular form (`discrepancy/cusum.py:47-75`).
-- ✅ **Provenance is structural, not decorative.** Every `Alarm` carries channel/detector/value/threshold/message (`models.py:34-73`), so operators see an explainable event, not a red light.
+- ✅ **The referee pattern scaled cleanly to nine channels.** Adding WWVB, Roughtime and C/N₀ required no change to `DiscrepancyEngine`: they are collectors emitting `Sample`s into the same fan-in. The extensibility seam v1.0 praised in theory has now been exercised three times in practice.
+- ✅ **Consensus is modelled as evidence, not just a number.** `MultiNtpCollector` and `MultiRoughtimeCollector` agree a Byzantine-tolerant offset by Marzullo interval intersection *and* emit `ntp_consensus_spread` / `roughtime_consensus_spread` / `roughtime_verify_failures` as first-class channels. Disagreement among references is itself monitored — the correct instinct for this problem.
+- ✅ **The runner is testable by construction.** Each `_*_step` is a single-threaded method unit-tested directly; the threading layer only loops them. One `threading.Lock` guards every engine and store touch, so the concurrency story is "serialise everything" — simple, and honestly documented as such.
+- ✅ **Storage is a real protocol, enforced.** `Store` is `@runtime_checkable`; both backends implement the full interface; `test_store_protocol.py` and `test_store_factory.py` assert conformance by `isinstance`.
 
 ### Gaps & Risks
-- ⚠️ **The dashboard discards the engine's richer status model.** `DiscrepancyEngine.status()` computes a proper three-way `OK/ALARM/STALE` per channel and resets on new data (`engine.py:142-167`, `:85`), but the dashboard's `_refresh()` never calls it — it re-derives a binary ok/alarm from the *entire unbounded alarm history* in the store (`dashboard/app.py:80`). The `"stale"` color at `app.py:26` is unreachable dead code, and a channel that alarmed once then recovered shows red forever. The two status models have diverged.
-- ⚠️ **"Live" dashboard is a static replay.** `main()` runs the whole scenario to completion into the store *before* starting Dash (`dashboard/app.py:133-148`); the `dcc.Interval` re-reads a finished dataset. No code path ingests real-time samples while serving.
-- ⚠️ **Solar channel is math-only.** `predictors/solar.py` computes an elevation residual but nothing wraps it into a `Sample` — `CH_SOLAR` is registered (`config.py:141-144`) but never produced outside tests. Honestly labelled roadmap (needs a sun-sensor), but the diagram's celestial channel is aspirational today.
+- ⚠️ **Solar remains aspirational.** `predictors/solar.py` computes an elevation residual with real physics and real tests, but `runner/cli.py` imports no solar collector — the celestial channel in the README diagram still does not exist at runtime. Honestly labelled as roadmap; still the widest gap between the diagram and the daemon.
+- ⚠️ **Publishing latency is one staleness period.** Channel state reaches the store from `Monitor._staleness_step`, so a transition is visible to a viewer after up to `--staleness-check-s` (default 1 s). Fine for a dashboard; worth knowing before anything alarms off this table.
 
 ## 2. Code Quality
 
 ### Strengths
-- ✅ **Frozen, slotted dataclasses with `__post_init__` validation everywhere** — `SiteConfig`, `CusumConfig`, `StepConfig`, `DetectorConfig` all raise `ConfigError`/`ThresholdConfigError` at construction (`config.py:43-113`). "Fail loudly at startup" is implemented, not just claimed.
-- ✅ **Typed exception hierarchy with sensible multiple inheritance** — `NmeaChecksumError(NmeaParseError)`, `ThresholdConfigError(DetectorError, ConfigError)` (`exceptions.py`) let callers catch at any granularity.
-- ✅ **Zero TODO/FIXME**, clean layer separation, each component independently testable.
+- ✅ **Frozen, slotted, self-validating dataclasses throughout**, now including the two new published records. Fail-loud-at-construction is applied consistently rather than selectively.
+- ✅ **Zero TODO/FIXME across 5,469 lines**, sustained through a 2.8× expansion.
+- ✅ **Optional dependencies stay optional.** `psycopg`, `dash`, `cryptography`, `pyserial` and `gpiod` are all imported lazily inside the functions that need them, so the stdlib-only core claim survives five extras.
 
 ### Gaps & Risks
-- ❌ **No lat/lon range validation in the NMEA parser.** `_parse_latlon` (`collectors/nmea.py:62-79`) checks hemisphere and `minutes < 60` but never bounds the degrees field. A checksum-valid `"9130.0000,N"` parses to **91.5° latitude** without error and flows into `haversine_m()` producing a numerically valid but meaningless distance. This is inconsistent with the rigor of `SiteConfig.__post_init__` and `solar_position()`, which both range-check — in a module whose own docstring claims "auditable correctness."
-- ⚠️ **`ingest()` is not transactional against store failures.** In-memory state (`last_sample`, counts, `alarms`) is mutated (`engine.py:83-93`) *before* the store writes (`:95-98`). A `StorageError` mid-loop propagates out — the caller never gets that call's alarms — while in-memory bookkeeping has already advanced. In-memory state and the persisted evidence trail can diverge during exactly the failure mode (storage errors) the persistence spec cares about.
-- ⚠️ **No lint/type gate.** No ruff, no `mypy --strict`. The code *looks* type-clean, but nothing enforces it — a regression that a sibling project (dronePrjs) catches in CI would pass here.
+- ❌ **No lat/lon range validation in the NMEA parser — unchanged from v1.0.** `_parse_latlon` (`collectors/nmea.py`) validates the hemisphere letter and `minutes < 60` but never bounds degrees. A checksum-valid `"9130.0000,N"` parses to **91.5° latitude** and flows into `haversine_m()`, producing a numerically valid, physically meaningless distance. Still inconsistent with `SiteConfig.__post_init__` and `solar_position()`, which both range-check. Three days of new validation code went in around it.
+- ⚠️ **`ingest()` is still not transactional against store failures — unchanged from v1.0.** In-memory state (`last_sample`, counts, `alarms`) is mutated before the store writes. A `StorageError` mid-loop propagates out — the caller never receives that call's alarms — while bookkeeping has already advanced. In-memory state and the persisted evidence trail diverge during precisely the failure the persistence spec exists to cover.
+- ⚠️ **Still no lint or type gate.** No ruff, no `mypy --strict`, no config file, and `ci.yml` runs pytest only. The code reads type-clean and the new modules carry full annotations, but nothing enforces it — and the codebase is now 2.8× larger than when this was first raised.
 
 ## 3. Test Coverage
 
 ### Strengths
-- ✅ **66 tests, 90 % coverage, real assertions.** Hand-derived expected values, not smoke: an SNTP offset computed to the decimal from a crafted 4-timestamp exchange (`test_ntp.py:60-72`), an XOR checksum verified by hand (`test_nmea.py:22-24`), holdover drift recovered to `1e-9` (`test_detectors.py:117-126`).
-- ✅ **Discriminative detector tests.** A drift provably below the step threshold (`0.002 × 199 = 0.398 < 0.5`) is asserted to be caught by CUSUM *and missed by step* (`test_detectors.py:78-92`) — a genuine separation test.
-- ✅ **Physically-grounded solar invariants** (equinox declination ≈ 0, solar-noon elevation > 85°, midnight-sun < −80°) test the approximation without over-fitting to golden values (`test_solar_store_demo.py:16-81`).
-- ✅ **End-to-end acceptance spine** — `test_engine.py` runs simulator → GPS factory → engine → alarms/store for all four scenarios plus persistence.
+- ✅ **323 tests, and the growth is proportional** — test LOC grew faster than source (5.7× vs 2.8×). Not a suite that got left behind.
+- ✅ **The hardest new logic is the best tested.** Marzullo consensus, Roughtime Ed25519 verification and the RFC-compliant codec, WWVB edge decoding, and the C/N₀ transport/verification failure split all carry dedicated files with derived expected values.
+- ✅ **`status()` now has real coverage** — the v1.0 hole is closed, with 21 assertions across the suite.
+- ✅ **Storage parity is tested on both backends**, including an offline fake-connection harness for TimescaleDB that needs no database server.
 
 ### Gaps & Risks
-- ⚠️ **Holes at the seams, not within components.** `GpsSampleFactory.samples_from_rmc` has no *direct* unit test (only indirect via the engine helper); `NtpCollector.collect()` failure-propagation is untested (only `SntpClient.query()` is); `DiscrepancyEngine.status()` — the whole OK/ALARM/STALE model — has **zero unit coverage**.
-- ⚠️ **Spec mirroring is partial.** Numeric scenarios that *are* tested match to the decimal, but `nmea-ingestion`'s "valid fix → two residuals" / "void fix → nothing" and `ntp-time`'s "failure produces no sample" have no dedicated test.
-- ⚠️ **No fuzz/property tests on the NMEA parser** despite it being a security-relevant surface (see §5); only a fixed set of hand-crafted malformed strings.
+- ⚠️ **`GpsSampleFactory.samples_from_rmc` still has no direct unit test** — unchanged from v1.0. It remains exercised only through the engine, so a regression in the 0-, 1-, or 2-sample fan-out surfaces as a confusing integration failure rather than a pointed one. This is the oldest untouched test gap in the repo.
+- ⚠️ **No fuzz or property tests on the NMEA parser**, unchanged from v1.0 and now more pressing: §5's transports feed it directly from a socket or serial port.
+- ⚠️ **Coverage is unverified in this review.** v1.0 measured 90 %; the local environment lacks `pytest-cov`, so this pass reports test count only. CI does measure it — worth reading the badge rather than trusting either number here.
 
 ## 4. Documentation
 
 ### Strengths
-- ✅ **Exceptional README** — precise threat model, an accurate architecture diagram, honest precision hierarchy ("GPS is nanoseconds; radio is milliseconds; celestial is seconds"), a real deploy guide, and a `docs/comparable-systems.md` situating it against BlueSky/GPSPATRON/RAIM/chrony. The name essay (Atri restoring the eclipsed Sun) is unusually apt.
-- ✅ **Specs-as-contracts** — 6 OpenSpec files with concrete numeric scenarios the tests mirror. Design commitments are stated *and* verified true.
+- ✅ **The README kept pace with a 2.8× expansion**, including an accurate mermaid diagram of the full nine-channel set, opt-in markers for every channel requiring hardware or configuration, and an honest precision hierarchy.
+- ✅ **12 specs-as-contracts**, doubled from six, with the newest requirement (channel-state publishing) carrying scenarios that the tests mirror.
+- ✅ **The known limitation is documented where users will hit it** — §7's latch is called out in both the README and the CHANGELOG rather than left for a reader to discover.
 
 ### Gaps & Risks
-- ⚠️ **README slightly oversells present tense.** The diagram and "How it works" read as a running system; the celestial channel, the "live" dashboard, and any runner are roadmap. The prose is honest on close reading (roadmap section, `* optional hardware` footnote), but a skim implies more is wired than is.
+- ⚠️ **Roadmap strikethroughs are accumulating.** The README's roadmap now mixes delivered items (struck through, or annotated "implemented") with genuine roadmap in one list. It is accurate but increasingly hard to skim for what is *not* done — the single question a prospective operator most needs answered.
+- ✅ **Fixed since v1.0:** the "README slightly oversells present tense" finding no longer holds — the runner exists, so the present tense is now earned.
 
 ## 5. Security & Safety
 
 ### Strengths
-- ✅ **No fabricated data.** Failed collectors raise typed exceptions (`CollectorTimeout`, `NtpQueryError`); a void GPS fix returns `[]` rather than a fake zero (`collectors/gps.py:51-52`); silence is then caught by staleness. "A monitor that invents readings is worse than none" is implemented.
+- ✅ **Roughtime is a genuinely strong addition.** Ed25519 signature verification with Merkle proofs gives a time reference an off-path attacker cannot forge without the private key, and multi-server consensus tolerates a lying minority. This is a meaningful step beyond what NTP alone can promise.
+- ✅ **Failure never fabricates.** Failed collectors raise typed exceptions; a void GPS fix returns nothing; a failed Roughtime round still persists its verification-failure count as evidence. "A monitor that invents readings is worse than none" continues to be implemented, not just claimed.
+- ✅ **NTP consensus closes the v1.0 single-server exposure** structurally rather than by patching one client.
 
 ### Gaps & Risks
-- ✅ **Closed 2026-07-18 (commit `be19c81`).** ~~SNTP client has no anti-spoofing protection whatsoever~~ — `query()` now rejects a reply (`NtpQueryError`) unless mode == 4, leap indicator ≠ 3, stratum ∈ 1–15, **and the originate timestamp echoes the request's transmit timestamp**. The originate-echo check is the load-bearing defence: an off-path attacker who cannot observe the request cannot forge the 64-bit transmit timestamp, so a blindly-injected reply is rejected. Added 5 anti-spoof regression tests (71 passing). *Original finding (for the record): the client discarded `recvfrom()`'s source address, never verified the originate echo, and never validated mode/stratum/leap — so the reference channel meant to catch GPS spoofing was itself trivially off-path-spoofable.* **Remaining defence-in-depth (optional):** source-IP filtering via `connect()` was not added (the originate-echo check already defeats off-path injection, which is the primary threat).
-- ⚠️ **No sentence-length cap before checksum.** `validate_sentence()` XORs the whole payload with no upper bound (`nmea.py:19-31`) — latent (no serial transport exists yet) but a corrupt/hostile stream that never emits `*XX` would scan/allocate proportional to whatever the transport hands it. Remember this when the gpsd/serial runner is built.
-- ⚠️ **Thresholds are consumer-grade defaults**, explicitly "meant to be overridden," never validated against real jamming/spoofing hardware (`config.py:116-153`).
+- ⚠️ **Unbounded NMEA sentence scan — escalated from v1.0, and the escalation needed no code change.** `validate_sentence()` strips, finds the last `*`, and XORs the whole payload with no upper bound. v1.0 rated this latent because "no serial transport exists yet" and said to remember it when the runner was built. **The runner was built.** `GpsdSource.lines()` iterates a text-mode socket file object and `SerialSource` a serial port, neither bounding line length — a corrupt or hostile stream that never emits a newline makes Python buffer without limit before the parser ever sees it. Cap the line at NMEA's 82-character maximum (plus slack) at the transport, and again before checksum.
+- ❌ **Unbounded latitude/longitude — see §2.** This is the other half of the same story: the one untrusted input surface is now reachable from a real device, and it validates neither length nor range.
+- ⚠️ **Thresholds remain consumer-grade defaults**, unchanged from v1.0 and explicitly documented as "meant to be overridden", still never validated against real jamming or spoofing hardware. Everything downstream — bands, alarms, the operator's trust — inherits that.
 
 ## 6. Scalability & Operations
 
 ### Strengths
-- ✅ **Local-first, air-gap-ready** — SQLite store, stdlib-only core, deterministic offline tests. The right posture for the degraded environments it's built for.
+- ✅ **Deployable.** systemd unit, three source types, two storage backends, a read-only live viewer. The v1.0 headline gap is closed.
+- ✅ **TimescaleDB behind the same interface** gives a real path off SQLite for multi-node or long-retention deployments without touching the engine.
+- ✅ **Local-first posture preserved.** Stdlib-only core, deterministic offline tests, every network channel opt-in — omit them all and it still runs air-gapped.
 
 ### Gaps & Risks
-- ❌ **No runner / scheduler / daemon exists.** Every collector is a one-shot call; `check_staleness()` must be driven by something on a cadence that isn't in the repo. `demo.py` replays a finite generator, not a live feed. Today this is a library + batch driver, not a monitor — the single most important framing for anyone assessing deployability.
-- ⚠️ **No concurrency model.** `engine._channels` is an unlocked dict; `SqliteStore` opens one connection without `check_same_thread=False`, WAL, or batching, committing after every write (`storage/store.py:52,89`). Three-to-five concurrent collector channels (as the diagram implies) would need serialization or locking — neither exists nor is documented as a constraint.
+- ⚠️ **Serialise-everything will become the ceiling.** One lock around every engine and store touch is right for nine channels at ≤1 Hz. It is documented rather than hidden, but it is the first thing that will bind if channel count or sample rate rises.
+- ⚠️ **`cli.py` has no `__main__` guard**, unlike `demo.py` and `dashboard/app.py`. `python -m atri_sangam.runner.cli` imports the module, does nothing, and **exits 0** — a silent no-op that reads as success. Harmless with the console script, actively misleading in a smoke test or container `CMD`.
+
+## 7. NEW — Alarm state latches forever
+
+The single most important finding of this review.
+
+`DiscrepancyEngine.status()` resolves a channel to `ALARM` whenever `state.alarm_count > 0`, and `ingest()` increments that counter without ever resetting or decaying it. Only `state.stale` is cleared on new data. So **a channel that alarms once reports `alarm` for the lifetime of the process**, no matter how long it has since behaved.
+
+This was partially visible in v1.0, which described the dashboard re-deriving a lossy binary status from unbounded alarm history and recommended consuming `status()` instead. That recommendation was implemented — correctly, in that the viewer's duplicate rule is gone and the engine's verdict is now single-sourced and authoritative. But the engine's rule has the same defect the dashboard's did, so the behaviour did not change. The recent work made the rule canonical rather than correct, and its CHANGELOG says so.
+
+Confirmed empirically: replaying the `dropout` scenario leaves every channel reporting `alarm` at the end, including channels whose data resumed.
+
+Why it matters for this product specifically: the pitch is explainable, actionable alarms — "an operator sees an explainable event, not a red light." A pill that can never return to green is exactly a red light. It also makes the state useless for the obvious downstream consumer, alerting: you cannot page on a signal that never clears.
+
+The fix is a semantic decision, not a patch: `ALARM` should mean "alarmed within a recent window" (the channel's `max_sample_age_s`, or an explicit dwell) or decay on sustained clean samples. Either changes the anomaly-detection contract and deserves its own spec scenarios.
 
 ## Priority Actions (Top 6)
 
-1. ✅ **Harden the SNTP client** — **done 2026-07-18 (`be19c81`):** `query()` now validates mode/leap/stratum and verifies the originate-timestamp echo, rejecting spoofed/injected replies (+5 regression tests). Optional remaining defence-in-depth: source-IP filtering via `connect()`. (`collectors/ntp.py`)
-2. ❌ **Build and test a runner service** — serial/gpsd → `GpsSampleFactory`, periodic `NtpCollector`/`HoldoverModel.update`/`check_staleness`. Zero lines of this exist; it's the gap between "library" and "monitor."
-3. ❌ **Add lat/lon range validation** in `_parse_latlon` to match `SiteConfig`/`solar_position` rigor. (`collectors/nmea.py:62-79`)
-4. ⚠️ **Fix the dashboard to consume `DiscrepancyEngine.status()`** (or a live feed) instead of re-deriving a lossy binary status from unbounded alarm history; wire the STALE state; clear resolved alarms. (`dashboard/app.py:72-128`)
-5. ⚠️ **Make `ingest()` store-transactional** (or persist before advancing in-memory state) so the evidence trail can't diverge on storage failure. (`discrepancy/engine.py:67-99`)
-6. ⚠️ **Add a lint/type gate to CI** (ruff + `mypy --strict`) and close the seam-level test holes (`samples_from_rmc`, `collect()` failure, `status()`).
+1. ❌ **Fix the alarm latch** (§7). Decide what `ALARM` means — a recent window, or decay on clean samples — write the scenarios, then change `status()`. Everything downstream of channel health is unreliable until this lands. (`discrepancy/engine.py`)
+2. ❌ **Bound and range-check the untrusted input surface.** Cap NMEA line length at the transport (`runner/sources.py`) and before checksum (`collectors/nmea.py`), and add degree-range validation to `_parse_latlon`. These are one surface, now reachable from a real device, and both have been open since v1.0.
+3. ⚠️ **Add a lint/type gate to CI** — ruff + `mypy --strict`, as a sibling project already does. Third review running; the codebase has nearly tripled since it was first raised.
+4. ⚠️ **Make `ingest()` store-transactional** (or persist before advancing in-memory state) so the evidence trail cannot diverge on storage failure. Unchanged since v1.0. (`discrepancy/engine.py`)
+5. ⚠️ **Close the oldest test gap** — direct unit tests for `samples_from_rmc`, plus property/fuzz tests on the NMEA parser now that a real transport feeds it.
+6. ⚠️ **Add a `__main__` guard to `cli.py`** (§6) so `python -m` cannot silently succeed at doing nothing, and wire the solar predictor into the daemon or move it out of the architecture diagram.
 
 ---
 
-*First review (v1.0). Grounded in a full read of `src/`, `tests/`, `openspec/specs/`, and CI, plus a verified local `pytest` run (66 passed, 90 % coverage) and demo-scenario execution. Cost-of-time-and-money analysis is maintained privately.*
+*Second review (v2.0), against `main` at `d953201`. Grounded in a re-read of `src/`, `tests/`, `openspec/specs/`, CI, and the README, plus a verified local `pytest` run (323 passed) and execution of all four demo scenarios. Coverage was not re-measured — `pytest-cov` is absent from the review environment. Every v1.0 finding was re-checked against current code rather than carried forward; the disposition table above records each one. Cost-of-time-and-money analysis is maintained privately.*

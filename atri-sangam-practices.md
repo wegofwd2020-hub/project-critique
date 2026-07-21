@@ -1,5 +1,13 @@
 # Atri Sangam — Good Practices, Bad Practices & How to Improve
 
+> ⚠️ **STALE — 2026-07-21.** This document reviews **v0.1.0 (2026-07-18)**.
+> Several findings below are resolved, most importantly the ❌ "No
+> runner/scheduler/daemon exists" — the daemon now exists, with a systemd unit.
+> Counts quoted here (66 tests, 90 % coverage, 6 specs) are superseded by 323
+> tests and 12 specs. Current state and a full v1.0-finding disposition table:
+> [atri-sangam-critique.md](atri-sangam-critique.md) (v2.0, `d953201`).
+
+
 **Document type:** Engineering practices analysis
 **Scope:** Python 3.10+ GPS/PNT integrity monitor — collectors, discrepancy engine + detectors, predictors, simulator, storage, dashboard. Reviewed from a source snapshot (no git history).
 **Period:** 2026-07-18 (v1.0 — first review, `v0.1.0`, Alpha)
