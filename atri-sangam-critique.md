@@ -1,7 +1,7 @@
 # Atri Sangam — Code Review & Critique
 
-**Reviewed:** 2026-07-21 (v2.1 — disposition update, against `main` at `8f251d1`)
-**Anchor:** `8f251d1`
+**Reviewed:** 2026-07-21 (v2.1 — disposition update, against `main` at `0effae1`)
+**Anchor:** `0effae1`
 **Previous:** v2.0, 2026-07-21, against `main` at `d953201` · v1.0, 2026-07-18,
 against the v0.1.0 source snapshot
 
@@ -13,10 +13,12 @@ against the v0.1.0 source snapshot
 
 > **v2.1 — what this revision changes.** Priority actions 1 and 2 of v2.0 were
 > both implemented and merged the same day (PRs #25 and #26), so §7 and §5's
-> input-bounds findings are now closed. This revision re-dispositions them
+> input-bounds findings are now closed. A fourth finding this revision raised —
+> the simulator source's false alarms — was fixed before this revision landed
+> (PR #27) and is recorded as closed rather than open. This revision re-dispositions them
 > against the code rather than restating v2.0; the sections below are marked
 > where they changed. Nothing else was re-reviewed — §§1, 3, 4, 6 and the
-> remaining §2 findings stand as written at v2.0. Suite is now **345 tests**.
+> remaining §2 findings stand as written at v2.0. Suite is now **350 tests**.
 
 ---
 
@@ -24,7 +26,7 @@ against the v0.1.0 source snapshot
 
 **126 commits on `main` in three days.** The v1.0 review is comprehensively out of date; treat any of its claims not restated here as void.
 
-| v1.0 finding | Status at `8f251d1` (v2.1) |
+| v1.0 finding | Status at `0effae1` (v2.1) |
 |---|---|
 | ❌ **No runner / scheduler / daemon exists** — "library + batch driver, not a monitor" | ✅ **Resolved.** `src/atri_sangam/runner/` — `cli.py`, `monitor.py`, `sources.py`, `config.py`, plus a systemd unit. `atri-sangam-run --source sim\|gpsd\|serial` |
 | ⚠️ Dashboard re-derives a binary status from unbounded alarm history; `"stale"` colour unreachable | ✅ **Resolved at v2.1** (PR #25). The dashboard reads the engine's published three-way verdict, `stale` renders, and the latch itself is now gone — see §7 |
@@ -53,11 +55,11 @@ What genuinely has not moved: `ingest()` still advances in-memory state before p
 
 ## Snapshot
 
-| Dimension | v1.0 (2026-07-18) | v2.1 (`8f251d1`) |
+| Dimension | v1.0 (2026-07-18) | v2.1 (`0effae1`) |
 |---|---|---|
 | Source LOC | 1,961 (23 files) | **5,469** (42 files) |
 | Test LOC | 719 (7 files) | **4,104** (35 files) |
-| Tests | 66 | **345, all passing** (verified locally) |
+| Tests | 66 | **350, all passing** (verified locally) |
 | Coverage | 90 % | **not re-measured this pass** — `pytest-cov` absent from the local env; CI runs `--cov` |
 | Channels | 4 | **9** (+ WWVB, Roughtime, C/N₀ spread, consensus-spread channels) |
 | Specs | 6 | **12** |
@@ -169,17 +171,24 @@ Every scenario previously ended with unrelated channels red. Status now names th
 
 1. ✅ ~~Fix the alarm latch~~ (§7) — PR #25.
 2. ✅ ~~Bound and range-check the untrusted input surface~~ (§§2, 5) — PR #26.
+3. ✅ ~~Fix the simulator source's false alarms~~ — PR #27. Raised by this
+   revision and fixed before it landed. `--source sim --scenario clean` produced
+   118 alarms because the replay ran ~3× faster than real time while samples
+   were stamped with the wall clock; the daemon now replays in real time, and
+   the same run produces zero step and zero CUSUM alarms with the offset holding
+   under 0.01 s against a 0.5 s threshold. The same discarded clock also meant a
+   simulated outage cost no wall time, so staleness never fired for the reason
+   the `dropout` scenario exercises — also fixed.
 
 **Open, in priority order:**
 
 1. ⚠️ **Add a lint/type gate to CI** — ruff + `mypy --strict`, as a sibling project already does. **Third consecutive review** raising this; the codebase has nearly tripled since it was first noted, and it is now the oldest unaddressed finding in the file.
 2. ⚠️ **Make `ingest()` store-transactional** (or persist before advancing in-memory state) so the evidence trail cannot diverge on storage failure. Unchanged since v1.0. (`discrepancy/engine.py`)
 3. ⚠️ **Close the oldest test gap** — direct unit tests for `samples_from_rmc`, plus property/fuzz tests on the NMEA parser. More valuable now than when first raised: the parser has real transports feeding it, and v2.1's bounds are exactly the kind of logic fuzzing exercises well.
-4. ⚠️ **Fix the simulator source's false alarms.** `atri-sangam-run --source sim --scenario clean` produces ~118 alarms: the source replays frames as fast as it can while stamping samples with the wall clock, so GPS-reported time races ahead of local time (~3× real time) and the growing offset trips step and CUSUM. The README recommends this exact command to smoke-test an install, so the first thing a new operator runs reports a healthy site as compromised. *(New at v2.1, found while smoke-testing PR #26.)*
-5. ⚠️ **Add a `__main__` guard to `cli.py`** (§6) so `python -m atri_sangam.runner.cli` cannot silently succeed at doing nothing, and wire the solar predictor into the daemon or move it out of the architecture diagram.
+4. ⚠️ **Add a `__main__` guard to `cli.py`** (§6) so `python -m atri_sangam.runner.cli` cannot silently succeed at doing nothing, and wire the solar predictor into the daemon or move it out of the architecture diagram.
 
 ---
 
-*Revision v2.1, against `main` at `8f251d1` — a disposition update, not a full re-review. §§2, 5 and 7 were re-checked against current code after PRs #25 and #26 merged; §§1, 3, 4, 6 stand as written at v2.0. Verified by a local `pytest` run (345 passed) and execution of all four demo scenarios. Coverage was not measured — `pytest-cov` is absent from the review environment; CI measures it. Cost-of-time-and-money analysis is maintained privately.*
+*Revision v2.1, against `main` at `0effae1` — a disposition update, not a full re-review. §§2, 5 and 7 were re-checked against current code after PRs #25 and #26 merged; §§1, 3, 4, 6 stand as written at v2.0. Verified by a local `pytest` run (350 passed) and execution of all four demo scenarios. Coverage was not measured — `pytest-cov` is absent from the review environment; CI measures it. Cost-of-time-and-money analysis is maintained privately.*
 
 *v2.0 (`d953201`) was the second review, grounded in a full re-read of `src/`, `tests/`, `openspec/specs/`, CI and the README, with every v1.0 finding re-checked against current code rather than carried forward.*

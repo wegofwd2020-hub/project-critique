@@ -5,7 +5,7 @@
 > runner/scheduler/daemon exists" — the daemon now exists, with a systemd unit.
 > Counts quoted here (66 tests, 90 % coverage, 6 specs) are superseded by 323
 > tests and 12 specs. Current state and a full v1.0-finding disposition table:
-> [atri-sangam-critique.md](atri-sangam-critique.md) (v2.1, `8f251d1`).
+> [atri-sangam-critique.md](atri-sangam-critique.md) (v2.1, `0effae1`).
 
 
 **Document type:** Engineering practices analysis

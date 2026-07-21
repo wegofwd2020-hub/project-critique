@@ -8,7 +8,7 @@
 > TimescaleDB backend and a live dashboard. Read it as a record of how the
 > project scoped its *first* release; do not read its present-tense claims
 > about what exists as current. Current state:
-> [atri-sangam-critique.md](atri-sangam-critique.md) (v2.1, `8f251d1`).
+> [atri-sangam-critique.md](atri-sangam-critique.md) (v2.1, `0effae1`).
 
 
 **Document type:** Development pattern analysis
