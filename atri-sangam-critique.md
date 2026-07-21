@@ -1,6 +1,9 @@
 # Atri Sangam — Code Review & Critique
 
 **Reviewed:** 2026-07-21 (v2.0 — second review, against `main` at `d953201`)
+**Anchor:** `b5329dd` — advanced past the reviewed SHA by one commit, a
+README-only docs fix (removing a pinned version number) that touches no code
+and changes no finding below.
 **Previous:** v1.0, 2026-07-18, against the v0.1.0 source snapshot
 **Repo:** `atri-sangam` (private, GitHub org)
 **Phase:** Alpha (`Development Status :: 3 - Alpha`, `pyproject` version `0.1.7`). **Now a deployable monitor, not just a library** — daemon, systemd unit, six live channels, two storage backends, live dashboard.
