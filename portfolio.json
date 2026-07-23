@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-22T11:30:10+00:00",
+  "generated": "2026-07-23T11:30:12+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -48,7 +48,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 14,
+        "last_commit_age_days": 15,
         "branch": "main"
       },
       "rigor": {
@@ -58,7 +58,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "missing tests"
+        "reason": "slowing \u2014 15d since last commit"
       },
       "staleness": {
         "reviewed_sha": "76addee7704271e9bdfde9f10fe2119b9711b6b1",
@@ -111,7 +111,7 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 295,
+        "commits_30d": 297,
         "last_commit_age_days": 1,
         "branch": "main"
       },
@@ -126,7 +126,7 @@
       },
       "staleness": {
         "reviewed_sha": "40166ee4caa20efe18cdfa6f0db9e18a20ed99a5",
-        "commits_behind": 467,
+        "commits_behind": 469,
         "status": "stale"
       }
     },
@@ -247,7 +247,7 @@
         "implemented": 9
       },
       "git": {
-        "commits_30d": 68,
+        "commits_30d": 64,
         "last_commit_age_days": 0,
         "branch": "main"
       },
@@ -262,7 +262,7 @@
       },
       "staleness": {
         "reviewed_sha": "d50bc3ef78c77f0cd8cd415e4c5782647de62bd0",
-        "commits_behind": 142,
+        "commits_behind": 143,
         "status": "stale"
       }
     },
@@ -280,9 +280,9 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 195,
-        "last_commit_age_days": 0,
-        "branch": "feat/consensus-hardening"
+        "commits_30d": 243,
+        "last_commit_age_days": 1,
+        "branch": "main"
       },
       "rigor": {
         "has_tests": true,
@@ -295,7 +295,7 @@
       },
       "staleness": {
         "reviewed_sha": "0effae1a327b241adb1dd671b2c27ea1b5726348",
-        "commits_behind": 46,
+        "commits_behind": 94,
         "status": "stale"
       }
     },
@@ -345,7 +345,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 16,
+        "last_commit_age_days": 17,
         "branch": "main"
       },
       "rigor": {
@@ -355,7 +355,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 16d since last commit"
+        "reason": "slowing \u2014 17d since last commit"
       },
       "staleness": {
         "reviewed_sha": "de3d9fa243f1ad4e0f7763cee50693d12e9b270d",
@@ -409,7 +409,7 @@
       },
       "git": {
         "commits_30d": 209,
-        "last_commit_age_days": 14,
+        "last_commit_age_days": 15,
         "branch": "main"
       },
       "rigor": {
@@ -419,7 +419,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "60% of features done"
+        "reason": "slowing \u2014 15d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -472,9 +472,9 @@
         "implemented": 5
       },
       "git": {
-        "commits_30d": 124,
+        "commits_30d": 139,
         "last_commit_age_days": 1,
-        "branch": "main"
+        "branch": "docs/thittam-static-demo"
       },
       "rigor": {
         "has_tests": false,
@@ -603,7 +603,7 @@
       },
       "git": {
         "commits_30d": 42,
-        "last_commit_age_days": 8,
+        "last_commit_age_days": 9,
         "branch": "main"
       },
       "rigor": {
@@ -667,7 +667,7 @@
       },
       "git": {
         "commits_30d": 11,
-        "last_commit_age_days": 14,
+        "last_commit_age_days": 15,
         "branch": "main"
       },
       "rigor": {
@@ -677,7 +677,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "40% of features done"
+        "reason": "slowing \u2014 15d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -700,7 +700,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 43,
+        "last_commit_age_days": 44,
         "branch": "docs/2026-06-admin-menu-onboarding"
       },
       "rigor": {
@@ -710,7 +710,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 43d"
+        "reason": "dormant \u2014 no commits in 44d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1453,7 +1453,7 @@
         {
           "id": "#122",
           "name": "infra(db): split DATABASE_URL into migrator (owner) vs runtime (thittam_app) DSN",
-          "status": "in-progress",
+          "status": "done",
           "commits": 5
         },
         {
@@ -1525,21 +1525,1093 @@
         {
           "id": "#134",
           "name": "observability(billing): alert on stuck/poison outbox rows + add pending gauge",
+          "status": "done",
+          "commits": 11
+        },
+        {
+          "id": "#135",
+          "name": "Vulnerabilities detected in dependencies (2026-07-09)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#136",
+          "name": "observability(billing): outbox dead-letter queue, gauges, alerts + operator CLI (#134)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#137",
+          "name": "billing: outbox guard defeated at batch saturation; DLQ follow-ups",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#138",
+          "name": "security(iam): services trust unverified x-caller-* headers \u2014 verify JWT in-process, fail closed",
+          "status": "done",
+          "commits": 17
+        },
+        {
+          "id": "#139",
+          "name": "security(platform): ~100 RPCs enforce no authorization; iam AssignRole is a self-promotion primitive",
+          "status": "in-progress",
+          "commits": 10
+        },
+        {
+          "id": "#140",
+          "name": "security(iam): verify the JWT in-process, fail closed (#138)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#141",
+          "name": "chore: follow-ups banked during #138 (fail-closed auth)",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#142",
+          "name": "chore(infra): pin Go toolchain to 1.25.12 (#135)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#143",
+          "name": "fix(ci): unbreak main \u2014 errcheck in outbox-admin, owner DSN for the purge test",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#144",
+          "name": "security(platform): enforce the tenant boundary \u2014 61 RPCs take tenant_id from the request body",
+          "status": "done",
+          "commits": 12
+        },
+        {
+          "id": "#145",
+          "name": "security(platform): enforce the tenant boundary \u2014 61 RPCs took tenant_id from the request body (#144)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#146",
+          "name": "security(iam): AssignRole has no authorization \u2014 any member can grant themselves super_admin",
+          "status": "done",
+          "commits": 7
+        },
+        {
+          "id": "#147",
+          "name": "fix(iam): role assignment requires authority and stays in-tenant (#146)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#148",
+          "name": "AcceptInvitation is not transactional: a failed role grant leaves a committed user row",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#149",
+          "name": "security(ledger): 12 accounting RPCs enforce no authorization, and three take their actor from the request body",
+          "status": "done",
+          "commits": 6
+        },
+        {
+          "id": "#150",
+          "name": "Vulnerabilities detected in dependencies (2026-07-22)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#151",
+          "name": "security(ledger): accounting RPCs require authority, and the actor comes from the token (#149)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#152",
+          "name": "fix(deps): x/text v0.39.0 for GO-2026-5970, and fail the nightly scan on an open CVE (#150)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#153",
+          "name": "docs(security): authorization policy table for all 127 RPCs (#139)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#154",
+          "name": "security(iam): changing a password revokes no sessions; a stolen refresh token survives it",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#155",
+          "name": "security(iam): ChangePassword takes its subject from the token, not the request body (#139)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#156",
+          "name": "security(iam): StartImpersonation takes its actor from the request body and writes it to the audit log",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#157",
+          "name": "security(project): phase and crew RPCs have no tenant filter \u2014 cross-tenant read and write by id",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#158",
+          "name": "security(project/budget/reporting): gate read RPCs on <resource>:read; reporting fails closed (#139)",
           "status": "pending",
           "commits": 0
         }
       ],
       "counts": {
-        "total": 134,
-        "done": 111,
+        "total": 158,
+        "done": 129,
         "in_progress": 9,
-        "pending": 14,
-        "implemented": 120
+        "pending": 20,
+        "implemented": 138
       },
       "git": {
-        "commits_30d": 152,
-        "last_commit_age_days": 13,
-        "branch": "feat/ledger-authz-149"
+        "commits_30d": 193,
+        "last_commit_age_days": 0,
+        "branch": "fix/iam-completion-139b"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, 82% done, tests+docs"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
+      }
+    },
+    {
+      "project": "Thittam",
+      "stage": "late-build",
+      "source_kind": "progress",
+      "source_error": null,
+      "features": [
+        {
+          "id": "#1",
+          "name": "chore(proto): Run buf generate and sqlc generate \u2014 shared prep work",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#2",
+          "name": "feat(iam): Build IAM service \u2014 identity, auth, RBAC, tenancy",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#3",
+          "name": "feat(project): Complete project-management service \u2014 repository, gRPC wiring, main.go",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#4",
+          "name": "feat(budget): Complete budget-planning service \u2014 repository, gRPC wiring, main.go",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#5",
+          "name": "feat(expense): Complete expense-tracking service \u2014 repository, gRPC wiring, main.go",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#6",
+          "name": "feat(inventory): Complete inventory-management service \u2014 repository, gRPC wiring, main.go",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#7",
+          "name": "feat(ledger): Build general-ledger service \u2014 double-entry accounting",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#8",
+          "name": "feat(reporting): Complete reporting-analytics service \u2014 repository, gRPC wiring, main.go",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#9",
+          "name": "feat(notifications): Build notifications service \u2014 email, SMS, push, in-app",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#10",
+          "name": "feat(document): Build document service \u2014 file storage, versioning, e-signatures",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#11",
+          "name": "[P0] Define proto contracts for IAM, GeneralLedger, Notifications, and Document services",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#12",
+          "name": "[P0] Validate tenant ID as UUID before interpolating into SET search_path to prevent schema injection",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#13",
+          "name": "[P0] Resolve contradiction between Rule #2 (env vars) and security doc (Vault for T1 secrets)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#14",
+          "name": "[P0] Design and implement saga pattern for the 9-step tenant registration pipeline",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#15",
+          "name": "[P1] Document and implement reporting-analytics read model strategy",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#16",
+          "name": "[P1] Add CI test suite for vertical plugin YAML schema validation",
+          "status": "done",
+          "commits": 3
+        },
+        {
+          "id": "#17",
+          "name": "[P1] Raise test coverage targets: 800+ tests with per-service thresholds",
+          "status": "done",
+          "commits": 3
+        },
+        {
+          "id": "#18",
+          "name": "[P1] Run critical-path E2E tests on every PR, not just nightly",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#19",
+          "name": "[P1] Document NATS JetStream dead-letter strategy for financial events",
+          "status": "done",
+          "commits": 3
+        },
+        {
+          "id": "#20",
+          "name": "[P2] Document vertical plugin YAML schema (JSON Schema or protobuf)",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#21",
+          "name": "[P2] Implement and ship the billing service",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#22",
+          "name": "[P2] Evaluate tenant-per-schema scalability ceiling and document decision for 500+ tenants",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#23",
+          "name": "[P2] Add load and chaos testing for the double-entry ledger and concurrent expense approvals",
+          "status": "done",
+          "commits": 3
+        },
+        {
+          "id": "#24",
+          "name": "[P2] Verify and document Istio DestinationRule ROUND_ROBIN load balancing for all gRPC service pairs",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#25",
+          "name": "[P3] Replace bcrypt with argon2id or add per-IP rate limiting on auth endpoints",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#26",
+          "name": "[P3] Implement automated documentation drift detection in CI (Rule #16)",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#27",
+          "name": "[P3] Define and document impersonation session lifecycle, maximum duration, and revocation policy",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#28",
+          "name": "[P3] Set MinIO presigned URL window dynamically based on file size",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#29",
+          "name": "feat(frontend): document management UI \u2014 file browser, upload, versioning, e-signatures",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#30",
+          "name": "feat(frontend): notifications inbox UI \u2014 in-app notification centre",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#31",
+          "name": "feat(infra): Prometheus alert rules for all services",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#32",
+          "name": "feat(infra): K8s manifests \u2014 Deployments, Services, HPA, ConfigMaps, NetworkPolicy for all 10 services",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#33",
+          "name": "feat(iam): rename system roles to generic names (ADR-014 Phase 1)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#34",
+          "name": "feat(iam): add inventory_manager and project_supervisor system roles (ADR-014 Phase 1)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#35",
+          "name": "feat(vertical): add role_labels map to vertical YAML schema (ADR-014 Phase 1)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#36",
+          "name": "chore(seeds): update XYZ_CBA demo seed for new role model (ADR-014 Phase 1)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#37",
+          "name": "chore(migrations): data migration \u2014 rename system roles for existing tenants (ADR-014 Phase 1)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#38",
+          "name": "docs(security): update RBAC documentation for new role model (ADR-014 Phase 1)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#39",
+          "name": "feat(iam): add project_id scope to user_roles \u2014 schema + DB constraints (ADR-014 Phase 2)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#40",
+          "name": "feat(iam): project-scoped CheckPermission and AssignProjectRole \u2014 service + repository (ADR-014 Phase 2)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#41",
+          "name": "feat(proto): add project_id to CheckPermissionRequest and AssignProjectRole RPC (ADR-014 Phase 2)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#42",
+          "name": "feat(interceptor): project-scoped permission enforcement in gRPC interceptor (ADR-014 Phase 2)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#43",
+          "name": "feat(services): wire project_id into permission checks across project-scoped services (ADR-014 Phase 2)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#44",
+          "name": "chore(dev): separate DB lifecycle from app startup; add per-test DB scaffold",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#45",
+          "name": "chore(rbac): ADR-014 cross-cutting role-name cleanup (Phase 1 leftover)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#46",
+          "name": "feat(rbac): wire IAM client into project-scoped services + PROJECT_SCOPED_RBAC rollout (ADR-014 Phase 2)",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#47",
+          "name": "feat(rbac): expand RequirePermission coverage to all mutating RPCs in project-scoped services",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#48",
+          "name": "test(crypto): make TestDecrypt_Tampered deterministic",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#49",
+          "name": "chore(repo): gitignore service binaries left at repo root by go build",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#50",
+          "name": "chore(proto): fix buf config so 'buf breaking' compares correctly",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#51",
+          "name": "ci: run 'make test-integration' on every PR",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#52",
+          "name": "verify(rbac): end-to-end dev rollout verification of PROJECT_SCOPED_RBAC",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#53",
+          "name": "ci: Test & Coverage job fails with 'no such tool covdata' on Go 1.22 toolchain",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#54",
+          "name": "ci: vuln-scan failing on Go 1.25 stdlib CVEs (GO-2026-*)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#55",
+          "name": "ci(lint): golangci-lint binary built on Go 1.24 fails on Go 1.25 target",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#56",
+          "name": "ci(buf): RPC response naming warnings break the buf lint job",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#57",
+          "name": "ci(doc-drift): Documentation Drift Check fails to checkout thittam_docs (404)",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#58",
+          "name": "ci(lint): fix 49 findings exposed by golangci-lint v2 (errcheck + staticcheck + unused)",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#59",
+          "name": "ci(deps): bump grpc + go-redis to fix remaining vuln-scan findings; document N/A vulns",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#60",
+          "name": "feat(api): REST\u2192gRPC bridge \u2014 grpc-gateway in services + Kong in local stack",
+          "status": "in-progress",
+          "commits": 8
+        },
+        {
+          "id": "#61",
+          "name": "feat(onboarding): capture company address + country-driven primary currency",
+          "status": "in-progress",
+          "commits": 3
+        },
+        {
+          "id": "#62",
+          "name": "feat(i18n): locale plumbing \u2014 tenant default + user override",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#63",
+          "name": "feat(a11y): surface existing dyslexia toggle + persist to user prefs",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#64",
+          "name": "feat(a11y): accessibility toggles + axe-core CI check",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#65",
+          "name": "feat(ui): adopt shadcn/ui as themeable foundation",
+          "status": "in-progress",
+          "commits": 1
+        },
+        {
+          "id": "#66",
+          "name": "feat(payments): ADR + Gateway interface design (no driver yet)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#67",
+          "name": "feat(seed): add XYZ Construction demo tenant",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#68",
+          "name": "docs(readme): replace upstream golang-migrate README with Thittam overview",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#69",
+          "name": "feat(budget): wire REST gateways + live /budgets pages (Phase B)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#70",
+          "name": "chore(tooling): Phase 1 \u2014 Claude Code workflow improvements (epic)",
+          "status": "in-progress",
+          "commits": 1
+        },
+        {
+          "id": "#71",
+          "name": "chore(tooling): \u00a71.1 /spec-first slash command",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#72",
+          "name": "chore(tooling): \u00a71.2 plan-mode discipline for multi-file changes",
+          "status": "in-progress",
+          "commits": 1
+        },
+        {
+          "id": "#73",
+          "name": "chore(tooling): \u00a71.3 sub-agent fleet defaults",
+          "status": "in-progress",
+          "commits": 1
+        },
+        {
+          "id": "#74",
+          "name": "chore(tooling): \u00a72.2 Thittam slash commands for repeated workflows",
+          "status": "in-progress",
+          "commits": 1
+        },
+        {
+          "id": "#75",
+          "name": "chore(tooling): Phase 1 \u2014 Claude Code workflow (spec-first + slash commands)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#76",
+          "name": "feat(payments): Gateway interface + stub driver (#66)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#77",
+          "name": "fix(ci): fetch full history for proto breaking-change job",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#78",
+          "name": "feat(ui): wire productions pages onto live API (Phase C)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#79",
+          "name": "docs(cost): add hosting & cost plan",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#80",
+          "name": "docs(roadmap): add product feature roadmap",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#81",
+          "name": "docs(ux): add UX goals + requirements spec",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#82",
+          "name": "docs(accessibility): add WCAG 2.1 AA plan + test procedure",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#83",
+          "name": "docs(requirements): add product requirements (PRD) doc",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#84",
+          "name": "docs(marketing): add pitch / investor collateral",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#85",
+          "name": "docs(testing): add load-testing procedure + SLA query runbook",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#86",
+          "name": "docs(security): add threat model paired with network security diagrams",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#87",
+          "name": "docs(integration): add 'working with external services' guide",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#88",
+          "name": "feat(seed): add seeds/template/new-tenant/ scaffold",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#89",
+          "name": "feat(iam): enforce UNIQUE on tenants.name \u2014 migration + service pre-check + 409 on conflict",
+          "status": "done",
+          "commits": 9
+        },
+        {
+          "id": "#90",
+          "name": "feat(iam): scheduled tenant retention pipeline \u2014 suspended \u2192 grace \u2192 deactivated \u2192 purge",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#91",
+          "name": "feat(iam): UNIQUE constraint on tenants.name (case-insensitive)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#92",
+          "name": "feat(iam): scheduled tenant retention sweeper (suspended \u2192 deactivated \u2192 purge)",
+          "status": "done",
+          "commits": 18
+        },
+        {
+          "id": "#93",
+          "name": "feat(project,ui): wire Phases + Crew tabs onto live API (Phase C part 2)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#94",
+          "name": "fix(ci): create local main ref so buf breaking actually finds it",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#95",
+          "name": "fix(ui): replace invalid ringColor CSS prop with ring-white Tailwind class",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#96",
+          "name": "feat(ui): per-production budget aggregation on detail page",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#97",
+          "name": "chore(demo): preflight smoke-test for local dev stack",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#98",
+          "name": "docs(commands): add Mermaid example to /new-adr template",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#99",
+          "name": "feat(iam): UNIQUE constraint on tenants.name (case-insensitive)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#100",
+          "name": "feat(iam): tenant retention lifecycle sweeper (Stages 1+2 of #92)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#101",
+          "name": "Vulnerabilities detected in dependencies (2026-05-08)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#102",
+          "name": "chore(security): bump Go to 1.25.10 + x/net v0.53.0 (closes #101)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#103",
+          "name": "Vulnerabilities detected in dependencies (2026-06-03)",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#104",
+          "name": "chore(security): bump Go toolchain to 1.25.11 + x/net to v0.53.0",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "#105",
+          "name": "chore(security): bump CI Go toolchain to 1.25.11",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#106",
+          "name": "chore(infra): scrape StudyBuddy API metrics from local Prometheus",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#107",
+          "name": "chore: add .claude project settings (enable frontend-design plugin)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#108",
+          "name": "feat(progress): bring thittam into agent orchestration + in-flight PROGRESS.md section",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#109",
+          "name": "docs(rules): codify accessibility (WCAG 2.1 AA) as a CODING_RULES entry",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#110",
+          "name": "chore(orchestration): record #109 in manifest + ledger",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#111",
+          "name": "chore(orchestration): #109 re-gated to approved (diff-aware scan)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#112",
+          "name": "Vulnerabilities detected in dependencies (2026-06-26)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#113",
+          "name": "fix(security): bump vulnerable deps to clear GO-2026 CVEs (#112)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#114",
+          "name": "feat(iam): finish #89 \u2014 whitespace-normalized tenant-name uniqueness",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#115",
+          "name": "feat(registration): collect country/currency at signup (remove IN/INR stopgap)",
+          "status": "done",
+          "commits": 5
+        },
+        {
+          "id": "#116",
+          "name": "feat(registration): tenant-name uniqueness parity with iam (#89 follow-up)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#117",
+          "name": "feat(registration): collect country + derive currency at signup (closes #115)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#118",
+          "name": "feat(billing): on invoice.payment_failed, suspend tenant + start retention clock",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "#119",
+          "name": "feat(iam): SetTenantRetention operator-override RPC (pause/extend/force-advance)",
+          "status": "done",
+          "commits": 6
+        },
+        {
+          "id": "#120",
+          "name": "epic(db): least-privilege thittam_app role \u2014 enforce audit_log append-only",
+          "status": "in-progress",
+          "commits": 4
+        },
+        {
+          "id": "#121",
+          "name": "feat(audit): Postgres audit Store + wire into retention sweeper (#92)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#122",
+          "name": "infra(db): split DATABASE_URL into migrator (owner) vs runtime (thittam_app) DSN",
+          "status": "done",
+          "commits": 5
+        },
+        {
+          "id": "#123",
+          "name": "ops(db): provision thittam_app password + repoint prod Secret",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#124",
+          "name": "feat(db): least-privilege thittam_app role \u2014 audit_log append-only (#120)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#125",
+          "name": "feat(db): services connect as thittam_app \u2014 enforce audit_log append-only (#122)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#126",
+          "name": "reliability(billing): no outbox for subscription.suspended \u2014 lapsed tenant can silently skip retention",
+          "status": "done",
+          "commits": 8
+        },
+        {
+          "id": "#127",
+          "name": "feat(billing,iam): suspend tenant + start retention clock on subscription suspension (#118)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#128",
+          "name": "feat(iam): SetTenantRetention operator override \u2014 hold/extend suspended tenants (#119)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#129",
+          "name": "feat(iam): PurgeTenant \u2014 two-person hard-delete of purge_eligible tenants (#92)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#130",
+          "name": "reliability(billing): migrations unwired + 001 drifted from live code",
+          "status": "done",
+          "commits": 5
+        },
+        {
+          "id": "#131",
+          "name": "fix(billing): wire migrations + reconcile 001 to live schema (#130)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#132",
+          "name": "docs(infra): CLAUDE.md guardrail \u2014 never -v on infra/local for DB verification",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#133",
+          "name": "feat(billing): transactional outbox for subscription.suspended (#126)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#134",
+          "name": "observability(billing): alert on stuck/poison outbox rows + add pending gauge",
+          "status": "done",
+          "commits": 11
+        },
+        {
+          "id": "#135",
+          "name": "Vulnerabilities detected in dependencies (2026-07-09)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#136",
+          "name": "observability(billing): outbox dead-letter queue, gauges, alerts + operator CLI (#134)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#137",
+          "name": "billing: outbox guard defeated at batch saturation; DLQ follow-ups",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#138",
+          "name": "security(iam): services trust unverified x-caller-* headers \u2014 verify JWT in-process, fail closed",
+          "status": "done",
+          "commits": 17
+        },
+        {
+          "id": "#139",
+          "name": "security(platform): ~100 RPCs enforce no authorization; iam AssignRole is a self-promotion primitive",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#140",
+          "name": "security(iam): verify the JWT in-process, fail closed (#138)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#141",
+          "name": "chore: follow-ups banked during #138 (fail-closed auth)",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#142",
+          "name": "chore(infra): pin Go toolchain to 1.25.12 (#135)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#143",
+          "name": "fix(ci): unbreak main \u2014 errcheck in outbox-admin, owner DSN for the purge test",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#144",
+          "name": "security(platform): enforce the tenant boundary \u2014 61 RPCs take tenant_id from the request body",
+          "status": "done",
+          "commits": 12
+        },
+        {
+          "id": "#145",
+          "name": "security(platform): enforce the tenant boundary \u2014 61 RPCs took tenant_id from the request body (#144)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#146",
+          "name": "security(iam): AssignRole has no authorization \u2014 any member can grant themselves super_admin",
+          "status": "done",
+          "commits": 7
+        },
+        {
+          "id": "#147",
+          "name": "fix(iam): role assignment requires authority and stays in-tenant (#146)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#148",
+          "name": "AcceptInvitation is not transactional: a failed role grant leaves a committed user row",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#149",
+          "name": "security(ledger): 12 accounting RPCs enforce no authorization, and three take their actor from the request body",
+          "status": "pending",
+          "commits": 0
+        }
+      ],
+      "counts": {
+        "total": 149,
+        "done": 123,
+        "in_progress": 8,
+        "pending": 18,
+        "implemented": 131
+      },
+      "git": {
+        "commits_30d": 186,
+        "last_commit_age_days": 1,
+        "branch": "feat/static-demo"
       },
       "rigor": {
         "has_tests": true,
@@ -1570,8 +2642,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 8,
-        "last_commit_age_days": 30,
+        "commits_30d": 0,
+        "last_commit_age_days": 31,
         "branch": "main"
       },
       "rigor": {
@@ -1580,8 +2652,8 @@
         "has_license": false
       },
       "health": {
-        "status": "yellow",
-        "reason": "slowing \u2014 30d since last commit"
+        "status": "red",
+        "reason": "dormant \u2014 no commits in 31d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1604,7 +2676,7 @@
       },
       "git": {
         "commits_30d": 34,
-        "last_commit_age_days": 16,
+        "last_commit_age_days": 17,
         "branch": "master"
       },
       "rigor": {
@@ -1614,7 +2686,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 16d since last commit"
+        "reason": "slowing \u2014 17d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1637,7 +2709,7 @@
       },
       "git": {
         "commits_30d": 7,
-        "last_commit_age_days": 22,
+        "last_commit_age_days": 23,
         "branch": "main"
       },
       "rigor": {
@@ -1647,7 +2719,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 22d since last commit"
+        "reason": "slowing \u2014 23d since last commit"
       },
       "staleness": {
         "reviewed_sha": "3b08f4422ee003ee764303161b5c4ce9d236216a",
@@ -1669,8 +2741,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 14,
-        "last_commit_age_days": 30,
+        "commits_30d": 0,
+        "last_commit_age_days": 31,
         "branch": "main"
       },
       "rigor": {
@@ -1679,8 +2751,8 @@
         "has_license": true
       },
       "health": {
-        "status": "yellow",
-        "reason": "slowing \u2014 30d since last commit"
+        "status": "red",
+        "reason": "dormant \u2014 no commits in 31d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1703,7 +2775,7 @@
       },
       "git": {
         "commits_30d": 10,
-        "last_commit_age_days": 3,
+        "last_commit_age_days": 4,
         "branch": "main"
       },
       "rigor": {
@@ -1736,7 +2808,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 36,
+        "last_commit_age_days": 37,
         "branch": "main"
       },
       "rigor": {
@@ -1746,7 +2818,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 36d"
+        "reason": "dormant \u2014 no commits in 37d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1769,7 +2841,7 @@
       },
       "git": {
         "commits_30d": 5,
-        "last_commit_age_days": 21,
+        "last_commit_age_days": 22,
         "branch": "main"
       },
       "rigor": {
@@ -1779,7 +2851,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 21d since last commit"
+        "reason": "slowing \u2014 22d since last commit"
       },
       "staleness": {
         "reviewed_sha": "837dfb50e0e2b3329d59ecad41d17e1c9f37841d",
@@ -1789,23 +2861,23 @@
     }
   ],
   "summary": {
-    "projects": 18,
+    "projects": 19,
     "health": {
-      "green": 3,
-      "yellow": 13,
-      "red": 2
+      "green": 4,
+      "yellow": 11,
+      "red": 4
     },
     "staleness": {
       "fresh": 3,
       "stale": 4,
-      "unknown": 11
+      "unknown": 12
     },
     "features": {
-      "total": 197,
-      "done": 149,
-      "in_progress": 16,
-      "pending": 32,
-      "implemented": 165
+      "total": 370,
+      "done": 290,
+      "in_progress": 24,
+      "pending": 56,
+      "implemented": 314
     }
   }
 }
