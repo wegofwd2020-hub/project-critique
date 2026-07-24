@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-23T11:30:12+00:00",
+  "generated": "2026-07-24T11:30:13+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -48,7 +48,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 15,
+        "last_commit_age_days": 16,
         "branch": "main"
       },
       "rigor": {
@@ -58,7 +58,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 15d since last commit"
+        "reason": "slowing \u2014 16d since last commit"
       },
       "staleness": {
         "reviewed_sha": "76addee7704271e9bdfde9f10fe2119b9711b6b1",
@@ -111,8 +111,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 297,
-        "last_commit_age_days": 1,
+        "commits_30d": 296,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -262,7 +262,7 @@
       },
       "staleness": {
         "reviewed_sha": "d50bc3ef78c77f0cd8cd415e4c5782647de62bd0",
-        "commits_behind": 143,
+        "commits_behind": 144,
         "status": "stale"
       }
     },
@@ -281,7 +281,7 @@
       },
       "git": {
         "commits_30d": 243,
-        "last_commit_age_days": 1,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -345,7 +345,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 17,
+        "last_commit_age_days": 18,
         "branch": "main"
       },
       "rigor": {
@@ -355,7 +355,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 17d since last commit"
+        "reason": "slowing \u2014 18d since last commit"
       },
       "staleness": {
         "reviewed_sha": "de3d9fa243f1ad4e0f7763cee50693d12e9b270d",
@@ -409,7 +409,7 @@
       },
       "git": {
         "commits_30d": 209,
-        "last_commit_age_days": 15,
+        "last_commit_age_days": 16,
         "branch": "main"
       },
       "rigor": {
@@ -419,7 +419,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 15d since last commit"
+        "reason": "slowing \u2014 16d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -472,8 +472,8 @@
         "implemented": 5
       },
       "git": {
-        "commits_30d": 139,
-        "last_commit_age_days": 1,
+        "commits_30d": 138,
+        "last_commit_age_days": 2,
         "branch": "docs/thittam-static-demo"
       },
       "rigor": {
@@ -603,7 +603,7 @@
       },
       "git": {
         "commits_30d": 42,
-        "last_commit_age_days": 9,
+        "last_commit_age_days": 10,
         "branch": "main"
       },
       "rigor": {
@@ -667,7 +667,7 @@
       },
       "git": {
         "commits_30d": 11,
-        "last_commit_age_days": 15,
+        "last_commit_age_days": 16,
         "branch": "main"
       },
       "rigor": {
@@ -677,7 +677,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 15d since last commit"
+        "reason": "slowing \u2014 16d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -700,7 +700,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 44,
+        "last_commit_age_days": 45,
         "branch": "docs/2026-06-admin-menu-onboarding"
       },
       "rigor": {
@@ -710,7 +710,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 44d"
+        "reason": "dormant \u2014 no commits in 45d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1556,7 +1556,7 @@
           "id": "#139",
           "name": "security(platform): ~100 RPCs enforce no authorization; iam AssignRole is a self-promotion primitive",
           "status": "in-progress",
-          "commits": 10
+          "commits": 46
         },
         {
           "id": "#140",
@@ -1663,27 +1663,129 @@
         {
           "id": "#157",
           "name": "security(project): phase and crew RPCs have no tenant filter \u2014 cross-tenant read and write by id",
-          "status": "pending",
-          "commits": 0
+          "status": "in-progress",
+          "commits": 7
         },
         {
           "id": "#158",
           "name": "security(project/budget/reporting): gate read RPCs on <resource>:read; reporting fails closed (#139)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#159",
+          "name": "security(platform): audit tenant isolation across billing/document/notifications/iam \u2014 grep cannot decide it",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#160",
+          "name": "chore(billing): sqlc generated code is stale; make generate-sqlc dirties any branch",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#161",
+          "name": "security(project/budget/inventory): scope child-row queries to the caller's tenant (#157)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#162",
+          "name": "security(iam): DeactivateUser's platform_admin gate is bypassable via UpdateUser",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#163",
+          "name": "fix(iam): validation sentinels surface as codes.Internal, not InvalidArgument",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#164",
+          "name": "security(iam): close a cross-tenant read and gate the three write RPCs (#139 slice B)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#165",
+          "name": "fix(expense): members cannot read back their own submitted expenses",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#166",
+          "name": "infra: nothing enforces migration-before-deploy ordering for permission migrations",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#167",
+          "name": "chore: project/budget/expense/inventory start without a permission checker; dial.go log line is false",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#168",
+          "name": "security(expense/inventory): gate nine read RPCs and backfill the new permissions (#139 slice D)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#169",
+          "name": "security(document): wire fail-closed authz and gate all 13 RPCs (#139 slice E)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#170",
+          "name": "security(billing): gate 13 RPCs, close a payment-method cross-tenant cluster (#139 slice F)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#171",
+          "name": "feat(notifications): authorization gates + self-scoped inbox (#139 slice G)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#172",
+          "name": "cleanup(db): dead unscoped sqlc-generated queries across billing/document/notifications",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#173",
+          "name": "security(billing): ListDunningAttempts/RecordDunningAttempt have no tenant scoping",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#174",
+          "name": "security(document): InitiateUpload sets folder_id from request without verifying folder ownership",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#175",
+          "name": "fix(security): tenant-isolation guard-by-type for 7 caller-discipline sites (#139 slice H / #159)",
           "status": "pending",
           "commits": 0
         }
       ],
       "counts": {
-        "total": 158,
-        "done": 129,
-        "in_progress": 9,
-        "pending": 20,
-        "implemented": 138
+        "total": 175,
+        "done": 136,
+        "in_progress": 10,
+        "pending": 29,
+        "implemented": 146
       },
       "git": {
-        "commits_30d": 193,
+        "commits_30d": 256,
         "last_commit_age_days": 0,
-        "branch": "fix/iam-completion-139b"
+        "branch": "chore/retire-impersonation-139-5"
       },
       "rigor": {
         "has_tests": true,
@@ -1692,7 +1794,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "active, 82% done, tests+docs"
+        "reason": "active, 78% done, tests+docs"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2609,8 +2711,8 @@
         "implemented": 131
       },
       "git": {
-        "commits_30d": 186,
-        "last_commit_age_days": 1,
+        "commits_30d": 185,
+        "last_commit_age_days": 2,
         "branch": "feat/static-demo"
       },
       "rigor": {
@@ -2643,7 +2745,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 31,
+        "last_commit_age_days": 32,
         "branch": "main"
       },
       "rigor": {
@@ -2653,7 +2755,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 31d"
+        "reason": "dormant \u2014 no commits in 32d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2676,7 +2778,7 @@
       },
       "git": {
         "commits_30d": 34,
-        "last_commit_age_days": 17,
+        "last_commit_age_days": 18,
         "branch": "master"
       },
       "rigor": {
@@ -2686,7 +2788,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 17d since last commit"
+        "reason": "slowing \u2014 18d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2709,7 +2811,7 @@
       },
       "git": {
         "commits_30d": 7,
-        "last_commit_age_days": 23,
+        "last_commit_age_days": 24,
         "branch": "main"
       },
       "rigor": {
@@ -2719,7 +2821,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 23d since last commit"
+        "reason": "slowing \u2014 24d since last commit"
       },
       "staleness": {
         "reviewed_sha": "3b08f4422ee003ee764303161b5c4ce9d236216a",
@@ -2742,7 +2844,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 31,
+        "last_commit_age_days": 32,
         "branch": "main"
       },
       "rigor": {
@@ -2752,7 +2854,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 31d"
+        "reason": "dormant \u2014 no commits in 32d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2775,7 +2877,7 @@
       },
       "git": {
         "commits_30d": 10,
-        "last_commit_age_days": 4,
+        "last_commit_age_days": 5,
         "branch": "main"
       },
       "rigor": {
@@ -2808,7 +2910,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 37,
+        "last_commit_age_days": 38,
         "branch": "main"
       },
       "rigor": {
@@ -2818,7 +2920,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 37d"
+        "reason": "dormant \u2014 no commits in 38d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2841,7 +2943,7 @@
       },
       "git": {
         "commits_30d": 5,
-        "last_commit_age_days": 22,
+        "last_commit_age_days": 23,
         "branch": "main"
       },
       "rigor": {
@@ -2851,7 +2953,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 22d since last commit"
+        "reason": "slowing \u2014 23d since last commit"
       },
       "staleness": {
         "reviewed_sha": "837dfb50e0e2b3329d59ecad41d17e1c9f37841d",
@@ -2873,11 +2975,11 @@
       "unknown": 12
     },
     "features": {
-      "total": 370,
-      "done": 290,
-      "in_progress": 24,
-      "pending": 56,
-      "implemented": 314
+      "total": 387,
+      "done": 297,
+      "in_progress": 25,
+      "pending": 65,
+      "implemented": 322
     }
   }
 }
