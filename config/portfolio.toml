@@ -6,3 +6,9 @@ exclude = ["project-critique", "_claude-memory-*", "studybuddy_free", "*-wt"]   
 # Stages that are exploratory — NOT expected to be feature-complete or rigor-heavy,
 # so health rules don't mark them red for being early. Everything else "expects" rigor.
 exploratory_stages = ["passion", "prototype", "pre-mvp", "spec", "early-build", "unknown"]
+
+# Stable-by-design repos (glob, fnmatch on dir name) — released libraries whose
+# dormancy is the intended state. Exempt from the dormant→red rule so a quiet,
+# finished shared library doesn't nag as "red". wegofwd-secure: BYOK security
+# primitives, one canonical copy, stable at v0.1.0.
+stable = ["wegofwd-secure"]

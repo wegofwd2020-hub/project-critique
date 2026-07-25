@@ -58,3 +58,12 @@ def test_early_stage_low_progress_not_red():
     h = assess(_counts(0, 1, 9), {"last_commit_age_days": 3, "commits_30d": 4},
                FULL_RIGOR, "prototype", "manifest", EXPL)
     assert h["status"] != "red"
+
+
+def test_stable_repo_dormant_is_green_not_red():
+    # a released, stable-by-design library: dormancy is intended → green, not red
+    git = {"last_commit_age_days": 45, "commits_30d": 0}
+    red = assess(_counts(0, 0, 0), git, FULL_RIGOR, "unknown", "none", EXPL)
+    assert red["status"] == "red" and "dormant" in red["reason"]
+    ok = assess(_counts(0, 0, 0), git, FULL_RIGOR, "unknown", "none", EXPL, is_stable=True)
+    assert ok["status"] == "green" and "stable" in ok["reason"]

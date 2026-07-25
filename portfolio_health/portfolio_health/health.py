@@ -14,8 +14,13 @@ def _progress(counts: dict) -> float | None:
 
 
 def assess(counts: dict, git: dict, rigor: dict, stage: str | None,
-           source_kind: str, exploratory_stages: list[str]) -> dict:
-    """Return Health. Rules are ordered; the first that fires wins."""
+           source_kind: str, exploratory_stages: list[str],
+           is_stable: bool = False) -> dict:
+    """Return Health. Rules are ordered; the first that fires wins.
+
+    `is_stable` marks a released, stable-by-design repo (e.g. a shared library):
+    dormancy is the intended state, so it is exempt from the dormant→red rule.
+    """
     stage = stage or "unknown"
     expects = stage not in exploratory_stages
     age = git.get("last_commit_age_days")
@@ -23,6 +28,9 @@ def assess(counts: dict, git: dict, rigor: dict, stage: str | None,
     pct = None if prog is None else round(prog * 100)
 
     if age is not None and age > DORMANT_DAYS:
+        if is_stable:
+            return {"status": "green",
+                    "reason": f"stable — released library ({age}d, low-touch by design)"}
         return {"status": "red", "reason": f"dormant — no commits in {age}d"}
     if prog is not None and prog < LOW_PROGRESS and expects:
         return {"status": "red", "reason": f"only {pct}% of features done at {stage} stage"}

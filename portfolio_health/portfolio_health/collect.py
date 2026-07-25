@@ -23,7 +23,8 @@ def _iter_repos(root: Path, exclude: list[str]):
 
 
 def collect(root: Path, exclude: list[str], exploratory_stages: list[str],
-            today: date | None = None, reviewed_dir: Path | None = None) -> dict:
+            today: date | None = None, reviewed_dir: Path | None = None,
+            stable: list[str] | None = None) -> dict:
     """Scan every git repo under `root` (minus `exclude`) into a Portfolio.
 
     `reviewed_dir` is where the ``<repo>-last-reviewed.txt`` anchors live (the
@@ -32,6 +33,7 @@ def collect(root: Path, exclude: list[str], exploratory_stages: list[str],
     at. With no anchor (or `reviewed_dir` None) a project is `unknown`.
     """
     root = Path(root).expanduser()
+    stable = stable or []
     today = today or datetime.now(timezone.utc).date()
     projects, health_tally = [], {"green": 0, "yellow": 0, "red": 0}
     stale_tally = {"fresh": 0, "stale": 0, "unknown": 0}
@@ -43,7 +45,9 @@ def collect(root: Path, exclude: list[str], exploratory_stages: list[str],
         git = git_stats(repo, today=today)
         rigor = scan_repo(repo)
         stage = src["stage"] or "unknown"
-        health = assess(counts, git, rigor, stage, src["kind"], exploratory_stages)
+        is_stable = any(fnmatch(repo.name, pat) for pat in stable)
+        health = assess(counts, git, rigor, stage, src["kind"], exploratory_stages,
+                        is_stable=is_stable)
         health_tally[health["status"]] += 1
         staleness = assess_staleness(repo, reviewed_sha(reviewed_dir, repo.name))
         stale_tally[staleness["status"]] += 1
