@@ -67,3 +67,11 @@ def test_stable_repo_dormant_is_green_not_red():
     assert red["status"] == "red" and "dormant" in red["reason"]
     ok = assess(_counts(0, 0, 0), git, FULL_RIGOR, "unknown", "none", EXPL, is_stable=True)
     assert ok["status"] == "green" and "stable" in ok["reason"]
+
+
+def test_deferred_repo_dormant_is_green_not_red():
+    # an intentionally-parked repo (resumes later): dormancy is expected → green,
+    # reported as deferred (distinct from stable).
+    git = {"last_commit_age_days": 33, "commits_30d": 0}
+    ok = assess(_counts(0, 0, 0), git, FULL_RIGOR, "unknown", "none", EXPL, is_deferred=True)
+    assert ok["status"] == "green" and "deferred" in ok["reason"]

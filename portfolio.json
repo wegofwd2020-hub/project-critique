@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-25T15:17:06+00:00",
+  "generated": "2026-07-25T16:11:20+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -1843,9 +1843,9 @@
         "implemented": 161
       },
       "git": {
-        "commits_30d": 309,
+        "commits_30d": 310,
         "last_commit_age_days": 0,
-        "branch": "main"
+        "branch": "feat/gateway-expense-inventory-60c2"
       },
       "rigor": {
         "has_tests": true,
@@ -1886,8 +1886,8 @@
         "has_license": false
       },
       "health": {
-        "status": "red",
-        "reason": "dormant \u2014 no commits in 33d"
+        "status": "green",
+        "reason": "deferred \u2014 intentionally parked, resumes later (33d quiet)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1975,8 +1975,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 0,
-        "last_commit_age_days": 33,
+        "commits_30d": 2,
+        "last_commit_age_days": 0,
         "branch": "main"
       },
       "rigor": {
@@ -1985,8 +1985,8 @@
         "has_license": true
       },
       "health": {
-        "status": "red",
-        "reason": "dormant \u2014 no commits in 33d"
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2097,9 +2097,9 @@
   "summary": {
     "projects": 18,
     "health": {
-      "green": 5,
+      "green": 7,
       "yellow": 11,
-      "red": 2
+      "red": 0
     },
     "staleness": {
       "fresh": 3,

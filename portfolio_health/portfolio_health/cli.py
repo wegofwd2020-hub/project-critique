@@ -35,7 +35,8 @@ def main(argv: list[str] | None = None) -> int:
                             exclude=cfg.get("exclude", []),
                             exploratory_stages=cfg.get("exploratory_stages", ["unknown"]),
                             reviewed_dir=reviewed_dir,
-                            stable=cfg.get("stable", []))
+                            stable=cfg.get("stable", []),
+                            deferred=cfg.get("deferred", []))
         Path(args.json_out).write_text(json.dumps(portfolio, indent=2), encoding="utf-8")
         Path(args.html_out).write_text(build_html(portfolio), encoding="utf-8")
     except (OSError, tomllib.TOMLDecodeError) as e:

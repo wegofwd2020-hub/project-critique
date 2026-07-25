@@ -12,3 +12,9 @@ exploratory_stages = ["passion", "prototype", "pre-mvp", "spec", "early-build", 
 # finished shared library doesn't nag as "red". wegofwd-secure: BYOK security
 # primitives, one canonical copy, stable at v0.1.0.
 stable = ["wegofwd-secure"]
+
+# Deferred repos (glob, fnmatch on dir name) — intentionally parked for now but
+# expected to resume, so exempt from the dormant→red rule (reported "deferred",
+# not "stable"). thittam_docs: docs deliberately trail the active thittam code
+# and will be updated once it matures.
+deferred = ["thittam_docs"]

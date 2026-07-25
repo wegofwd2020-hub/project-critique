@@ -15,11 +15,16 @@ def _progress(counts: dict) -> float | None:
 
 def assess(counts: dict, git: dict, rigor: dict, stage: str | None,
            source_kind: str, exploratory_stages: list[str],
-           is_stable: bool = False) -> dict:
+           is_stable: bool = False, is_deferred: bool = False) -> dict:
     """Return Health. Rules are ordered; the first that fires wins.
 
     `is_stable` marks a released, stable-by-design repo (e.g. a shared library):
     dormancy is the intended state, so it is exempt from the dormant→red rule.
+
+    `is_deferred` marks a repo intentionally parked for now but expected to
+    resume (e.g. docs that trail an active codebase until it matures): also
+    exempt from the dormant→red rule, but reported as deferred rather than
+    stable so the distinction stays visible.
     """
     stage = stage or "unknown"
     expects = stage not in exploratory_stages
@@ -31,6 +36,9 @@ def assess(counts: dict, git: dict, rigor: dict, stage: str | None,
         if is_stable:
             return {"status": "green",
                     "reason": f"stable — released library ({age}d, low-touch by design)"}
+        if is_deferred:
+            return {"status": "green",
+                    "reason": f"deferred — intentionally parked, resumes later ({age}d quiet)"}
         return {"status": "red", "reason": f"dormant — no commits in {age}d"}
     if prog is not None and prog < LOW_PROGRESS and expects:
         return {"status": "red", "reason": f"only {pct}% of features done at {stage} stage"}
