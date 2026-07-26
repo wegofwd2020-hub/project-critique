@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-25T16:11:20+00:00",
+  "generated": "2026-07-26T11:30:38+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -47,8 +47,8 @@
         "implemented": 4
       },
       "git": {
-        "commits_30d": 14,
-        "last_commit_age_days": 17,
+        "commits_30d": 16,
+        "last_commit_age_days": 0,
         "branch": "main"
       },
       "rigor": {
@@ -58,11 +58,11 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 17d since last commit"
+        "reason": "missing tests"
       },
       "staleness": {
         "reviewed_sha": "76addee7704271e9bdfde9f10fe2119b9711b6b1",
-        "commits_behind": 16,
+        "commits_behind": 18,
         "status": "stale"
       }
     },
@@ -112,7 +112,7 @@
       },
       "git": {
         "commits_30d": 275,
-        "last_commit_age_days": 3,
+        "last_commit_age_days": 4,
         "branch": "main"
       },
       "rigor": {
@@ -247,7 +247,7 @@
         "implemented": 9
       },
       "git": {
-        "commits_30d": 64,
+        "commits_30d": 68,
         "last_commit_age_days": 0,
         "branch": "main"
       },
@@ -262,7 +262,7 @@
       },
       "staleness": {
         "reviewed_sha": "d50bc3ef78c77f0cd8cd415e4c5782647de62bd0",
-        "commits_behind": 145,
+        "commits_behind": 150,
         "status": "stale"
       }
     },
@@ -281,7 +281,7 @@
       },
       "git": {
         "commits_30d": 243,
-        "last_commit_age_days": 3,
+        "last_commit_age_days": 4,
         "branch": "main"
       },
       "rigor": {
@@ -345,7 +345,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 19,
+        "last_commit_age_days": 20,
         "branch": "main"
       },
       "rigor": {
@@ -355,7 +355,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 19d since last commit"
+        "reason": "slowing \u2014 20d since last commit"
       },
       "staleness": {
         "reviewed_sha": "de3d9fa243f1ad4e0f7763cee50693d12e9b270d",
@@ -409,7 +409,7 @@
       },
       "git": {
         "commits_30d": 209,
-        "last_commit_age_days": 17,
+        "last_commit_age_days": 18,
         "branch": "main"
       },
       "rigor": {
@@ -419,7 +419,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 17d since last commit"
+        "reason": "slowing \u2014 18d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -473,7 +473,7 @@
       },
       "git": {
         "commits_30d": 138,
-        "last_commit_age_days": 3,
+        "last_commit_age_days": 4,
         "branch": "docs/thittam-static-demo"
       },
       "rigor": {
@@ -603,7 +603,7 @@
       },
       "git": {
         "commits_30d": 42,
-        "last_commit_age_days": 11,
+        "last_commit_age_days": 12,
         "branch": "main"
       },
       "rigor": {
@@ -667,7 +667,7 @@
       },
       "git": {
         "commits_30d": 11,
-        "last_commit_age_days": 17,
+        "last_commit_age_days": 18,
         "branch": "main"
       },
       "rigor": {
@@ -677,7 +677,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 17d since last commit"
+        "reason": "slowing \u2014 18d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -700,7 +700,7 @@
       },
       "git": {
         "commits_30d": 4,
-        "last_commit_age_days": 0,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -1081,8 +1081,8 @@
         {
           "id": "#60",
           "name": "feat(api): REST\u2192gRPC bridge \u2014 grpc-gateway in services + Kong in local stack",
-          "status": "in-progress",
-          "commits": 8
+          "status": "done",
+          "commits": 23
         },
         {
           "id": "#61",
@@ -1609,8 +1609,8 @@
         {
           "id": "#148",
           "name": "AcceptInvitation is not transactional: a failed role grant leaves a committed user row",
-          "status": "pending",
-          "commits": 0
+          "status": "done",
+          "commits": 4
         },
         {
           "id": "#149",
@@ -1663,8 +1663,8 @@
         {
           "id": "#157",
           "name": "security(project): phase and crew RPCs have no tenant filter \u2014 cross-tenant read and write by id",
-          "status": "in-progress",
-          "commits": 7
+          "status": "done",
+          "commits": 8
         },
         {
           "id": "#158",
@@ -1831,21 +1831,99 @@
         {
           "id": "#185",
           "name": "Invitations SQL is broken against real Postgres: queries reference accepted_at + a nonexistent ON CONFLICT target",
+          "status": "done",
+          "commits": 3
+        },
+        {
+          "id": "#186",
+          "name": "fix(iam): repair invitations SQL drift (accepted_at, ON CONFLICT, role_id) + first real-Postgres coverage (#185)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#187",
+          "name": "fix(iam): make AcceptInvitation transactional via Repository.WithTx (#148)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#188",
+          "name": "feat(infra): Kong single-origin local proxy on :8500 (#60 Phase B)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#189",
+          "name": "refactor(api): shared RunRESTGateway helper + migrate iam/budget/project (#60 Phase C1)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#190",
+          "name": "feat(reporting): dashboard RPCs + gateway (#60 Phase C, follow-up)",
+          "status": "done",
+          "commits": 5
+        },
+        {
+          "id": "#191",
+          "name": "feat(expense): RejectExpense / ApprovePurchaseOrder / SettlePettyCash RPCs (#60 Phase C, follow-up)",
+          "status": "done",
+          "commits": 9
+        },
+        {
+          "id": "#192",
+          "name": "fix(inventory): CheckInAsset contract + list filter/pagination fields (#60 Phase C, follow-up)",
+          "status": "done",
+          "commits": 7
+        },
+        {
+          "id": "#193",
+          "name": "feat(api): expense + inventory REST gateways via RunRESTGateway (#60 Phase C2)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#194",
+          "name": "feat(reporting): dashboard RPCs + REST gateway :9085 (#190)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#195",
+          "name": "feat(expense): reject/PO-approve/settle write RPCs + po_number fix (#191)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#196",
+          "name": "expense: ApprovePurchaseOrder skips the approval-limit/dual-approval checks ApproveExpense enforces (authorization parity)",
           "status": "pending",
           "commits": 0
+        },
+        {
+          "id": "#197",
+          "name": "expense: SettlePettyCash has no issued_to ownership check and gates on expense:submit (settle actor undecided)",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "#198",
+          "name": "feat(inventory): CheckInAsset resolve-from-asset + damage, ListAssets/ListCheckouts filters (#192)",
+          "status": "done",
+          "commits": 1
         }
       ],
       "counts": {
-        "total": 185,
-        "done": 151,
-        "in_progress": 10,
+        "total": 198,
+        "done": 166,
+        "in_progress": 8,
         "pending": 24,
-        "implemented": 161
+        "implemented": 174
       },
       "git": {
-        "commits_30d": 310,
+        "commits_30d": 344,
         "last_commit_age_days": 0,
-        "branch": "feat/gateway-expense-inventory-60c2"
+        "branch": "feat/expense-caller-authz-196-197"
       },
       "rigor": {
         "has_tests": true,
@@ -1854,7 +1932,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "active, 82% done, tests+docs"
+        "reason": "active, 84% done, tests+docs"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1877,7 +1955,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 33,
+        "last_commit_age_days": 34,
         "branch": "main"
       },
       "rigor": {
@@ -1887,7 +1965,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "deferred \u2014 intentionally parked, resumes later (33d quiet)"
+        "reason": "deferred \u2014 intentionally parked, resumes later (34d quiet)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1910,7 +1988,7 @@
       },
       "git": {
         "commits_30d": 34,
-        "last_commit_age_days": 19,
+        "last_commit_age_days": 20,
         "branch": "master"
       },
       "rigor": {
@@ -1920,7 +1998,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 19d since last commit"
+        "reason": "slowing \u2014 20d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1943,7 +2021,7 @@
       },
       "git": {
         "commits_30d": 7,
-        "last_commit_age_days": 25,
+        "last_commit_age_days": 26,
         "branch": "main"
       },
       "rigor": {
@@ -1953,7 +2031,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 25d since last commit"
+        "reason": "slowing \u2014 26d since last commit"
       },
       "staleness": {
         "reviewed_sha": "3b08f4422ee003ee764303161b5c4ce9d236216a",
@@ -1976,7 +2054,7 @@
       },
       "git": {
         "commits_30d": 2,
-        "last_commit_age_days": 0,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -2009,7 +2087,7 @@
       },
       "git": {
         "commits_30d": 13,
-        "last_commit_age_days": 0,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -2042,7 +2120,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 39,
+        "last_commit_age_days": 40,
         "branch": "main"
       },
       "rigor": {
@@ -2052,7 +2130,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "stable \u2014 released library (39d, low-touch by design)"
+        "reason": "stable \u2014 released library (40d, low-touch by design)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2075,7 +2153,7 @@
       },
       "git": {
         "commits_30d": 5,
-        "last_commit_age_days": 24,
+        "last_commit_age_days": 25,
         "branch": "main"
       },
       "rigor": {
@@ -2085,7 +2163,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 24d since last commit"
+        "reason": "slowing \u2014 25d since last commit"
       },
       "staleness": {
         "reviewed_sha": "837dfb50e0e2b3329d59ecad41d17e1c9f37841d",
@@ -2107,11 +2185,11 @@
       "unknown": 11
     },
     "features": {
-      "total": 248,
-      "done": 189,
-      "in_progress": 17,
+      "total": 261,
+      "done": 204,
+      "in_progress": 15,
       "pending": 42,
-      "implemented": 206
+      "implemented": 219
     }
   }
 }
