@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-28T11:30:34+00:00",
+  "generated": "2026-07-29T11:30:34+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -47,8 +47,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 236,
-        "last_commit_age_days": 1,
+        "commits_30d": 228,
+        "last_commit_age_days": 2,
         "branch": "feat/multi-theme-support"
       },
       "rigor": {
@@ -185,7 +185,7 @@
       "git": {
         "commits_30d": 67,
         "last_commit_age_days": 0,
-        "branch": "main"
+        "branch": "fix/visuals-nginx-location-522"
       },
       "rigor": {
         "has_tests": true,
@@ -198,7 +198,7 @@
       },
       "staleness": {
         "reviewed_sha": "d50bc3ef78c77f0cd8cd415e4c5782647de62bd0",
-        "commits_behind": 152,
+        "commits_behind": 153,
         "status": "stale"
       }
     },
@@ -217,7 +217,7 @@
       },
       "git": {
         "commits_30d": 243,
-        "last_commit_age_days": 6,
+        "last_commit_age_days": 7,
         "branch": "main"
       },
       "rigor": {
@@ -281,7 +281,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 22,
+        "last_commit_age_days": 23,
         "branch": "main"
       },
       "rigor": {
@@ -291,7 +291,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 22d since last commit"
+        "reason": "slowing \u2014 23d since last commit"
       },
       "staleness": {
         "reviewed_sha": "de3d9fa243f1ad4e0f7763cee50693d12e9b270d",
@@ -345,7 +345,7 @@
       },
       "git": {
         "commits_30d": 207,
-        "last_commit_age_days": 20,
+        "last_commit_age_days": 21,
         "branch": "main"
       },
       "rigor": {
@@ -355,7 +355,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 20d since last commit"
+        "reason": "slowing \u2014 21d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -408,8 +408,8 @@
         "implemented": 5
       },
       "git": {
-        "commits_30d": 136,
-        "last_commit_age_days": 1,
+        "commits_30d": 130,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -539,7 +539,7 @@
       },
       "git": {
         "commits_30d": 42,
-        "last_commit_age_days": 14,
+        "last_commit_age_days": 15,
         "branch": "main"
       },
       "rigor": {
@@ -548,8 +548,8 @@
         "has_license": false
       },
       "health": {
-        "status": "green",
-        "reason": "active, 88% done, tests+docs"
+        "status": "yellow",
+        "reason": "slowing \u2014 15d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -603,7 +603,7 @@
       },
       "git": {
         "commits_30d": 9,
-        "last_commit_age_days": 20,
+        "last_commit_age_days": 21,
         "branch": "main"
       },
       "rigor": {
@@ -613,7 +613,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 20d since last commit"
+        "reason": "slowing \u2014 21d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -636,7 +636,7 @@
       },
       "git": {
         "commits_30d": 4,
-        "last_commit_age_days": 3,
+        "last_commit_age_days": 4,
         "branch": "main"
       },
       "rigor": {
@@ -1925,13 +1925,19 @@
           "name": "fix(iam): map validation sentinels to correct gRPC codes, not Internal (#163)",
           "status": "done",
           "commits": 1
+        },
+        {
+          "id": "#212",
+          "name": "Vulnerabilities detected in dependencies (2026-07-28)",
+          "status": "pending",
+          "commits": 0
         }
       ],
       "counts": {
-        "total": 211,
+        "total": 212,
         "done": 184,
         "in_progress": 8,
-        "pending": 19,
+        "pending": 20,
         "implemented": 192
       },
       "git": {
@@ -1969,7 +1975,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 36,
+        "last_commit_age_days": 37,
         "branch": "main"
       },
       "rigor": {
@@ -1979,7 +1985,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "deferred \u2014 intentionally parked, resumes later (36d quiet)"
+        "reason": "deferred \u2014 intentionally parked, resumes later (37d quiet)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2002,7 +2008,7 @@
       },
       "git": {
         "commits_30d": 34,
-        "last_commit_age_days": 22,
+        "last_commit_age_days": 23,
         "branch": "master"
       },
       "rigor": {
@@ -2012,7 +2018,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 22d since last commit"
+        "reason": "slowing \u2014 23d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2035,7 +2041,7 @@
       },
       "git": {
         "commits_30d": 2,
-        "last_commit_age_days": 28,
+        "last_commit_age_days": 29,
         "branch": "main"
       },
       "rigor": {
@@ -2045,7 +2051,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 28d since last commit"
+        "reason": "slowing \u2014 29d since last commit"
       },
       "staleness": {
         "reviewed_sha": "3b08f4422ee003ee764303161b5c4ce9d236216a",
@@ -2068,7 +2074,7 @@
       },
       "git": {
         "commits_30d": 2,
-        "last_commit_age_days": 3,
+        "last_commit_age_days": 4,
         "branch": "main"
       },
       "rigor": {
@@ -2101,7 +2107,7 @@
       },
       "git": {
         "commits_30d": 13,
-        "last_commit_age_days": 3,
+        "last_commit_age_days": 4,
         "branch": "main"
       },
       "rigor": {
@@ -2134,7 +2140,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 42,
+        "last_commit_age_days": 43,
         "branch": "main"
       },
       "rigor": {
@@ -2144,7 +2150,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "stable \u2014 released library (42d, low-touch by design)"
+        "reason": "stable \u2014 released library (43d, low-touch by design)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2167,7 +2173,7 @@
       },
       "git": {
         "commits_30d": 5,
-        "last_commit_age_days": 27,
+        "last_commit_age_days": 28,
         "branch": "main"
       },
       "rigor": {
@@ -2177,7 +2183,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 27d since last commit"
+        "reason": "slowing \u2014 28d since last commit"
       },
       "staleness": {
         "reviewed_sha": "837dfb50e0e2b3329d59ecad41d17e1c9f37841d",
@@ -2189,8 +2195,8 @@
   "summary": {
     "projects": 17,
     "health": {
-      "green": 7,
-      "yellow": 10,
+      "green": 6,
+      "yellow": 11,
       "red": 0
     },
     "staleness": {
@@ -2199,10 +2205,10 @@
       "unknown": 11
     },
     "features": {
-      "total": 269,
+      "total": 270,
       "done": 218,
       "in_progress": 15,
-      "pending": 36,
+      "pending": 37,
       "implemented": 233
     }
   }
