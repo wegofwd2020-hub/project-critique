@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-30T11:30:32+00:00",
+  "generated": "2026-08-01T11:30:27+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -47,9 +47,9 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 291,
-        "last_commit_age_days": 0,
-        "branch": "feat/mobile-make-a-post"
+        "commits_30d": 340,
+        "last_commit_age_days": 1,
+        "branch": "next/2026-08-01-c"
       },
       "rigor": {
         "has_tests": true,
@@ -62,7 +62,7 @@
       },
       "staleness": {
         "reviewed_sha": "40166ee4caa20efe18cdfa6f0db9e18a20ed99a5",
-        "commits_behind": 541,
+        "commits_behind": 612,
         "status": "stale"
       }
     },
@@ -183,9 +183,9 @@
         "implemented": 9
       },
       "git": {
-        "commits_30d": 66,
-        "last_commit_age_days": 1,
-        "branch": "fix/visuals-nginx-location-522"
+        "commits_30d": 68,
+        "last_commit_age_days": 0,
+        "branch": "fix/quiz-grading-curriculum-resolve-524"
       },
       "rigor": {
         "has_tests": true,
@@ -198,7 +198,7 @@
       },
       "staleness": {
         "reviewed_sha": "d50bc3ef78c77f0cd8cd415e4c5782647de62bd0",
-        "commits_behind": 153,
+        "commits_behind": 157,
         "status": "stale"
       }
     },
@@ -216,8 +216,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 243,
-        "last_commit_age_days": 8,
+        "commits_30d": 247,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -231,7 +231,7 @@
       },
       "staleness": {
         "reviewed_sha": "0effae1a327b241adb1dd671b2c27ea1b5726348",
-        "commits_behind": 94,
+        "commits_behind": 98,
         "status": "stale"
       }
     },
@@ -281,7 +281,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 24,
+        "last_commit_age_days": 26,
         "branch": "main"
       },
       "rigor": {
@@ -291,7 +291,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 24d since last commit"
+        "reason": "slowing \u2014 26d since last commit"
       },
       "staleness": {
         "reviewed_sha": "de3d9fa243f1ad4e0f7763cee50693d12e9b270d",
@@ -344,8 +344,8 @@
         "implemented": 4
       },
       "git": {
-        "commits_30d": 207,
-        "last_commit_age_days": 22,
+        "commits_30d": 132,
+        "last_commit_age_days": 24,
         "branch": "main"
       },
       "rigor": {
@@ -355,7 +355,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 22d since last commit"
+        "reason": "slowing \u2014 24d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -408,9 +408,9 @@
         "implemented": 5
       },
       "git": {
-        "commits_30d": 129,
-        "last_commit_age_days": 3,
-        "branch": "main"
+        "commits_30d": 139,
+        "last_commit_age_days": 1,
+        "branch": "feat/atri-sangam-branded-page"
       },
       "rigor": {
         "has_tests": false,
@@ -539,7 +539,7 @@
       },
       "git": {
         "commits_30d": 42,
-        "last_commit_age_days": 16,
+        "last_commit_age_days": 18,
         "branch": "main"
       },
       "rigor": {
@@ -549,7 +549,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 16d since last commit"
+        "reason": "slowing \u2014 18d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -559,7 +559,7 @@
     },
     {
       "project": "pramana",
-      "stage": "spec",
+      "stage": "build",
       "source_kind": "manifest",
       "source_error": null,
       "features": [
@@ -571,7 +571,55 @@
         },
         {
           "id": "data-model",
-          "name": "SQLAlchemy 2.x data model + Alembic baseline",
+          "name": "SQLAlchemy 2.x data model + Alembic baseline (0001\u21920004)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "audit-chain",
+          "name": "Tamper-evident audit log (SHA-256 hash chain + append-only DB trigger)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "assignment-state-machine",
+          "name": "Assignment state machine (pure domain, property-based tests)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "content-approval",
+          "name": "Content approval state machine (separation of duties, hash-pinned attestation)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "definitions-library",
+          "name": "Framework definitions library (6 references, clause-anchor resolution)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "oidc-auth",
+          "name": "OIDC auth (bearer-token to principal, first-login provisioning)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "fastapi-service",
+          "name": "FastAPI service layer (content-requests, consumer-library, content-drafts, frameworks)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "package-ingestion",
+          "name": "Consumable Package ingestion (HMAC signature + content-hash verification)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": "wegofwd-video-integration",
+          "name": "wegofwd-video integration for training content (ADR-026)",
           "status": "done",
           "commits": null
         },
@@ -582,29 +630,41 @@
           "commits": null
         },
         {
-          "id": "fastapi-service",
-          "name": "FastAPI service layer",
+          "id": "content-pipeline",
+          "name": "Content pipeline end-to-end (Create \u2192 Manufacture \u2192 Approve \u2192 Present)",
+          "status": "in-progress",
+          "commits": null
+        },
+        {
+          "id": "learner-runtime",
+          "name": "Assignment / player / certificate runtime",
           "status": "pending",
           "commits": null
         },
         {
-          "id": "wegofwd-video-integration",
-          "name": "wegofwd-video integration for training content",
+          "id": "audit-verification",
+          "name": "Audit-chain verification tooling and evidence export",
+          "status": "pending",
+          "commits": null
+        },
+        {
+          "id": "worm-archival",
+          "name": "S3 Object Lock (WORM) archival of the audit log",
           "status": "pending",
           "commits": null
         }
       ],
       "counts": {
-        "total": 5,
-        "done": 2,
-        "in_progress": 1,
-        "pending": 2,
-        "implemented": 3
+        "total": 15,
+        "done": 10,
+        "in_progress": 2,
+        "pending": 3,
+        "implemented": 12
       },
       "git": {
-        "commits_30d": 9,
-        "last_commit_age_days": 22,
-        "branch": "main"
+        "commits_30d": 5,
+        "last_commit_age_days": 2,
+        "branch": "docs/architecture-positioning"
       },
       "rigor": {
         "has_tests": true,
@@ -613,7 +673,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 22d since last commit"
+        "reason": "67% of features done"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -636,7 +696,7 @@
       },
       "git": {
         "commits_30d": 4,
-        "last_commit_age_days": 5,
+        "last_commit_age_days": 7,
         "branch": "main"
       },
       "rigor": {
@@ -1479,14 +1539,14 @@
         {
           "id": "#137",
           "name": "billing: outbox guard defeated at batch saturation; DLQ follow-ups",
-          "status": "pending",
-          "commits": 0
+          "status": "done",
+          "commits": 4
         },
         {
           "id": "#138",
           "name": "security(iam): services trust unverified x-caller-* headers \u2014 verify JWT in-process, fail closed",
           "status": "done",
-          "commits": 17
+          "commits": 19
         },
         {
           "id": "#139",
@@ -1503,8 +1563,8 @@
         {
           "id": "#141",
           "name": "chore: follow-ups banked during #138 (fail-closed auth)",
-          "status": "pending",
-          "commits": 0
+          "status": "done",
+          "commits": 7
         },
         {
           "id": "#142",
@@ -1647,8 +1707,8 @@
         {
           "id": "#165",
           "name": "fix(expense): members cannot read back their own submitted expenses",
-          "status": "pending",
-          "commits": 0
+          "status": "done",
+          "commits": 6
         },
         {
           "id": "#166",
@@ -1659,8 +1719,8 @@
         {
           "id": "#167",
           "name": "chore: project/budget/expense/inventory start without a permission checker; dial.go log line is false",
-          "status": "pending",
-          "commits": 0
+          "status": "done",
+          "commits": 6
         },
         {
           "id": "#168",
@@ -1917,7 +1977,7 @@
         {
           "id": "#210",
           "name": "chore: sweep all services' grpcErr/grpcError for sentinels defaulting to codes.Internal",
-          "status": "pending",
+          "status": "done",
           "commits": 0
         },
         {
@@ -1931,19 +1991,49 @@
           "name": "Vulnerabilities detected in dependencies (2026-07-28)",
           "status": "pending",
           "commits": 0
+        },
+        {
+          "id": "#213",
+          "name": "feat(expense): self-scoped reads so submitters can read their own expenses (#165)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#214",
+          "name": "fix(infra): bump grpc/x-net/x-crypto/klauspost for GO-2026 CVEs",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#215",
+          "name": "fix: require IAM permission checker at startup for project/budget/expense/inventory (#167)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#216",
+          "name": "fix(billing): dead-letter poison on broker health, not in-batch publish; delete unfirable alerts (#137)",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "#217",
+          "name": "chore: discharge six banked #138 follow-ups (#141)",
+          "status": "done",
+          "commits": 1
         }
       ],
       "counts": {
-        "total": 212,
-        "done": 184,
+        "total": 217,
+        "done": 194,
         "in_progress": 8,
-        "pending": 20,
-        "implemented": 192
+        "pending": 15,
+        "implemented": 202
       },
       "git": {
-        "commits_30d": 416,
-        "last_commit_age_days": 1,
-        "branch": "chore/app-role-prod-cutover-123"
+        "commits_30d": 427,
+        "last_commit_age_days": 2,
+        "branch": "security/expense-self-scope-po-pettycash-220"
       },
       "rigor": {
         "has_tests": true,
@@ -1952,7 +2042,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "active, 87% done, tests+docs"
+        "reason": "active, 89% done, tests+docs"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -1975,7 +2065,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 38,
+        "last_commit_age_days": 40,
         "branch": "main"
       },
       "rigor": {
@@ -1985,7 +2075,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "deferred \u2014 intentionally parked, resumes later (38d quiet)"
+        "reason": "deferred \u2014 intentionally parked, resumes later (40d quiet)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2008,7 +2098,7 @@
       },
       "git": {
         "commits_30d": 34,
-        "last_commit_age_days": 24,
+        "last_commit_age_days": 26,
         "branch": "master"
       },
       "rigor": {
@@ -2018,7 +2108,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 24d since last commit"
+        "reason": "slowing \u2014 26d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2040,8 +2130,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 2,
-        "last_commit_age_days": 30,
+        "commits_30d": 0,
+        "last_commit_age_days": 32,
         "branch": "main"
       },
       "rigor": {
@@ -2050,8 +2140,8 @@
         "has_license": false
       },
       "health": {
-        "status": "yellow",
-        "reason": "slowing \u2014 30d since last commit"
+        "status": "red",
+        "reason": "dormant \u2014 no commits in 32d"
       },
       "staleness": {
         "reviewed_sha": "3b08f4422ee003ee764303161b5c4ce9d236216a",
@@ -2074,7 +2164,7 @@
       },
       "git": {
         "commits_30d": 2,
-        "last_commit_age_days": 5,
+        "last_commit_age_days": 7,
         "branch": "main"
       },
       "rigor": {
@@ -2106,8 +2196,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 13,
-        "last_commit_age_days": 5,
+        "commits_30d": 14,
+        "last_commit_age_days": 0,
         "branch": "main"
       },
       "rigor": {
@@ -2140,7 +2230,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 44,
+        "last_commit_age_days": 46,
         "branch": "main"
       },
       "rigor": {
@@ -2150,7 +2240,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "stable \u2014 released library (44d, low-touch by design)"
+        "reason": "stable \u2014 released library (46d, low-touch by design)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2172,8 +2262,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 5,
-        "last_commit_age_days": 29,
+        "commits_30d": 0,
+        "last_commit_age_days": 31,
         "branch": "main"
       },
       "rigor": {
@@ -2182,8 +2272,8 @@
         "has_license": false
       },
       "health": {
-        "status": "yellow",
-        "reason": "slowing \u2014 29d since last commit"
+        "status": "red",
+        "reason": "dormant \u2014 no commits in 31d"
       },
       "staleness": {
         "reviewed_sha": "837dfb50e0e2b3329d59ecad41d17e1c9f37841d",
@@ -2196,8 +2286,8 @@
     "projects": 17,
     "health": {
       "green": 6,
-      "yellow": 11,
-      "red": 0
+      "yellow": 9,
+      "red": 2
     },
     "staleness": {
       "fresh": 3,
@@ -2205,11 +2295,11 @@
       "unknown": 11
     },
     "features": {
-      "total": 270,
-      "done": 218,
-      "in_progress": 15,
-      "pending": 37,
-      "implemented": 233
+      "total": 285,
+      "done": 236,
+      "in_progress": 16,
+      "pending": 33,
+      "implemented": 252
     }
   }
 }
