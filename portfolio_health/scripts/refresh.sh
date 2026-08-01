@@ -36,10 +36,22 @@ done
     --html "$ROOT/portfolio.html" || exit 1
 cd "$ROOT"
 if ! git diff --quiet portfolio.json portfolio.html; then
+  URL="https://github.com/wegofwd2020-hub/project-critique.git"
   git add portfolio.json portfolio.html
   # cron runs headless with no ssh-agent, so disable SSH commit-signing and push
   # over HTTPS via the gh credential helper (both work non-interactively).
   git -c commit.gpgsign=false \
       commit -m "chore(portfolio): refresh health snapshot $(date -u +%Y-%m-%d)"
-  git push https://github.com/wegofwd2020-hub/project-critique.git HEAD:main
+  # Reconcile with anything pushed elsewhere (e.g. a critique from another
+  # machine) BEFORE pushing, so a diverged remote doesn't silently reject the
+  # push and let daily snapshots pile up unpushed. The snapshot touches only
+  # the two generated artifacts, so a rebase almost never conflicts; on the
+  # rare true conflict, abort and keep the commit local for the next run rather
+  # than forcing over someone else's work.
+  if ! git -c rebase.autoStash=false pull --rebase --quiet "$URL" main; then
+    git rebase --abort 2>/dev/null || true
+    echo "refresh: rebase conflict against origin/main — commit kept local, push skipped"
+    exit 1
+  fi
+  git push "$URL" HEAD:main
 fi
