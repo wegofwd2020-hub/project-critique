@@ -299,6 +299,16 @@ Everything above rests on ADR-001: *the vendor never holds a key.* **ADR-032 ame
 
 ✅ **Credit where due: the Open Shelves security work is the strongest in the repo.** SSRF resolve-then-check with literal-IP short-circuit and CGNAT blocking, a fail-closed per-IP limiter, manual-redirect re-validation, a content-type allowlist, and `Authorization`/`Cookie` stripping on every hop — all shipped **with** the feature, on an endpoint that is anonymous by design. That is the discipline §5 has praised since v1.0, applied to a genuinely new attack surface.
 
+### Update — 2026-08-04: Supabase advisor flagged `rls_disabled_in_public` (CRITICAL) — found and closed
+
+Supabase's weekly Security Advisor flagged the production project (`vvlsaiywyfhxkjppjoiy`, the Mentible auth/DB project) with **`rls_disabled_in_public`**: one or more `public`-schema tables had **Row-Level Security disabled**.
+
+**Why it was a real exposure, not a false positive.** Mentible uses Supabase for **auth**, but its app tables share the same Postgres `public` schema, and Supabase auto-exposes a **PostgREST** REST API (`/rest/v1/<table>`) for every public table. The **anon key is public by design** — it ships inside the Expo bundle (`EXPO_PUBLIC_SUPABASE_ANON_KEY`, observable in the mambakkam.net demo bundles). With RLS off, anyone holding that anon key could `GET/POST/PATCH/DELETE` those rows **directly, bypassing the backend** — and the app's isolation is app-level (`WHERE idp_sub = …`), which only guards the backend path, not PostgREST. On a launched product, this is CRITICAL.
+
+**Why the fix was safe (verified on disk before advising).** The mobile client uses `supabase-js` for **auth only** — `signInWithPassword` / `signUp` / `getSession` / OAuth `exchangeCodeForSession` — with **zero `.from()`/`.rpc()`** table queries; all data flows through the backend API (`EXPO_PUBLIC_API_BASE_URL`). The backend connects as the **`postgres` role** (`DATABASE_URL=postgresql://postgres.vvls…@…pooler`, plus a service-role key), which **bypasses RLS**. So enabling RLS with **no policies and no `FORCE`** denies the anonymous PostgREST path while leaving the backend and the auth flow untouched.
+
+**Action taken (operator, in the Supabase SQL Editor):** `alter table public.<t> enable row level security;` across all `public` tables (no permissive policies, no `force row level security` — either would have re-opened the hole or broken the backend owner). Advisor cleared. This matches Mentible's documented posture (`backend/README.md`: *"Single-tenant per user. No multi-tenancy, no RLS"*) — isolation stays in the backend; RLS here is purely a **deny-all gate on the public API surface**, not tenant logic. Optional further hardening noted: drop `public` from the API's exposed schemas, since the client never uses PostgREST.
+
 ---
 
 ## 6. Scalability / Operability
