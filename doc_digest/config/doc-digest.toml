@@ -1,0 +1,36 @@
+# doc_digest/config/doc-digest.toml — per-project doc-path map for the weekly digest.
+base      = "~/Documents/AIStuff/wegofwd2020-hub"
+exclude   = ["**/node_modules/**", "**/.venv/**", "**/dist/**", "*-wt/**"]
+sdd_globs = ["docs/superpowers/**"]
+doc_exts  = [".md", ".txt", ".rst"]
+
+[[project]]
+name = "Mentible"
+include = ["docs", "Plans"]
+[[project]]
+name = "thittam"
+include = ["docs"]
+[[project]]
+name = "StudyBuddy_OnDemand"
+include = ["docs"]
+[[project]]
+name = "pramana"
+include = ["docs"]
+[[project]]
+name = "kathai-chithiram"
+include = ["docs"]
+[[project]]
+name = "atri-sangam"
+include = ["docs"]
+[[project]]
+name = "mambakkam-net"
+include = ["docs"]
+[[project]]
+name = "wegofwd-llm"
+include = ["README.md", "docs"]
+[[project]]
+name = "wegofwd-video"
+include = ["README.md"]
+[[project]]
+name = "dronePrjs"
+include = ["CLAUDE.md", "closedSpace/docs"]
