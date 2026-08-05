@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 applications - feature mind-maps (3 apps, 3 audiences) - 2026-07-07" vertex="1">
+        <mxCell id="title" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 applications - feature mind-maps (3 apps, 3 audiences) - 2026-08-05" vertex="1">
           <mxGeometry height="30" width="1200" x="20" y="20" as="geometry" />
         </mxCell>
         <mxCell id="l0_0_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="Course versioning" vertex="1">
@@ -103,7 +103,7 @@
         <mxCell id="l0_6_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="SOX (v1 target)" vertex="1">
           <mxGeometry height="24" width="195" x="460" y="874" as="geometry" />
         </mxCell>
-        <mxCell id="l0_6_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="FCPA (backlog)" vertex="1">
+        <mxCell id="l0_6_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="FCPA (stories authored)" vertex="1">
           <mxGeometry height="24" width="195" x="460" y="902" as="geometry" />
         </mxCell>
         <mxCell id="l0_6_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="HIPAA / GDPR / ISO / PCI (future)" vertex="1">
@@ -310,7 +310,7 @@
         <mxCell id="l1_5_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;arcSize=20;" value="Evidence view" vertex="1">
           <mxGeometry height="24" width="195" x="1220" y="776" as="geometry" />
         </mxCell>
-        <mxCell id="l1_5_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="Suggestion engine (gated)" vertex="1">
+        <mxCell id="l1_5_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="M1 progress engine (built, gated)" vertex="1">
           <mxGeometry height="24" width="195" x="1220" y="804" as="geometry" />
         </mxCell>
         <mxCell id="l1_5_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="Therapist policy (planned)" vertex="1">
@@ -472,10 +472,10 @@
         <mxCell id="l2_1_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="Managed-key vault (built, off)" vertex="1">
           <mxGeometry height="24" width="200" x="1980" y="300" as="geometry" />
         </mxCell>
-        <mxCell id="l2_1_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="Metering + spend caps (off)" vertex="1">
+        <mxCell id="l2_1_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="Metering (on); caps unset" vertex="1">
           <mxGeometry height="24" width="200" x="1980" y="328" as="geometry" />
         </mxCell>
-        <mxCell id="l2_1_4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="RevenueCat entitlements (off)" vertex="1">
+        <mxCell id="l2_1_4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;dashed=1;fontColor=#7f7f7f;" value="RevenueCat entitlements (pending)" vertex="1">
           <mxGeometry height="24" width="200" x="1980" y="356" as="geometry" />
         </mxCell>
         <mxCell id="g2_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="LLM &amp; Managed Billing" vertex="1">
@@ -496,13 +496,13 @@
         <mxCell id="g2_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="Compile &amp; Export" vertex="1">
           <mxGeometry height="36" width="160" x="1770" y="434" as="geometry" />
         </mxCell>
-        <mxCell id="l2_3_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="Versioned BookTemplates" vertex="1">
+        <mxCell id="l2_3_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="Multi-theme engine (6 palettes)" vertex="1">
           <mxGeometry height="24" width="200" x="1980" y="524" as="geometry" />
         </mxCell>
         <mxCell id="l2_3_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="Brand design tokens" vertex="1">
           <mxGeometry height="24" width="200" x="1980" y="552" as="geometry" />
         </mxCell>
-        <mxCell id="l2_3_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="Cover motifs" vertex="1">
+        <mxCell id="l2_3_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="Versioned BookTemplates (designed)" vertex="1">
           <mxGeometry height="24" width="200" x="1980" y="580" as="geometry" />
         </mxCell>
         <mxCell id="l2_3_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;arcSize=20;" value="Glossary / front-matter" vertex="1">
@@ -730,7 +730,7 @@
         <mxCell id="e2_gg2_8_3" parent="1" edge="1" source="g2_8" target="l2_8_3" style="edgeStyle=entityRelationEdgeStyle;curved=1;startArrow=none;endArrow=none;rounded=0;strokeColor=#d79b00;strokeWidth=1.5;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="foot" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" value="Solid = live in code; dashed / grey = designed, built-but-off, or partial (marker in label: (planned)=spec/design only, (built, off)/(gated)=code-complete but disabled, (partial)=partly shipped). PRAMANA is SOX single-tenant v1 - much of Certification, bulk assign, SAML, GDPR erasure and 5-of-6 frameworks are spec, not runtime. All three apps share the wegofwd-llm seam; PRAMANA + kathai-chithiram also share wegofwd-video (ADR-026); Mentible adds shared wegofwd-secure / wegofwd-help - see shared_library.drawio. Verified against each repo README/docs/ADRs/source, 2026-07-07." vertex="1">
+        <mxCell id="foot" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" value="Solid = live in code; dashed / grey = designed, built-but-off, or partial (marker in label: (planned)=spec/design only, (built, off)/(gated)=code-complete but disabled, (partial)=partly shipped). PRAMANA is SOX single-tenant v1 - much of Certification, bulk assign, SAML, GDPR erasure and 5-of-6 frameworks are spec, not runtime. All three apps share the wegofwd-llm seam; PRAMANA + kathai-chithiram also share wegofwd-video (ADR-026); Mentible adds shared wegofwd-secure / wegofwd-help - see shared_library.drawio. Mentible is repositioning to an SME expert-validation studio (ADR-037) with a per-user private hosted library (ADR-033) - designed, not yet built; see apps_features.drawio. Verified against each repo README/docs/ADRs/source, 2026-08-05." vertex="1">
           <mxGeometry height="60" width="1900" x="40" y="1640" as="geometry" />
         </mxCell>
       </root>
