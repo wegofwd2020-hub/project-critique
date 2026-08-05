@@ -53,10 +53,10 @@
         </mxCell>
 
         <!-- wegofwd-video edges -->
-        <mxCell id="e-video-pramana" parent="1" edge="1" source="video" target="pramana" style="endArrow=classic;html=1;rounded=1;curved=1;strokeColor=#d79b00;fontColor=#d79b00;" value="pip v0.1.2">
+        <mxCell id="e-video-pramana" parent="1" edge="1" source="video" target="pramana" style="endArrow=classic;html=1;rounded=1;curved=1;strokeColor=#d79b00;fontColor=#d79b00;" value="pip v1.0.0">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-video-kathai" parent="1" edge="1" source="video" target="kathai" style="endArrow=classic;html=1;rounded=1;curved=1;strokeColor=#d79b00;fontColor=#d79b00;" value="pip v0.1.2">
+        <mxCell id="e-video-kathai" parent="1" edge="1" source="video" target="kathai" style="endArrow=classic;html=1;rounded=1;curved=1;strokeColor=#d79b00;fontColor=#d79b00;" value="pip v1.0.0">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-video-self" parent="1" edge="1" source="video" target="mentible" style="endArrow=open;html=1;rounded=1;curved=1;dashed=1;strokeColor=#b3b3b3;fontColor=#999999;" value="planned">
@@ -81,7 +81,7 @@
         </mxCell>
 
         <!-- Legend -->
-        <mxCell id="legend" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;spacingLeft=4;" value="Legend&#10;──▶ solid  = code-verified pip dependency (import + pinned in pyproject/requirements)&#10;┄┄▶ dashed = intended end-state, NOT yet wired in code&#10;Purple dashed node = shared operator toolkit (not a pip library).&#10;Note: wegofwd-llm is now at v0.2.0. Version skew across consumers — Mentible v0.2.0 (current); pramana v0.1.1; StudyBuddy_OnDemand v0.1.2; wegofwd-expenses (billclassify/billextract) unpinned. StudyBuddy_OnDemand &amp; Thittam are further wegofwd-llm consumers (shown here via orchestration; their llm edges not drawn).&#10;wegofwd-video (ADR-026; pkg v1.0.0, consumers pin git tag v0.1.2) is used by pramana &amp; kathai-chithiram; Mentible planned.&#10;wegofwd-orchestration: a dependency-free operator toolkit (triage → taskforge → critique-gate) that orchestrates the product repos and supplies the progress_inflight seam used by StudyBuddy_OnDemand &amp; Thittam's nightly progress generators; it consumes none of the shared libraries.&#10;medtracker (added 2026-07-14) is deliberately NOT drawn: its pyproject pins only Django, django-allauth, cryptography &amp; requests — zero shared-library edges, and no LLM at runtime. It is the one product that consumes nothing from this diagram.">
+        <mxCell id="legend" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;spacingLeft=4;" value="Legend&#10;──▶ solid  = code-verified pip dependency (import + pinned in pyproject/requirements)&#10;┄┄▶ dashed = intended end-state, NOT yet wired in code&#10;Purple dashed node = shared operator toolkit (not a pip library).&#10;Note: wegofwd-llm is now at v0.2.0. Version skew across consumers — Mentible v0.2.0 (current); pramana v0.1.1; StudyBuddy_OnDemand v0.1.2; wegofwd-expenses (billclassify/billextract) unpinned. StudyBuddy_OnDemand &amp; Thittam are further wegofwd-llm consumers (shown here via orchestration; their llm edges not drawn).&#10;wegofwd-video (ADR-026; pkg v1.0.0, pramana &amp; kathai-chithiram now both on v1.0.0) — Mentible planned.&#10;wegofwd-orchestration: a dependency-free operator toolkit (triage → taskforge → critique-gate) that orchestrates the product repos and supplies the progress_inflight seam used by StudyBuddy_OnDemand &amp; Thittam's nightly progress generators; it consumes none of the shared libraries.&#10;medtracker (added 2026-07-14) is deliberately NOT drawn: its pyproject pins only Django, django-allauth, cryptography &amp; requests — zero shared-library edges, and no LLM at runtime. It is the one product that consumes nothing from this diagram.">
           <mxGeometry height="185" width="710" x="40" y="800" as="geometry" />
         </mxCell>
       </root>
