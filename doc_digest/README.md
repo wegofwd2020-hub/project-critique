@@ -14,6 +14,17 @@ python3 -m doc_digest.cli --config config/doc-digest.toml \
 (`python3` must be 3.11+ for `tomllib`; the tool is stdlib-only. Tests use a
 local `.venv` with pytest — see below.)
 
+### Which machine / hub path
+The config `base` and the `digest.sh` wrapper both default to the
+`STEM_studybuddy` layout — the machine that runs the daily `portfolio_health`
+cron. On any other checkout, point at that machine's hub:
+
+```bash
+# CLI: add --base ; wrapper: export PORTFOLIO_ROOT (it forwards to --base)
+--base ~/Documents/AIStuff/wegofwd2020-hub          # e.g. this checkout's layout
+PORTFOLIO_ROOT=~/Documents/AIStuff/wegofwd2020-hub  # for scripts/digest.sh
+```
+
 ## Run the tests
 ```bash
 cd doc_digest

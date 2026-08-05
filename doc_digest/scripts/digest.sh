@@ -3,7 +3,11 @@
 # (read-only), writes the report into project-critique, commits + rebase-pushes.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"        # project-critique
-BASE="${PORTFOLIO_ROOT:-$HOME/Documents/AIStuff/wegofwd2020-hub}"
+# Hub holding the 10 watched repos. Default matches portfolio_health/refresh.sh
+# (the sibling cron this runs beside, on the STEM_studybuddy machine). Override
+# with PORTFOLIO_ROOT on any other machine — it controls both the fetch loop
+# below AND the CLI's --base, so the two never drift.
+BASE="${PORTFOLIO_ROOT:-$HOME/Documents/code/projects/AIStuff/STEM_studybuddy}"
 PY="${PYTHON:-$ROOT/portfolio_health/.venv/bin/python}"; [ -x "$PY" ] || PY=python3
 URL="https://github.com/wegofwd2020-hub/project-critique.git"
 LOG_DIR="$HOME/.local/share/doc-digest"; mkdir -p "$LOG_DIR" "$ROOT/doc-digest"
@@ -23,6 +27,7 @@ done
 
 PYTHONPATH="$ROOT/doc_digest" "$PY" -m doc_digest.cli \
     --config "$ROOT/doc_digest/config/doc-digest.toml" \
+    --base "$BASE" \
     --as-of "$(date -Iseconds)" --since-days 7 \
     --out-md "$ROOT/doc-digest/$DATE.md" \
     --out-html "$ROOT/doc-digest.html" || exit 1

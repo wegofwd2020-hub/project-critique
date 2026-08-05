@@ -1,5 +1,8 @@
 # doc_digest/config/doc-digest.toml — per-project doc-path map for the weekly digest.
-base      = "~/Documents/AIStuff/wegofwd2020-hub"
+# Hub holding the 10 watched repos. Default matches portfolio_health (the
+# STEM_studybuddy machine where the daily cron runs). On another machine,
+# override with the CLI's --base (the digest.sh wrapper passes --base "$PORTFOLIO_ROOT").
+base      = "~/Documents/code/projects/AIStuff/STEM_studybuddy"
 exclude   = ["**/node_modules/**", "**/.venv/**", "**/dist/**", "*-wt/**"]
 sdd_globs = ["docs/superpowers/**"]
 doc_exts  = [".md", ".txt", ".rst"]
