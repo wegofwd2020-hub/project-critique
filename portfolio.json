@@ -1,7 +1,71 @@
 {
-  "generated": "2026-08-04T11:30:48+00:00",
+  "generated": "2026-08-07T11:30:22+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
+    {
+      "project": "MarketingTools",
+      "stage": "active",
+      "source_kind": "manifest",
+      "source_error": null,
+      "features": [
+        {
+          "id": null,
+          "name": "Central asset library (assets/products.yaml, brand rules)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Channel-ready copy generator (generate.py via Claude)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Paste-ready templates library",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "CRM-lite outreach log (campaigns/)",
+          "status": "done",
+          "commits": null
+        },
+        {
+          "id": null,
+          "name": "Landing/microsite builder",
+          "status": "pending",
+          "commits": null
+        }
+      ],
+      "counts": {
+        "total": 5,
+        "done": 4,
+        "in_progress": 0,
+        "pending": 1,
+        "implemented": 4
+      },
+      "git": {
+        "commits_30d": 23,
+        "last_commit_age_days": 2,
+        "branch": "main"
+      },
+      "rigor": {
+        "has_tests": false,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "missing tests"
+      },
+      "staleness": {
+        "reviewed_sha": "76addee7704271e9bdfde9f10fe2119b9711b6b1",
+        "commits_behind": 31,
+        "status": "stale"
+      }
+    },
     {
       "project": "Mentible",
       "stage": "pre-mvp",
@@ -47,9 +111,9 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 317,
+        "commits_30d": 316,
         "last_commit_age_days": 1,
-        "branch": "main"
+        "branch": "feat/publish-to-library-download"
       },
       "rigor": {
         "has_tests": true,
@@ -62,7 +126,7 @@
       },
       "staleness": {
         "reviewed_sha": "40166ee4caa20efe18cdfa6f0db9e18a20ed99a5",
-        "commits_behind": 615,
+        "commits_behind": 635,
         "status": "stale"
       }
     },
@@ -183,9 +247,9 @@
         "implemented": 9
       },
       "git": {
-        "commits_30d": 97,
+        "commits_30d": 110,
         "last_commit_age_days": 0,
-        "branch": "fix/dedupe-unit-progress-rows"
+        "branch": "main"
       },
       "rigor": {
         "has_tests": true,
@@ -198,7 +262,7 @@
       },
       "staleness": {
         "reviewed_sha": "d50bc3ef78c77f0cd8cd415e4c5782647de62bd0",
-        "commits_behind": 189,
+        "commits_behind": 216,
         "status": "stale"
       }
     },
@@ -217,7 +281,7 @@
       },
       "git": {
         "commits_30d": 247,
-        "last_commit_age_days": 4,
+        "last_commit_age_days": 7,
         "branch": "main"
       },
       "rigor": {
@@ -280,8 +344,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 1,
-        "last_commit_age_days": 29,
+        "commits_30d": 0,
+        "last_commit_age_days": 32,
         "branch": "main"
       },
       "rigor": {
@@ -290,8 +354,8 @@
         "has_license": false
       },
       "health": {
-        "status": "yellow",
-        "reason": "slowing \u2014 29d since last commit"
+        "status": "red",
+        "reason": "dormant \u2014 no commits in 32d"
       },
       "staleness": {
         "reviewed_sha": "de3d9fa243f1ad4e0f7763cee50693d12e9b270d",
@@ -344,8 +408,8 @@
         "implemented": 4
       },
       "git": {
-        "commits_30d": 32,
-        "last_commit_age_days": 27,
+        "commits_30d": 3,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -355,7 +419,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 27d since last commit"
+        "reason": "60% of features done"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -408,7 +472,7 @@
         "implemented": 5
       },
       "git": {
-        "commits_30d": 135,
+        "commits_30d": 125,
         "last_commit_age_days": 1,
         "branch": "main"
       },
@@ -539,7 +603,7 @@
       },
       "git": {
         "commits_30d": 42,
-        "last_commit_age_days": 21,
+        "last_commit_age_days": 24,
         "branch": "main"
       },
       "rigor": {
@@ -549,7 +613,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 21d since last commit"
+        "reason": "slowing \u2014 24d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -662,8 +726,8 @@
         "implemented": 12
       },
       "git": {
-        "commits_30d": 5,
-        "last_commit_age_days": 5,
+        "commits_30d": 4,
+        "last_commit_age_days": 8,
         "branch": "docs/architecture-positioning"
       },
       "rigor": {
@@ -696,7 +760,7 @@
       },
       "git": {
         "commits_30d": 4,
-        "last_commit_age_days": 10,
+        "last_commit_age_days": 13,
         "branch": "main"
       },
       "rigor": {
@@ -2031,8 +2095,8 @@
         "implemented": 202
       },
       "git": {
-        "commits_30d": 424,
-        "last_commit_age_days": 5,
+        "commits_30d": 380,
+        "last_commit_age_days": 8,
         "branch": "security/expense-self-scope-po-pettycash-220"
       },
       "rigor": {
@@ -2065,7 +2129,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 43,
+        "last_commit_age_days": 46,
         "branch": "main"
       },
       "rigor": {
@@ -2075,7 +2139,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "deferred \u2014 intentionally parked, resumes later (43d quiet)"
+        "reason": "deferred \u2014 intentionally parked, resumes later (46d quiet)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2097,9 +2161,42 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 36,
-        "last_commit_age_days": 3,
+        "commits_30d": 2,
+        "last_commit_age_days": 6,
         "branch": "master"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
+      }
+    },
+    {
+      "project": "wegofwd-hub",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 15,
+        "last_commit_age_days": 0,
+        "branch": "main"
       },
       "rigor": {
         "has_tests": true,
@@ -2131,7 +2228,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 35,
+        "last_commit_age_days": 38,
         "branch": "main"
       },
       "rigor": {
@@ -2141,7 +2238,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 35d"
+        "reason": "dormant \u2014 no commits in 38d"
       },
       "staleness": {
         "reviewed_sha": "3b08f4422ee003ee764303161b5c4ce9d236216a",
@@ -2164,7 +2261,7 @@
       },
       "git": {
         "commits_30d": 2,
-        "last_commit_age_days": 10,
+        "last_commit_age_days": 13,
         "branch": "main"
       },
       "rigor": {
@@ -2197,7 +2294,7 @@
       },
       "git": {
         "commits_30d": 14,
-        "last_commit_age_days": 3,
+        "last_commit_age_days": 6,
         "branch": "main"
       },
       "rigor": {
@@ -2230,7 +2327,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 49,
+        "last_commit_age_days": 52,
         "branch": "main"
       },
       "rigor": {
@@ -2240,7 +2337,40 @@
       },
       "health": {
         "status": "green",
-        "reason": "stable \u2014 released library (49d, low-touch by design)"
+        "reason": "stable \u2014 released library (52d, low-touch by design)"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
+      }
+    },
+    {
+      "project": "wegofwd-text2audio",
+      "stage": "unknown",
+      "source_kind": "none",
+      "source_error": null,
+      "features": [],
+      "counts": {
+        "total": 0,
+        "done": 0,
+        "in_progress": 0,
+        "pending": 0,
+        "implemented": 0
+      },
+      "git": {
+        "commits_30d": 11,
+        "last_commit_age_days": 0,
+        "branch": "feat/poc-core"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": false
+      },
+      "health": {
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2262,8 +2392,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 0,
-        "last_commit_age_days": 34,
+        "commits_30d": 1,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -2272,34 +2402,34 @@
         "has_license": false
       },
       "health": {
-        "status": "red",
-        "reason": "dormant \u2014 no commits in 34d"
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
       },
       "staleness": {
         "reviewed_sha": "837dfb50e0e2b3329d59ecad41d17e1c9f37841d",
-        "commits_behind": 0,
-        "status": "fresh"
+        "commits_behind": 1,
+        "status": "stale"
       }
     }
   ],
   "summary": {
-    "projects": 17,
+    "projects": 20,
     "health": {
-      "green": 7,
+      "green": 10,
       "yellow": 8,
       "red": 2
     },
     "staleness": {
-      "fresh": 3,
-      "stale": 3,
-      "unknown": 11
+      "fresh": 2,
+      "stale": 5,
+      "unknown": 13
     },
     "features": {
-      "total": 285,
-      "done": 236,
+      "total": 290,
+      "done": 240,
       "in_progress": 16,
-      "pending": 33,
-      "implemented": 252
+      "pending": 34,
+      "implemented": 256
     }
   }
 }
