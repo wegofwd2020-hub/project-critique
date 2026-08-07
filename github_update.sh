@@ -20,9 +20,9 @@ enc() { echo "$1" | sed 's|[/_]|-|g'; }
 
 # project subdirs that are each their own git repo. Not every one has a memory repo —
 # studybuddy-docs, thittam_docs, wegofwd-expenses, wegofwd-secure, wegofwd-video,
-# wegofwd-private-docs, atri-sangam, and wegofwd-text2audio are code/docs-only, so they
-# appear here but not in MEM_PATHS below.
-PROJECTS="StudyBuddy_OnDemand studybuddy-docs Mentible thittam thittam_docs mambakkam-net pramana kathai-chithiram project-critique wegofwd-private-docs MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video wegofwd-expenses wegofwd-secure dronePrjs medtracker atri-sangam wegofwd-text2audio"
+# wegofwd-private-docs, atri-sangam, wegofwd-text2audio, and wegofwd-hub are
+# code/docs-only, so they appear here but not in MEM_PATHS below.
+PROJECTS="StudyBuddy_OnDemand studybuddy-docs Mentible thittam thittam_docs mambakkam-net pramana kathai-chithiram project-critique wegofwd-private-docs MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video wegofwd-expenses wegofwd-secure dronePrjs medtracker atri-sangam wegofwd-text2audio wegofwd-hub"
 
 # absolute project paths whose memory repo should be pulled
 MEM_PATHS="
