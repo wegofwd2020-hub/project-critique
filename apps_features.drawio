@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 applications — feature overview (3 apps, 3 audiences) · 2026-08-05">
+        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 applications — feature overview (3 apps, 3 audiences) · 2026-08-17">
           <mxGeometry height="30" width="1000" x="30" y="20" as="geometry" />
         </mxCell>
         <mxCell id="h0" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#6c8ebf;strokeColor=#3c5a80;fontColor=#ffffff;fontSize=12;arcSize=8;" value="&lt;b&gt;PRAMANA&lt;/b&gt;&lt;br&gt;Audit-grade compliance training &amp; evidence&lt;br&gt;&lt;i&gt;Audience: compliance officers · regulated enterprises&lt;/i&gt;&lt;br&gt;Stage: backend + content pipeline live; assignment / cert runtime pending (SOX v1)">
@@ -88,7 +88,7 @@
         <mxCell id="c2_9" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#fdf0e3;strokeColor=#d79b00;fontSize=11;arcSize=8;dashed=1;" value="&lt;b&gt;SME Studio &amp; Private Hosted Library&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#9a9a9a&quot;&gt;◦ Capture → Create → Validate → Share (ADR-037)&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#9a9a9a&quot;&gt;◦ Expert approval as first-class UI&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#9a9a9a&quot;&gt;◦ Per-user private hosted content (ADR-033/035)&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#9a9a9a&quot;&gt;◦ Services-led revenue; managed sub deferred&lt;/font&gt;">
           <mxGeometry height="106" width="450" x="990" y="1240" as="geometry" />
         </mxCell>
-        <mxCell id="foot" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" value="Solid • = live in code; grey ◦ = designed / built-but-off / partial (marker in text: (planned)=spec only, (built, off)/(gated)=code-complete but disabled, (partial)=partly shipped). Dashed card = whole group not yet live. All three apps share the wegofwd-llm seam (and wegofwd-secure for key handling); pramana + kathai-chithiram also share wegofwd-video (ADR-026); Mentible adds a shared wegofwd-help package (planned) — see shared_library.drawio. Verified against each repo README / docs / ADRs / source, 2026-08-05.">
+        <mxCell id="foot" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" value="Solid • = live in code; grey ◦ = designed / built-but-off / partial (marker in text: (planned)=spec only, (built, off)/(gated)=code-complete but disabled, (partial)=partly shipped). Dashed card = whole group not yet live. All three apps share the wegofwd-llm seam (and wegofwd-secure for key handling); pramana + kathai-chithiram also share wegofwd-video (ADR-026); Mentible adds a shared wegofwd-help package (planned) — see shared_library.drawio. Verified against each repo README / docs / ADRs / source, 2026-08-17.">
           <mxGeometry height="50" width="1410" x="30" y="1360" as="geometry" />
         </mxCell>
       </root>
