@@ -309,6 +309,16 @@ Supabase's weekly Security Advisor flagged the production project (`vvlsaiywyfhx
 
 **Action taken (operator, in the Supabase SQL Editor):** `alter table public.<t> enable row level security;` across all `public` tables (no permissive policies, no `force row level security` — either would have re-opened the hole or broken the backend owner). Advisor cleared. This matches Mentible's documented posture (`backend/README.md`: *"Single-tenant per user. No multi-tenancy, no RLS"*) — isolation stays in the backend; RLS here is purely a **deny-all gate on the public API surface**, not tenant logic. Optional further hardening noted: drop `public` from the API's exposed schemas, since the client never uses PostgREST.
 
+### Update — 2026-08-18: it recurred, and the cycle is now closed for good
+
+The advisor re-flagged the same `rls_disabled_in_public` on the same project. Cause: **new `public` tables created by Alembic migrations added after the 8/4 fix** (the trust module — `0009_trust_validation`, `0010_trust_membership`, and onward, now to `0026`) default to RLS **off**, so PostgREST re-exposed them. This is structural: *every* future table would recur it. Re-verified the fix is still safe — mobile `supabase-js` is still auth-only (no `.from()`/`.rpc()`), backend still connects as `postgres` (bypasses RLS).
+
+**Two durable fixes, applied 2026-08-24, that end the recurrence:**
+1. **Removed `public` from the Supabase Data API Exposed schemas** (Project Settings → **Data API** → Exposed schemas — the control moved there from the old Settings → API page). Nothing legitimate uses `/rest/v1` on `public` (mobile auth-only; backend connects directly as `postgres`, not through PostgREST), so this closes the whole exposure class — new tables are never auto-published.
+2. **Belt-and-suspenders in the migration machinery:** `backend/alembic/env.py` (`do_run_migrations`) now runs, after every migration, a Postgres-only `DO` block that enables RLS on any `public` table lacking it (guarded on `connection.dialect.name == 'postgresql'`, so it's a no-op on the SQLite test path); `backend/alembic/script.py.mako` carries an RLS reminder for migration authors. Even if the Data API exposure were ever re-enabled, new tables self-secure on the next `alembic upgrade`.
+
+Net: the anonymous-PostgREST exposure is now closed at the platform layer (no exposed `public`) **and** self-healing at the schema layer (auto-RLS on migrate) — no longer dependent on anyone remembering per-table.
+
 ---
 
 ## 6. Scalability / Operability
