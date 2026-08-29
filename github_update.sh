@@ -22,7 +22,7 @@ enc() { echo "$1" | sed 's|[/_]|-|g'; }
 # studybuddy-docs, thittam_docs, wegofwd-expenses, wegofwd-secure, wegofwd-video,
 # wegofwd-private-docs, atri-sangam, wegofwd-text2audio, wegofwd-hub, and
 # claude-config are code/docs-only, so they appear here but not in MEM_PATHS below.
-PROJECTS="StudyBuddy_OnDemand studybuddy-docs Mentible thittam thittam_docs mambakkam-net pramana kathai-chithiram project-critique wegofwd-private-docs MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video wegofwd-expenses wegofwd-secure dronePrjs medtracker atri-sangam wegofwd-text2audio wegofwd-hub claude-config"
+PROJECTS="StudyBuddy_OnDemand studybuddy-docs Mentible thittam thittam_docs mambakkam-net pramana kathai-chithiram project-critique wegofwd-private-docs MarketingTools wegofwd-llm wegofwd-orchestration wegofwd-video wegofwd-expenses wegofwd-secure dronePrjs medtracker atri-sangam wegofwd-text2audio wegofwd-hub claude-config local_watch"
 
 # absolute project paths whose memory repo should be pulled
 MEM_PATHS="
