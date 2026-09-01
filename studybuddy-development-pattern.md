@@ -3,11 +3,20 @@
 **Document type:** Development pattern analysis
 **Scope:** Full lifecycle — from idea to late-build production system
 **Period:** 2025–2026
-**Last refresh:** 2026-06-09 (v1.6 — alignment with critique v1.7: numbers re-measured on `main` @ `d50bc3e`; school onboarding wizard as a self-service-enablement milestone; "Administration" menu as UI-grouping discipline; ADR-005/006 as retro/refine decision-record hygiene; backup restore-path hardening)
-**Prior:** v1.5 June 2026 (alignment with critique v1.6: Curriculum Authoring Studio (Epic 12) as a method milestone; ADR-004 product-boundary decision; book-export as a one-way content bridge) · v1.4 May 2026 (alignment with critique v1.5: numbers re-measured, `teacher_capabilities`, CONTESTED-status discipline) · v1.3 May 2026 (visual-library wave cadence + Pivot 7 helpers-toolkit + resolver-eval feedback loop) · v1.2 April 2026 (Epic 10 governance, Epic 11 content formatting, Streams registry, Playwright persona expansion)
+**Last refresh:** 2026-09-01 (v1.7 — alignment with critique v1.8: numbers re-measured on `main` @ `b686be7`; server-side quiz grading as a client-trust pivot; the live-stack `quiz_suite` as a mock-discipline lesson born from a P0 escape (#524); ADR-007/008 as decision-ahead-of-code hygiene at scale; independent-teacher tier's second life as a subscription product, distinct from the removed private-teacher-tier pivot)
+**Prior:** v1.6 June 2026 (alignment with critique v1.7: numbers re-measured on `main` @ `d50bc3e`; school onboarding wizard as a self-service-enablement milestone; "Administration" menu as UI-grouping discipline; ADR-005/006 as retro/refine decision-record hygiene; backup restore-path hardening) · v1.5 June 2026 (alignment with critique v1.6: Curriculum Authoring Studio (Epic 12) as a method milestone; ADR-004 product-boundary decision; book-export as a one-way content bridge) · v1.4 May 2026 (alignment with critique v1.5: numbers re-measured, `teacher_capabilities`, CONTESTED-status discipline) · v1.3 May 2026 (visual-library wave cadence + Pivot 7 helpers-toolkit + resolver-eval feedback loop) · v1.2 April 2026 (Epic 10 governance, Epic 11 content formatting, Streams registry, Playwright persona expansion)
 **Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-practices.md](studybuddy-practices.md) · sibling product: [mentible-development-pattern.md](mentible-development-pattern.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
 
+> **Update 2026-09-01 (v1.7):** the body below is still the v1.3 record, preserved; nothing in the method has been overturned by a 357-commit window (`d50bc3e` → `b686be7`). Three additions to the documented pattern this cycle, detailed as a new Pivot 8 and a Section 5.4 update below:
+>
+> - **A client-trust boundary got closed for real (Pivot 8).** Quiz grading moved from client-submitted score to server-resolved score — a genuine "stop trusting the client" pivot, the same category as the original device-side-to-backend pivot (Pivot 1), just at a narrower scope (one endpoint, not the whole architecture).
+> - **A P0 escape produced a durable live-stack test tier, not just a patched test.** #524 shipped because every mock in the existing suite proved the code *called* the right functions without proving the *real* stack produced the right answer. The fix — `backend/quiz_suite/` running against the real dev stack outside normal CI — is a "mock discipline" lesson worth generalizing: **when a bug crosses a seam every layer mocks, the fix is a test tier that cannot mock that seam, not a better mock.**
+> - **A retired pattern came back in a different shape.** §6 Pivot 2 records the private-teacher-tier migration (0022) being **removed entirely** in the school-as-primary pivot. The independent-teacher Solo/Growth/Pro subscription tier (live as of this window, Stripe-backed) is *not* a reversion of that pivot — it's a parallel monetization path alongside school billing, not a replacement of it. Worth noting explicitly so a future reader doesn't read the removed migration as evidence the concept never came back.
+> - **ADR-ahead-of-code now recurs at scale.** ADR-007 and ADR-008 both shipped migrations (0067, 0068) before their own ADR left "Proposed." What was a single instance (ADR-005) in v1.6 is now a repeating pattern — worth watching whether it becomes the team's default mode rather than an occasional gap.
+>
+> Re-measured 2026-09-01: **1,454 backend tests passed / 2 skipped across 129 files** (was 1,085/77), **68 migrations (latest 0068)**, **19 Playwright specs / 3,156 LOC**, **8 ADRs** (ADR-007/008 added, both Proposed), **21 RLS-enabled tenant tables** (was 7 base + RESTRICTIVE curricula). Zero TODO/FIXME holds.
+>
 > **Note (2026-06-09, v1.6):** the body below is the v1.3 record, preserved; nothing in the method has been overturned. New since v1.5 (26-commit window, HEAD `d50bc3e`), worth adding to the documented pattern:
 >
 > - **Self-service onboarding built on derived signals, not new endpoints.** The school_admin onboarding wizard (#420) computes a guided checklist (`web/lib/school/setup-checklist.ts`) purely from counts the portal *already* exposes — teachers, students, adoptions, classrooms — so the feature added **zero backend surface**. The step computation is a pure function, unit-tested without rendering. Method pattern: *build the guidance layer on top of existing read signals; do not grow the API to power a UI affordance.*
@@ -711,11 +720,17 @@ Pipeline tests
 └── format_drift validator has its own coverage
 
 E2E tests (Playwright)
-├── 16 spec files / 2,620 LOC
-├── Student critical path (293 LOC)
-├── Persona accessibility (student/teacher/admin/school-admin — 276+319+232+327 LOC)
-├── Auth, landing, pricing, admin portal
-└── School-admin-curriculum-flow has 6 fixme'd scenarios (issue #188)
+├── 19 spec files / 3,156 LOC ("120 tests / 4 projects", 2026-09-01)
+├── Student critical path
+├── Persona accessibility (student/teacher/admin/school-admin)
+├── Auth, landing, pricing, admin portal, quiz-suite
+└── School-admin-curriculum-flow has 5 fixme'd scenarios remaining, down from 6 (issue #188)
+
+Live-stack tests (backend/quiz_suite/ + web/tests/e2e/quiz-suite/, added 2026-08)
+├── Run against the real dev stack via `scripts/quiz_suite.sh`, not fixtures/mocks
+├── Deliberately excluded from normal CI — pytest -m "not quiz_live" / opt-in QUIZ_SUITE=1
+├── test_smoke, test_journey, test_anticheat, test_content_integrity, test_failure_surface
+└── Born from #524 — a grading bug every mocked layer proved "called correctly" without proving "computed correctly"
 ```
 
 ### 5.5 The CLAUDE.md Operational Pattern
@@ -858,6 +873,8 @@ Phase 3 — Library promotion + eval
 
 **Driver:** "The School/Institution is the primary entity. The teacher is a member of a single school."
 
+*2026-09-01 note:* the independent-teacher Solo/Growth/Pro subscription tier (live, Stripe-backed) is not a reversal of this pivot — school-as-primary billing is unchanged. It is a second, parallel monetization path for teachers without a subscribed school, built new rather than resurrecting the removed migration-0022 tier.
+
 ### Pivot 3 — App-layer Tenant Isolation to PostgreSQL RLS
 
 | Option considered | Decision |
@@ -911,6 +928,18 @@ The first visual-library catalogue (`generate_oscillations_visuals.ts`) was writ
 | Wall time per class | First-of-class ~3h; same-class downstream ~45 min |
 
 **Driver:** ten near-identical sub-issues invited a wave cadence. The compression result (estimated ~19 FTE-days → actual ~14h 56m) is **process maturity, not primitive reuse** — most SVGs and Remotion scenes are class-specific. What scaled was the Phase 1/2/3 ritual.
+
+### Pivot 8 — Client-Trusted to Server-Verified Quiz Grading (P0 Escape #524, July–August 2026)
+
+A quiz's score was resolved partly from data the client submitted. #524 showed this could produce a wrong (and, adversarially, a forgeable) grade, and — worse — that the existing mocked test suite could not have caught it: every layer's mock proved the code *called* the grading function correctly, none proved the *real* stack returned the right score for a real quiz.
+
+| Before | After |
+|---|---|
+| Quiz score partly client-resolved | Backend resolves the quiz curriculum and computes the grade server-side (2026-07-12) |
+| Test suite entirely mocked (Postgres fixture, mocked Stripe/Auth0/Anthropic) | New `backend/quiz_suite/` + `web/tests/e2e/quiz-suite/` tier runs against the **real dev stack**, opt-in (`QUIZ_SUITE=1`), excluded from normal CI |
+| No test tier could reproduce a seam-crossing regression | `test_smoke.py` proves the suite reaches the live app before any other tier is trusted; `test_failure_surface.py` covers grading-failure-mid-quiz specifically |
+
+**Driver:** a P0 in production is the forcing function that reveals which seams your mocks paper over. The fix is two-layered — close the specific trust hole (server-side grading) *and* add a permanent test tier shaped to catch the next bug in that same class, rather than adding one more assertion to the existing mocked suite.
 
 ### Decision Point — PAI 5.0 Removal (May 2026)
 

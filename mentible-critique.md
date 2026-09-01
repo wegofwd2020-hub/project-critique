@@ -1,10 +1,10 @@
 # Mentible — Code Review & Critique
 
-**Reviewed:** 2026-06-09 (v2.0 — major refresh; measured on disk at branch `main` @ `40166ee`. **97 commits since v1.0**; headline shifts: LLM provider seam extracted into the installable `wegofwd-llm` package (ADR-012), Pramana in-process generation integration (ADR-011/013), multi-provider BYOK with free providers, BYOK 422-scrub security fix (ADR-001).)
+**Reviewed:** 2026-09-01 (v2.1 — refresh; measured on disk at branch `main` @ `e13f10b`, app version `v0.2.63`. **1,354 commits total, +1,226 since v2.0's `40166ee`**. Headline: **ADR-037's expert-validation Studio is built end-to-end** (capture→structure→validate→share, per-topic approve/withdraw, publish→Library EPUB/PDF/DOCX, a 10-palette re-skin) — while the project's own designated-canonical status doc has gone **717 commits stale** and doesn't mention it. See **"Update — 2026-09-01"** below.
 **Addendum:** 2026-07-14 — **the AI-capability expansion (ADR-028 → ADR-032)**, measured at `main@28a62c8` (**677 commits**, +135 since 2026-07-06). Open Shelves is **built**; ADR-029/030/032 are **paper**; **ADR-032 amends ADR-001 (no server-side key custody)** and reverses ADR-028's device-local promise in its own words. See the §1 and §5 updates, the new P0s, and the companion diagram [`mentible_enhanced_features_mindmap.drawio`](mentible_enhanced_features_mindmap.drawio).
-**Prior review:** 2026-06-02 (v1.0 — first review, branch `feat/authoring-regenerate-export-fixes` @ `e1c66f7`)
+**Prior review:** 2026-06-09 (v2.0 — major refresh, `40166ee`) · 2026-06-02 (v1.0 — first review, branch `feat/authoring-regenerate-export-fixes` @ `e1c66f7`)
 **Repo:** `wegofwd2020-hub/Mentible` · **Public brand:** **Mentible** (tagline *"Author Yourself"*; ADR-006, name pending trademark/domain clearance — formerly "StudyBuddy Q", earlier "StudyBuddy SelfLearner")
-**Phase:** ~~Pre-deploy MVP~~ → **SHIPPED.** As of the 2026-07-14 addendum, Mentible is **live in production**: backend at `mambakkam.net/mentible-api` (Hetzner VPS), full web app at `/app/mentible`, public demo at `/demos/mentible`, **Android APK released**, **`v0.2.0` tagged 2026-06-28**. *The v2.0 body below was written pre-deploy and describes a pre-deploy product; several of its findings are now closed and one has **escalated** — see **"Corrections"** immediately below before reading further.*
+**Phase:** **SHIPPED, and repositioning.** Live in production since the 2026-07-14 addendum (backend at `mambakkam.net/mentible-api`, web app at `/app/mentible`, demo at `/demos/mentible`, Android APK, `v0.2.0` tagged 2026-06-28). As of 2026-09-01, **ADR-037 (Accepted-in-practice, still filed `Status: Proposed`) has shipped a second product mode on top of the self-learner app**: an AI-accelerated studio for subject-matter experts, *"Trust is the product."* Revenue is now **services-led** (ADR-039, Accepted 2026-08-16) rather than self-serve billing. *The v2.0 body below was written pre-deploy and describes a pre-deploy product; the 2026-07-14 addendum closed/escalated several of its findings; the 2026-09-01 update below closes, half-closes, or re-opens findings from both — read it before trusting anything below on documentation freshness or job-runner architecture.*
 **Rating key:** ✅ Strong · ⚠️ Gap / Risk · ❌ Critical Issue
 
 ---
@@ -39,6 +39,48 @@ What the wildcard actually cost is **defence in depth**: any page in any browser
 **New since v2.0, undocumented in the body:** a second shared-package dependency, **`wegofwd-secure @ v0.1.0`** (`backend/requirements.txt:42`), which inherits the same git-pin/no-registry supply-chain posture §1 flags for `wegofwd-llm` — now doubled.
 
 **Process note.** This review's own §4 hammered the project for stale status headers while its own header sat five weeks stale, telling readers a shipped product was pre-deploy. The project fixed its drift faster than the critique did. A point-in-time review that is not re-dated becomes exactly the artifact it criticizes — so the header now carries the correction, and the diagram-drift item in the new Priority Actions block is the same disease in a third surface.
+
+---
+
+## Update — 2026-09-01: ADR-037's Studio shipped; the canonical status doc didn't notice (`main@e13f10b`, v0.2.63, 1,354 commits)
+
+**Headline: ADR-037 ("Reposition to Expert-Validation Studio") is built end-to-end, on `main`, and live.** Verified on disk, not inferred from the ADR: `mobile/src/lib/projectPhase.ts` drives a **Capture → Structure → Validate → Share** loop; `backend/src/trust/` is a real 30-file module (`router.py`'s `generate_topic_version`/`withdraw_topic_version_approval`, `topic_approval_repo.py`, `generation_job_repo.py`) with migrations running `0009` past `0026`; **publish-to-Library** is wired (`backend/src/library/router.py POST /{book_id}/publish`, `export/router.py` serving `epub|pdf|docx|pack`, `compiler/src/docx.ts`); and the app got a **10-palette re-skin** (`mobile/src/constants/theme.ts`: the default Study palette plus `manuscript`, `reading`, `gilded-noir`, `forest-moss`, `navy-trust`, and four `studio-*` palettes). This is a second product mode (SME expert-validation studio) shipped on top of the original self-learner app, not a repaint.
+
+✅ **ADR-038 is a good example of the ADR process correcting itself from field feedback.** ADR-038 ("Navy Trust design language") forced SME surfaces into one palette; PRs **#375** (`fix(theme): SME surfaces + Posts follow the selected theme (reverse ADR-038 O1)`) and **#376** (`fix(theme): show all theme swatches (incl. Navy Trust)`) reversed that restriction days later once it read as a bug to users. The decision was wrong, was caught quickly, and was reversed in the open rather than quietly patched — the same discipline this critique has praised since v1.0, now applied to a UX call instead of a security one.
+
+⚠️ **ADR-037 is filed `Status: Proposed` while it has shipped ~30+ files across two repos' worth of surface.** (`docs/adr/ADR-037-reposition-to-expert-validation-studio.md`: *"Status: Proposed (2026-07-27). Strategic direction chosen; implementation specifics deferred to per-sub-project specs."*) This is the same pattern the 2026-07-14 addendum flagged for ADR-028 ("shipped while still Proposed") — now on the project's own headline feature. *Proposed* has stopped meaning "not yet built" anywhere in this repo; it needs to be re-anchored to something checkable, or the field should be retired in favor of reading the code.
+
+❌ **Documentation has *regressed* since 2026-07-14, and the failure is structural, not cosmetic.** `CLAUDE.md` is, to its credit, fresh and self-aware — it now explicitly flags ADR-037 up top and names `docs/STATUS.md` as *"the canonical, current 'what's built' record — read it first."* But that hand-off target has failed: `docs/STATUS.md`'s last touch on `main` is **2026-07-16** (an ADR-036 note) — **717 commits behind HEAD** — and contains **zero mentions of ADR-037**, the studio, trust/validation, or any of the last six weeks of work. A reader who follows `CLAUDE.md`'s own instruction to "read STATUS.md first" lands on a document that has never heard of the product's current headline feature. Compounding it, `project-status.yaml` (the machine-readable starter manifest) still reads `stage: pre-mvp` with `fastapi-backend` and `mobile-app-code` both `status: pending` — over a 61k+-LOC shipped product with a live paid-services funnel. **This is worse than the v1.0/v2.0 doc-drift finding, not a repeat of it: there, the stale doc was an accidental leftover; here, the project explicitly designated a doc as canonical and then let it go stale anyway.** The self-correcting instinct that fixed `CLAUDE.md` did not extend to the document `CLAUDE.md` itself points readers to.
+
+⚠️ **The job runner is now a mixed architecture, not a single deferred one.** v2.0 and the 2026-07-14 addendum tracked "in-process `BackgroundTask`, not Celery" as one open item. It has been half-resolved in a way that adds an inconsistency rather than removing one: `backend/src/core/celery_app.py` + `backend/src/trust/tasks.py` run the **new** trust/topic-generation and suggest-TOC work on **Celery+Redis**, while `generate/router.py`, `export/router.py`, `library/router.py`, and `structure/router.py` — the original, still-live generation/export paths — remain on in-process `BackgroundTasks`. Two job-execution models now coexist with no stated migration plan for the legacy routers and no doc saying which runner new work should default to. Finish the migration (move the legacy routers to Celery) or write down why the split is permanent — an unplanned 50/50 split is itself a new architecture-consistency risk.
+
+**Closed / unchanged from prior findings:**
+- ✅ **`wegofwd-llm` pin lag — CLOSED for real this time.** `backend/requirements.txt` now pins `wegofwd-llm[anthropic] @ ...@v0.2.0` with no drift from the package's own tag. The registry gap the earlier fix left open **still stands, unchanged in shape**: both `wegofwd-llm@v0.2.0` and the second shared dependency `wegofwd-secure@v0.1.0` are `git+https` pins with no registry or hash-pinning — `requirements.txt` even carries a comment pinning `structlog` transitively to satisfy `wegofwd-secure`'s own version range, a small, live symptom of the coupling this review keeps flagging as unresolved, not new.
+- 🟡 **ADR-033/035 (per-user private hosted library) — still design-only.** A repo-wide grep for `boto3`, `s3`, `hosted_library`, `blob` across `backend/src` returns zero hits. No regression, no progress either; still paper.
+- **ADR-039 (Accepted 2026-08-16): a real strategic pivot, not just another ADR.** *"Option A: services-led; the self-serve billing rail (P0-1) is deferred. Revenue comes from invoiced services through the built work-with-me funnel."* This reprioritizes away from the self-serve subscription plumbing several ADRs elsewhere in this review (031/032) were built around — worth reading before trusting any of the managed-billing analysis above as the current monetization plan.
+
+### Re-measured numbers (v2.0 `40166ee` → v2.1 `e13f10b`, `wc -l` / grep on disk)
+
+| Metric | v2.0 (`40166ee`, 2026-06-09) | v2.1 (`e13f10b`, 2026-09-01) |
+|---|---|---|
+| Commits (total) | 228 | **1,354** |
+| ADRs | 13 | **42** |
+| Backend src LOC / `def test_` (files) | 1,953 / 96 (11) | **16,037 / 929 (105)** |
+| Compiler src LOC / test blocks (files) | 2,223 / 71 (11) | **3,881 / 210 (27)** |
+| Mobile src LOC / test blocks (files) | 7,696 / 132 (23) | **41,507 / 1,851 (334)** |
+| Pipeline LOC | 1,246 | 1,260 |
+| In-repo production LOC (excl. tests) | ~13,118 | **~62,685** (mobile 41,507 / backend 16,037 / compiler 3,881 / pipeline 1,260) |
+
+*Methodology note: the backend `def test_` count is a plain-pattern grep over `backend/tests/*.py` — it counts every `def test_`/`async def test_` occurrence, not pytest-collected items, so treat it as an upper-bound approximation like the JS `it/test(` block counts; the file count (105) is a cleaner cross-check.*
+
+### Ratings, revised
+
+| Area | v2.0 Rating | v2.1 Rating | Why it moved |
+|---|---|---|---|
+| Architecture | 🟢 Strong | 🟢 Strong, with a new inconsistency | ADR-037's trust pipeline + publish-to-Library is a real, well-bounded addition; the Celery/BackgroundTask split is the new open item |
+| Documentation | 🟡 Good | 🔴 **Regressed** | `CLAUDE.md` fixed itself and correctly names `STATUS.md` canonical — but `STATUS.md` is 717 commits stale with zero ADR-037 mentions, and `project-status.yaml` still says `pre-mvp`. Designating a canonical doc and then not maintaining it is worse than the earlier undesignated drift |
+| Security | 🟢 Strong | 🟢 Strong | No new findings this pass beyond what §5 already tracks; BYOK posture and the Supabase RLS closure both hold |
+| Everything else (Code Quality / Test Coverage / Scalability) | — | — | Unchanged this pass; see the dated sections below for standing items |
 
 ---
 
@@ -99,6 +141,8 @@ Mentible remains the **direct-to-learner answer to a GTM problem**: a thin, opin
 **Top 5 actions (as written 2026-06-09 — three are now closed; see Corrections):** ~~(1) **Fix the `wegofwd-llm` version pin**~~ ✅ *(now `@v0.2.0`; the registry gap stands and has doubled with `wegofwd-secure`)*. (2) Replace the in-process `BackgroundTask` with the planned Celery/Redis worker, or formally document the restart-data-loss window — **still open, and now running in production**. ~~(3) **Close the doc-drift for real**~~ ✅ *(headers fixed; `STATUS.md` current)*. ~~(4) Deploy to Fly~~ ✅ *(shipped — on **Hetzner**, not Fly)*. (5) Resolve ADR-010 (narrative mode) and ADR-011 (Pramana handoff) from *Proposed* — **still open 39 days later**, and the *Proposed* backlog has since grown to seven ADRs.
 
 **The current top action is none of these:** put a real number on the **spend ceiling that ships at `default=0`** — the control that ADR-031 D3/D8, ADR-032 D10 *and* ADR-032 D15 each cite as what bounds abuse and cost. (CORS and the false help copy, the other two items flagged on 2026-07-14, are **closed** in Mentible PR #304.) See the 2026-07-14 Priority Actions block.
+
+> ⚠️ **This table and the "Top 5 actions" line above are dated 2026-06-09 and preserved as history — several ratings have since moved.** See **"Update — 2026-09-01"** below for the current Documentation rating (🟡 Good → 🔴 **Regressed**) and Architecture note (the Celery/BackgroundTask split), and **"Added 2026-09-01 — the current Top-3"** in Priority Actions for what supersedes the spend-ceiling item as the top action.
 
 ---
 
@@ -340,6 +384,16 @@ Net: the anonymous-PostgREST exposure is now closed at the platform layer (no ex
 
 ## Priority Actions (Ordered)
 
+### Added 2026-09-01 — the current Top-3 (supersedes prior Top-3/5 blocks where they conflict)
+
+| Priority | Action | Area |
+|---|---|---|
+| **P0** | **Refresh `docs/STATUS.md`.** It is 717 commits stale (last touched 2026-07-16) and mentions none of ADR-037, the trust/validation Studio, or the last six weeks of shipped work. `CLAUDE.md` explicitly tells readers to treat it as canonical — a canonical doc this stale is actively misleading, not just outdated. Fix `project-status.yaml`'s `stage: pre-mvp` in the same pass | Documentation |
+| **P1** | **Finish the Celery migration, or document why not.** `trust/tasks.py` runs on Celery+Redis; `generate/`, `export/`, `library/`, and `structure/` routers are still in-process `BackgroundTasks`. Move the legacy paths onto the new runner, or write down the reason two job-execution models are meant to coexist long-term | Architecture |
+| **P1** | **Reconcile ADR-037's `Status: Proposed` with the fact that it shipped.** Mark it Accepted (or Superseded-by-implementation) now that Capture→Structure→Validate→Share, the trust module, and publish-to-Library are all merged and live. Check the rest of the ADR set for the same drift while at it | Documentation / Architecture |
+
+**Standing gate, unchanged:** run one real BYOK end-to-end generation against the deployed instance and record it — still the single most valuable verification this project has not done as a committed, repeatable check.
+
 ### Added 2026-07-14 — the ADR-028 → ADR-032 expansion
 
 | Priority | Action | Area |
@@ -385,3 +439,5 @@ Net: the anonymous-PostgREST exposure is now closed at the platform layer (no ex
 *The **2026-07-14 addendum** (§1 and §5 updates, the added Priority Actions block) is measured against `main@28a62c8` — 677 commits, 135 of them since 2026-07-06 — reading ADR-028 through ADR-032 in full plus the companion brief `docs/proposals/2026-07-12-server-hosted-library-and-rag.md`, and verifying implementation status by grep across `backend/src`, `mobile/src`, `pipeline/`, and `compiler/`. All five new ADRs are **Proposed**; ADR-028 is nonetheless merged and shipping. Claims that a capability is "paper" are word-boundary-grep negatives (`rag`, `embedding`, `vector_store`, `fts5`, `watch_manifest`, `currency_agent`, `Plan.features`), not inferences from the ADR text. The `managed_account_spend_ceiling_micros: int = Field(default=0)` finding is read directly from `backend/config.py`. Tests were not executed in the review environment.*
 
 *This critique is a point-in-time review measured against the code on disk at `40166ee` (branch `main`, 2026-06-09), the 13 ADRs, the commit log `e1c66f7..HEAD` (97 commits), and the sibling repos `wegofwd-llm` (latest tag `v0.1.1`) and `pramana` (HEAD `e2958ef`, branch `feat/ai-drafted-approved-content`). Deployment status and on-device UX are **self-reported in `docs/STATUS.md`** (now stale) and were not verifiable from source; pytest could not be executed in the review environment (no `pytest` module installed), so the 422-scrub claim is verified by reading the handler, the `scrub_validation_errors` implementation, and the asserting test, not by a green run. The brand "Mentible" is adopted per ADR-006 pending trademark/domain clearance; the repo and some identifiers remain `Mentible` / `studybuddy-q` intentionally. Supersedes v1.0 (2026-06-02 @ `e1c66f7`).*
+
+*The **2026-09-01 (v2.1) update** is measured against `origin/main@e13f10b` (app version `v0.2.63`, 1,354 commits) — read via `git show origin/main:<path>` / `git log origin/main`, not the local working tree, which may be behind. All 42 ADR files and `docs/STATUS.md`/`CLAUDE.md`/`project-status.yaml` were read directly; the ADR-037 build claim rests on grepping `backend/src/trust/`, `mobile/src/lib/projectPhase.ts`, `backend/src/library/router.py`, and `mobile/src/constants/theme.ts` for the named symbols, not on the ADR's own text. The Celery/BackgroundTask split is read from `grep -rl BackgroundTasks backend/src` vs. the presence of `backend/src/core/celery_app.py`. LOC and test-block counts are `wc -l` / pattern-grep on a detached worktree of `origin/main`, same methodology as v2.0. Tests were not executed. Supersedes v2.0 (2026-06-09 @ `40166ee`) and the 2026-07-14 addendum where they conflict.*

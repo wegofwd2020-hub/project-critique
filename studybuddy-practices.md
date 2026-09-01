@@ -2,11 +2,21 @@
 
 **Document type:** Engineering practices analysis
 **Scope:** Backend (FastAPI/Python), Web (Next.js), Mobile (Kivy), Pipeline, Infrastructure
-**Period:** 2026-06-09 (v1.7 — alignment with critique v1.7: numbers re-measured on `main` @ `d50bc3e`; new practices surfaced — onboarding wizard on derived signals (no new endpoints), UI grouping that disclaims being authz, retro/refine ADR hygiene, backup restore-path fixed with tests)
-**Prior:** v1.6 June 2026 (interactive authoring studio with publish-completeness gate, one-way content-export bridge, ADR to fix product boundary) · v1.5 May 2026 (additive-RBAC via capabilities table, CONTESTED-status discipline) · v1.4 May 2026 (visual-library wave 1+2, four bug close-outs, PAI removal) · v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
+**Period:** 2026-09-01 (v1.8 — alignment with critique v1.8: numbers re-measured on `main` @ `b686be7`; new practices surfaced — server-side-grading-over-client-trust, live-stack `quiz_suite` born from a mocked-past-the-seam P0 escape (#524), an a11y contrast probe that itself had a false-passing bug)
+**Prior:** v1.7 June 2026 (numbers re-measured on `main` @ `d50bc3e`; new practices surfaced — onboarding wizard on derived signals (no new endpoints), UI grouping that disclaims being authz, retro/refine ADR hygiene, backup restore-path fixed with tests) · v1.6 June 2026 (interactive authoring studio with publish-completeness gate, one-way content-export bridge, ADR to fix product boundary) · v1.5 May 2026 (additive-RBAC via capabilities table, CONTESTED-status discipline) · v1.4 May 2026 (visual-library wave 1+2, four bug close-outs, PAI removal) · v1.3 April 2026 (Epic 10 / Epic 11 / Streams / Playwright persona expansion)
 **Related:** [studybuddy-critique.md](studybuddy-critique.md) · [studybuddy-development-pattern.md](studybuddy-development-pattern.md) · sibling product: [mentible-practices.md](mentible-practices.md)
 **Rating key:** ✅ Good practice · ⚠️ Bad practice · 🔧 How to improve
 
+> **Update 2026-09-01 (v1.8):** the body below is still the v1.4 record, preserved. No documented practice has been overturned by a 357-commit window (`d50bc3e` → `b686be7`). Three new practices worth adding to the catalogue, detailed as new subsections below:
+>
+> - **✅ New good practice — server-side grading over client trust.** Quiz scoring stopped trusting a client-submitted score; the backend now resolves the quiz curriculum and computes the grade itself (2026-07-12). A client that can compute its own score can also forge one — this closes a real, not theoretical, integrity hole. See §2 (Security Practices).
+> - **✅ New good practice — a live-stack test tier born from a mock-discipline lesson (#524).** A grading regression reached production because every layer of the existing suite mocked past the exact seam that broke. The fix, `backend/quiz_suite/` + `web/tests/e2e/quiz-suite/` run against the real dev stack via `scripts/quiz_suite.sh` (opt-in, excluded from normal CI), is a durable process fix: *when a bug crosses a seam every mock papers over, add a test tier that cannot mock that seam.* See §5 (Testing Practices).
+> - **⚠️ New watch-item — the verification tool can itself be the bug.** The #189 a11y contrast pass found that an earlier contrast probe computed OKLCH values as if they were RGB, **false-passing** combinations that actually failed WCAG AA. The fix (canvas-based probe) is good; the lesson is that a false-passing check is worse than no check, because it looks like coverage. See §5.
+> - **✅ Carried forward, narrowed — 2 of 3 disabled axe rules resolved (#189).** `html-has-lang` and `document-title` fixed; `color-contrast` remains disabled (not every page cleared 4.5:1 after the warm-neutrals pass, so the rule stays honestly off rather than narrowed dishonestly).
+> - **⚠️ Carried forward, unchanged — `purge_account.py` (#416) still gated by a comment, not code.** Third review window in a row with no `APP_ENV`/hostname assertion added.
+>
+> Re-measured 2026-09-01: **1,454 backend tests passed / 2 skipped across 129 files**, 19 Playwright specs / 3,156 LOC, 68 migrations (latest 0068), 8 ADRs (ADR-007/008 added, both Proposed), 21 RLS-enabled tenant tables.
+>
 > **Note (2026-06-09, v1.7):** the body below is the v1.4 record, preserved. No documented practice has been overturned. New since v1.6 (26-commit window, HEAD `d50bc3e`), worth adding to the catalogue:
 >
 > - **✅ New good practice — UI affordance built on derived signals, not new endpoints (#420).** The school onboarding wizard computes its checklist purely from counts the portal already exposes (`web/lib/school/setup-checklist.ts`, a pure unit-tested function) — zero backend surface added. *Build the guidance layer on existing read signals; don't grow the API to power a UI hint.*
@@ -287,7 +297,37 @@ Revoked signing keys are evicted automatically. Key rotation handled (re-fetch o
 
 ### ✅ Good — RLS Extended to Curricula for Platform-Write Protection
 
-Migration 0046 adds three RESTRICTIVE RLS policies on `curricula` refusing INSERT/UPDATE/DELETE on `owner_type='platform'` rows unless the session variable is `'bypass'`. Schools cannot modify platform curricula even if the application path is bypassed.
+Migration 0046 adds three RESTRICTIVE RLS policies on `curricula` refusing INSERT/UPDATE/DELETE on `owner_type='platform'` rows unless the session variable is `'bypass'`. Schools cannot modify platform curricula even if the application path is bypassed. RLS coverage has kept growing additively since — **21 tenant tables** enabled through migration 0068.
+
+---
+
+### ✅ New (2026-09-01) — Server-Side Grading Closes a Client-Trust Hole
+
+Quiz scoring previously resolved partly from data the client submitted. A client that can compute its own score can also forge one. The fix (2026-07-12) moved resolution server-side: the backend now resolves the quiz curriculum and computes the grade itself, rather than accepting a client-reported result.
+
+```
+BAD (before): client submits {score: 9, total: 10}, backend trusts it
+GOOD (after): backend resolves the quiz's curriculum + answer key itself,
+              grades the submitted answers server-side, ignores any
+              client-reported score field entirely
+```
+
+This is a general practice, not a one-off patch: **any endpoint that grades, scores, or awards value must compute that value from data the server already trusts, never from a value the client hands back.**
+
+---
+
+### ⚠️ Bad — `purge_account.py` (#416) Is Gated by a Comment, Not Code
+
+Three review windows running, unchanged: the script defaults to a dry-run (rolls back its own transaction) and carries an explicit docstring warning against running it on real customer data, but nothing in the code asserts `APP_ENV` or checks the target host before `--commit` is honored.
+
+#### 🔧 How to Improve
+
+```python
+if not (settings.APP_ENV == "test" or "test" in settings.DATABASE_URL):
+    raise RuntimeError("purge_account.py refuses to run outside a test database")
+```
+
+A docstring is documentation. A destructive script needs an assertion.
 
 ---
 
@@ -562,18 +602,42 @@ Enforced in CI after pytest. Much stronger than the old flat 70% floor.
 
 ### ✅ Good — Playwright E2E Suite Has Broadened
 
-16 spec files, 2,620 LOC total:
+19 spec files, 3,156 LOC total ("120 tests / 4 projects", 2026-09-01 — up from 16 files / 2,620 LOC):
 
 | Category | Specs |
 |---|---|
-| Landing / public | landing (191 LOC), public pages (201 LOC) |
-| Auth | login + redirects + school/student flows (73+111+77+25+25 LOC) |
-| Persona accessibility | student-accessibility (276), teacher-accessibility (319), admin-accessibility (232), school-admin-curriculum-flow (327) |
-| Admin portal | 228 LOC |
-| Pricing | 130 LOC |
-| Student critical path | 293 LOC — landing → curriculum map → lesson → quiz → result → history |
+| Landing / public | landing, public pages |
+| Auth | login + redirects + school/student flows |
+| Persona accessibility | student-accessibility, teacher-accessibility, admin-accessibility, school-admin-curriculum-flow |
+| Admin portal | admin-portal |
+| Pricing | pricing |
+| Quiz suite | quiz-suite (new, live-stack — see below) |
+| Student critical path | landing → curriculum map → lesson → quiz → result → history |
 
-Status: 35/35 persona + 86/86 chromium-project specs passing; 6 `fixme`'d in `school-admin-curriculum-flow` tracked in issue #188.
+Status: **5** `fixme`'d in `school-admin-curriculum-flow` tracked in issue #188 (narrowed from 6), each fixme naming its own concrete unblock step.
+
+---
+
+### ✅ New (2026-09-01) — A Live-Stack Test Tier for the Seam Mocks Can't See
+
+`backend/quiz_suite/` + `web/tests/e2e/quiz-suite/`, run via `scripts/quiz_suite.sh` against the **real dev stack**, not fixtures. Born from #524: a grading regression reached production because every layer of the pre-existing (fully mocked) suite proved the code *called* the right functions without proving the *real* stack produced the right quiz score.
+
+```
+GOOD: a test tier that cannot mock the seam that broke
+
+  backend/quiz_suite/test_smoke.py
+    → proves the suite can reach the LIVE app before any other tier is trusted
+
+  backend/quiz_suite/test_journey.py, test_anticheat.py,
+  test_content_integrity.py, test_failure_surface.py
+    → run against the real dev stack (docker compose exec -T api ...)
+
+  Deliberately excluded from normal CI:
+    pytest -m "not quiz_live"   (default)
+    QUIZ_SUITE=1                (opt-in to run it)
+```
+
+Practice: **when a bug crosses a seam every existing mock papers over, the fix is a test tier that cannot mock that seam — not one more assertion inside the existing mocked suite.** A suite that is 100% mocked can be 100% green while the seam between "code calls the right function" and "the real stack returns the right answer" stays completely untested.
 
 ---
 
@@ -589,7 +653,7 @@ tests/e2e/functional/
   teacher_reports.spec.ts
   school_admin_subscription.spec.ts
   school_admin_content_review.spec.ts
-  school_admin_curriculum_submission.spec.ts   ← unfixme issue #188
+  school_admin_curriculum_submission.spec.ts   ← unfixme issue #188 (5 remaining)
 
 Each spec: full user journey, real form submission, real backend state change,
 assert on downstream visible effect (not just page render).
@@ -597,13 +661,21 @@ assert on downstream visible effect (not just page render).
 
 ---
 
-### ⚠️ Bad — 3 Axe Rules Disabled
+### ⚠️ Bad — 1 of 3 Axe Rules Still Disabled (Narrowed From 3)
 
-`color-contrast`, `html-has-lang`, `document-title` — issue #189. These are high-weight rules for school-district procurement.
+`html-has-lang` (fixed via a server-side `"en"` fallback in `app/layout.tsx`) and `document-title` (fixed via an explicit `export const metadata` per portal layout) are resolved. `color-contrast` remains disabled — issue #189's warm-neutrals pass brought most gray-400/blue-100-class combos from 2.59–4.31:1 up to 4.79+:1, but not every page cleared WCAG AA 4.5:1, so the rule honestly stays off rather than being narrowed prematurely.
 
 #### 🔧 How to Improve
 
-Fix each rule, then remove the disable. Add a Playwright axe-config diff test that fails if a rule is re-disabled without explanation in the config comment.
+Finish the remaining contrast fixes, then remove the disable. Add a Playwright axe-config diff test that fails if a rule is re-disabled without explanation in the config comment.
+
+---
+
+### ⚠️ New watch-item (2026-09-01) — A Contrast Probe That Itself False-Passed
+
+While fixing #189, the team found that an *earlier* contrast-checking probe computed OKLCH color values as if they were plain RGB — silently **false-passing** combinations that actually failed WCAG AA. The replacement is a canvas-based probe that renders the actual computed color before measuring contrast.
+
+Practice: **a verification tool that reports green when the real condition is red is worse than no tool at all** — it consumes the "we checked this" credit without providing the safety. Any custom-written check (contrast probes, custom linters, ad hoc assertion helpers) deserves the same scrutiny as the code it verifies, ideally validated against at least one known-failing input during its own development.
 
 ---
 
@@ -826,7 +898,7 @@ Before the first paying school, the live-key rollout procedure must exist.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│  StudyBuddy OnDemand — Practices Scorecard (v1.3)                    │
+│  StudyBuddy OnDemand — Practices Scorecard (v1.8, 2026-09-01)        │
 ├─────────────────────────────┬──────────┬────────────────────────────┤
 │  Practice Area              │  Rating  │  Priority Fix               │
 ├─────────────────────────────┼──────────┼────────────────────────────┤
@@ -843,7 +915,8 @@ Before the first paying school, the live-key rollout procedure must exist.
 │  JWKS TTL enforced          │  ✅ Good  │  —                         │
 │  Redis-backed auth limiter  │  ✅ Good  │  —                         │
 │  Auth0 mgmt token cached    │  ✅ Good  │  —                         │
-│  RLS (0028) + 0046 extend   │  ✅ Good  │  —                         │
+│  RLS (0028) + 0046 extend   │  ✅ Good  │  —  (21 tables thru 0068)  │
+│  Server-side quiz grading   │  ✅ Good  │  —  (2026-07-12)           │
 │  Hot read path caching      │  ✅ Good  │  —                         │
 │  bcrypt in executor         │  ✅ Good  │  —                         │
 │  Audio via CDN              │  ✅ Good  │  —                         │
@@ -858,7 +931,9 @@ Before the first paying school, the live-key rollout procedure must exist.
 │  Token factory              │  ✅ Good  │  —                         │
 │  Per-module coverage        │  ✅ Good  │  —                         │
 │  RLS isolation tests        │  ✅ Good  │  —                         │
-│  Playwright 16 specs        │  ✅ Good  │  —                         │
+│  Playwright 19 specs        │  ✅ Good  │  —                         │
+│  Live-stack quiz_suite (#524)│ ✅ Good  │  —  (mock-discipline fix) │
+│  Contrast probe rewritten   │  ✅ Good  │  —  (was false-passing)   │
 │  Universal + per-subject    │  ✅ Good  │  —                         │
 │  Shared SBMarkdown          │  ✅ Good  │  —                         │
 │  Format-drift validator     │  ✅ Good  │  —                         │
@@ -877,7 +952,8 @@ Before the first paying school, the live-key rollout procedure must exist.
 │  Slowapi + Redis coexist    │  ⚠️  Bad  │  P1 — audit + consolidate  │
 │  Pool arith warn-not-assert │  ⚠️  Bad  │  P1 — Pydantic validator   │
 │  E2E narrow (accessibility) │  ⚠️  Bad  │  P1 — functional specs     │
-│  3 axe rules disabled       │  ⚠️  Bad  │  P1 — issue #189           │
+│  1 axe rule disabled (was 3)│  ⚠️  Bad  │  P1 — color-contrast, #189 │
+│  #188 5 fixme'd (was 6)     │  ⚠️  Bad  │  P1 — narrowing, not closed│
 │  L-6 sweeper deferred       │  ⚠️  Bad  │  P2 — Beat task            │
 │  No load/perf tests         │  ⚠️  Bad  │  P2 — k6/Locust suite      │
 │  No mobile/web boundary doc │  ⚠️  Bad  │  P2 — before Epic 3 Path B │
@@ -892,9 +968,11 @@ Before the first paying school, the live-key rollout procedure must exist.
 │  DEV_ACCOUNTS verify outstand│ ⚠️  Bad  │  P3 — confirm tag action   │
 │  Mobile UI not tested       │  ⚠️  Bad  │  P3 — pending Epic 3 choice│
 │  No cross-client auth tests │  ⚠️  Bad  │  P3 — as Epic 3 activates  │
-│  purge_account test-only gate│ ⚠️  Bad  │  P2 — env-assert, not cmt  │
-│  Onboarding/Admin E2E gap   │  ⚠️  Bad  │  P2 — web-unit only today  │
-│  ADR-005 still Proposed      │ ⚠️  Bad  │  P2 — soft-delete to ship  │
+│  purge_account comment gate │  ⚠️  Bad  │  P1 — 3rd window, escalated│
+│  Onboarding/Admin E2E gap   │  ⚠️  Bad  │  P2 — web-unit only, 2nd wk│
+│  ADR-005/007/008 Proposed   │  ⚠️  Bad  │  P2 — 3 ADRs behind code   │
+│  pricing.ts stale "future"  │  ⚠️  Bad  │  P3 — teacher tier is live │
+│  Epic 2 hosting never chosen│  ⚠️  Bad  │  P1 — biggest launch gap   │
 └─────────────────────────────┴──────────┴────────────────────────────┘
 
 P1 = Fix before first production users

@@ -2,14 +2,27 @@
 
 **Document type:** Development pattern analysis
 **Scope:** Full lifecycle — from advisor feedback to a multi-provider, package-seam pre-deploy MVP
-**Period:** 2026-04-25 → 2026-06-09 (~6.5 weeks, 228 commits)
-**Last refresh:** 2026-06-09 (v2.0 — major refresh; measured on disk at `40166ee`, branch `main`. **97 commits since v1.0**; headline: the LLM provider seam was *extracted into the installable `wegofwd-llm` package* (ADR-012), intended to be shared across the product family (Mentible + Pramana, ADR-011/013) — a single-repo pattern designed to become a product-family pattern, though on disk Mentible is still its only consumer.)
-**Prior refresh:** 2026-06-02 (v1.0 — first analysis, `e1c66f7`, branch `feat/authoring-regenerate-export-fixes`)
+**Period:** 2026-04-25 → 2026-08-30 (~18 weeks, 1,354 commits)
+**Last refresh:** 2026-09-01 (v2.1 — targeted update; measured on `origin/main@e13f10b`, v0.2.63. See **"Update — 2026-09-01"** below for what changed since v2.0.)
+**Prior refresh:** 2026-06-09 (v2.0 — major refresh; measured on disk at `40166ee`, branch `main`. **97 commits since v1.0**; headline: the LLM provider seam was *extracted into the installable `wegofwd-llm` package* (ADR-012), intended to be shared across the product family (Mentible + Pramana, ADR-011/013) — a single-repo pattern designed to become a product-family pattern, though on disk Mentible is still its only consumer.)
+**First analysis:** 2026-06-02 (v1.0, `e1c66f7`, branch `feat/authoring-regenerate-export-fixes`)
 **Repo / brand:** `wegofwd2020-hub/Mentible` · public brand **Mentible** (*"Author Yourself"*)
 **Related:** [mentible-critique.md](mentible-critique.md) · [mentible-practices.md](mentible-practices.md) · parent product: [studybuddy-development-pattern.md](studybuddy-development-pattern.md)
 **Author:** WeGoFwd2020 / Claude (Anthropic)
 
 > This is the development-method analysis: *how* the product was scoped, designed, and built — less about bugs (see the critique), more about the decision discipline. The defining trait remains that the project is **ADR-driven and spec-first to an unusual degree**. The v2.0 story is that the same discipline scaled from "re-scope one product with ADRs" to **"extract a shared seam across three products with ADRs"** — and that the one persistent weakness (promoting decisions back into the durable top-of-funnel spec) is still only half-fixed.
+
+---
+
+## Update — 2026-09-01: the doc-drift lesson flips, and a self-correcting ADR is worth naming as a pattern
+
+Measured on `origin/main@e13f10b` (1,354 commits, 42 ADRs, +1,126 commits since v2.0's `40166ee`). The headline architectural event of this window is **ADR-037**, an in-place repositioning to an expert-validation Studio built end-to-end on the existing stack (see [mentible-critique.md](mentible-critique.md) for the code-level verification). Two development-pattern lessons stand out:
+
+**The canonical-doc-drift lesson from v1.0/v2.0 didn't resolve — it *moved*, and got worse in the moving.** v2.0 tracked one item: `CLAUDE.md`'s stale "Pre-MVP" header. That item is now genuinely fixed — `CLAUDE.md` is current, self-aware, and explicitly designates `docs/STATUS.md` as *"the canonical, current 'what's built' record — read it first."* But `docs/STATUS.md` itself has since gone **717 commits stale** (last touched 2026-07-16) with zero mention of ADR-037. **The lesson to take from this is not "the doc got fixed" — it's that fixing one doc and pointing readers at a second one only relocates the freshness obligation; it doesn't discharge it.** A canonical-doc *designation* needs the same update discipline as the file it replaces, or it becomes a more confident way to mislead a reader, not a less confident one.
+
+**ADR-038 → PRs #375/#376 is a clean example of the "close the losers explicitly" pattern applied to a shipped decision, not just a proposed one.** Prior refreshes praised this project for closing losing *options* in an ADR before building (§3 of this document). ADR-038 (Navy Trust design language) took a stronger version further: it shipped a restriction (SME surfaces locked to one palette), the restriction read as a UX bug in the field, and it was **reversed within days**, in the open, via two named PRs (`fix(theme): SME surfaces + Posts follow the selected theme (reverse ADR-038 O1)`, `fix(theme): show all theme swatches`) rather than silently patched or left to accumulate as a workaround. The pattern worth naming: **a decision that turns out wrong after shipping should be reversed as visibly as it was made** — same discipline as writing the ADR in the first place, now applied post-hoc.
+
+**The job runner shows a third pattern this window: partial migration without a stated boundary.** `backend/src/core/celery_app.py` + `trust/tasks.py` moved the *new* trust/topic-generation work onto Celery+Redis, while the original `generate/export/library/structure` routers stayed on in-process `BackgroundTasks`. Migrating new work onto better infrastructure while leaving legacy code alone is a reasonable incremental strategy — but nothing in the repo says whether this is a deliberate "new work gets Celery, legacy stays as-is" line or an in-progress migration that stalled. The method gap isn't the mixed state itself; it's that the mixed state isn't *decided and written down* the way this project writes everything else down.
 
 ---
 
@@ -120,3 +133,5 @@ The execution gap is the same as v1.0, plus one: (a) the plan (`MVP_v1.md` "Cele
 ---
 
 *This analysis is drawn from the code on disk at `40166ee` (branch `main`), the 13 ADRs, `SCOPE.md`, `CLAUDE.md`, `docs/STATUS.md`, `MVP_v1.md`, the commit history `e1c66f7..HEAD` (97 commits, 2026-06-02 → 2026-06-09), and the sibling repos `wegofwd-llm` (latest tag `v0.1.1`, 773 LOC / 48 tests) and `pramana` (HEAD `e2958ef`, branch `feat/ai-drafted-approved-content`; a definitive cross-repo grep confirms Pramana does not yet import the seam). Where `CLAUDE.md`/`SCOPE.md`/`docs/STATUS.md` conflict with the ADRs or the code, the code and ADRs were treated as authoritative. Supersedes v1.0 (2026-06-02 @ `e1c66f7`).*
+
+*The **2026-09-01 update** reads `origin/main@e13f10b` directly (`git show origin/main:<path>`), not the local working tree. It is a targeted addition, not a full re-derivation of §1–7 below — those sections' historical claims (measured at `40166ee`) are left as originally written except where the new Update section above says otherwise.*

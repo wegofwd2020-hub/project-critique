@@ -1,6 +1,6 @@
 # StudyBuddy OnDemand — Code Review & Critique
 
-**Reviewed:** 2026-06-09 (v1.7 — refresh: numbers re-measured on `main` @ `d50bc3e`; school onboarding wizard #420; "Administration" top-bar menu #415/#417; ADR-005 school_admin superset role + single-key uniqueness; ADR-006 multi-provider LLM formalized; backup restore-path + PII hardening #410/#411/#413; classroom curriculum picker #418; banyan favicon/branding; `purge_account.py`) · 2026-06-02 (v1.6 — refresh: numbers re-measured on `main` @ `0d7abe1`; Curriculum Authoring Studio (Epic 12) shipped; book-export #400 + publish-gating #401/#402; ADR-004 sends the standalone author-your-own-book product to the Mentible repo) · 2026-05-24 (v1.5 — numbers re-measured; `teacher_capabilities` #358; corporate-L&D epics 17/18 surfaced) · May 2026 (v1.4 — visual-library wave 1+2, four bug close-outs, PAI removal)
+**Reviewed:** 2026-09-01 (v1.8 — refresh: numbers re-measured on `main` @ `b686be7`; **server-side quiz grading** closes a grade-integrity gap (client score no longer trusted); live-stack `quiz_suite` born from the #524 mocked-past-the-seam P0 escape — a real "mock discipline" lesson; ADR-007 (academic calendar) + ADR-008 (delivery calibration) added, both shipped ahead of the ADR flipping Accepted; independent-teacher Solo/Growth/Pro tier fully live with Stripe checkout/upgrade/downgrade/cancel; portal-wide warm-neutrals + a11y contrast pass (#189) resolves 2 of 3 disabled axe rules; Epic 18 corporate-compliance scenario catalog shipped as a gated in-app demo, Epic 17 fork still CONTESTED; Epic 2 production-hosting decision still the headline gap) · 2026-06-09 (v1.7 — refresh: numbers re-measured on `main` @ `d50bc3e`; school onboarding wizard #420; "Administration" top-bar menu #415/#417; ADR-005 school_admin superset role + single-key uniqueness; ADR-006 multi-provider LLM formalized; backup restore-path + PII hardening #410/#411/#413; classroom curriculum picker #418; banyan favicon/branding; `purge_account.py`) · 2026-06-02 (v1.6 — refresh: numbers re-measured on `main` @ `0d7abe1`; Curriculum Authoring Studio (Epic 12) shipped; book-export #400 + publish-gating #401/#402; ADR-004 sends the standalone author-your-own-book product to the Mentible repo) · 2026-05-24 (v1.5 — numbers re-measured; `teacher_capabilities` #358; corporate-L&D epics 17/18 surfaced) · May 2026 (v1.4 — visual-library wave 1+2, four bug close-outs, PAI removal)
 **Prior reviews:** v1.3 April 2026 (Epic 10 / Epic 11 / Streams) · v1.2 March 2026 · v1.1 Feb 2026
 **Repos:** `wegofwd2020-hub/StudyBuddy_OnDemand` · `wegofwd2020-hub/studybuddy-docs` · sibling: `wegofwd2020-hub/Mentible` (brand **Mentible**, see [mentible-critique.md](mentible-critique.md))
 **Phase:** Late-build / pre-production
@@ -10,6 +10,8 @@
 
 ## Executive Summary
 
+> **Note (2026-09-01, v1.8):** the summary below is still the v1.4 record (May 2026), preserved verbatim, and the architectural read still holds after a 357-commit window (`d50bc3e` → `b686be7`, 2026-06-09 → 2026-09-01). Re-measured at HEAD `b686be7`: **1,454 backend tests passed, 2 skipped, across 129 files** (was 1,085/77), **68 migrations (latest 0068, `feedback_question_grain`)** (was 60), **8 ADRs** (was 4 — ADR-007 academic calendar + ADR-008 delivery calibration added, both Proposed), **19 Playwright specs / 3,156 LOC** ("120 tests / 4 projects", was 17/2,779), **975 web unit tests passed**, **RLS enabled on 21 tenant tables** through 0068 (was 7 through 0028). The headline of this window is **grade integrity, not new architecture**: quiz scoring moved server-side (the client score is no longer trusted), and a P0 escape (#524 — a mocked test suite couldn't see a real grading bug reach production) drove a dedicated live-stack `quiz_suite` that runs against the real dev stack outside normal CI. See **What Changed Since v1.7 (2026-09-01 refresh)** immediately below.
+>
 > **Note (2026-06-09, v1.7):** the summary below is the v1.4 record (May 2026), preserved verbatim, and the architectural read still holds. Re-measured at HEAD `d50bc3e` (2026-06-09): **1,085 backend tests across 77 files**, **60 migrations (latest 0060, `curriculum_authoring_studio` — no schema change this window)**, **17 Playwright specs / 2,779 LOC**, **4 ADRs (ADR-005/006 added)**. The headline this cycle is **school-operations enablement** — a guided school_admin onboarding wizard (#420) + an "Administration" top-bar menu (#415/#417) that supersedes the old Curriculum menu — plus **two formalizing ADRs** (ADR-005 school roles/uniqueness; ADR-006 multi-provider LLM retro-documented) and **backup restore-path + PII hardening** (#410/#411/#413). No new migration shipped; the wizard rides on signals the portal already exposes. See **What Changed Since v1.6 (2026-06-09 refresh)** immediately below.
 >
 > **Note (2026-06-02, v1.6):** the summary below is the v1.4 record (May 2026), preserved verbatim, and the architectural read still holds. Numbers have moved again since the v1.5 note — current is **1,081 backend tests across 78 files**, **60 migrations (latest 0060, `curriculum_authoring_studio`)**, **17 Playwright specs / 2,779 LOC**. The headline addition this cycle is the **Curriculum Authoring Studio (Epic 12, super-admin)** — TOC paste → LLM structure + flow analysis → editable topic tree → staged platform curriculum → per-topic generate → review/regenerate → snapshots/restore → publish — plus **book-export (#400)** and **publish-gating (#401/#402)**. **ADR-004** decides that the *standalone* author-your-own-book + free-reader BYOK product belongs to the sibling Mentible repo (brand **Mentible**), not here; OnDemand keeps the Authoring Studio only as super-admin platform content-ops. See **What Changed Since v1.5 (2026-06-02 refresh)** immediately below for the full delta.
@@ -31,6 +33,42 @@ The platform continues to mature along the trajectory set by v1.2. All prior P0/
 The Playwright suite has grown from 3 student-path specs to 16 spec files totalling 2,620 LOC across persona-accessibility, auth, admin, and public flows (35/35 persona + 86/86 chromium-project specs passing). The backend test count has grown to 835 test functions across 59 files; per-module coverage thresholds (auth/subscription 90%, content 85%, default 80%) are still enforced by `scripts/check_coverage_thresholds.py`.
 
 The remaining risks are second-tier: `APP_ENV` is still not asserted against a valid enum at startup; the Redis-backed auth rate-limiter and the slowapi in-process limiter still coexist; pool arithmetic is logged but not a hard assertion; load/performance tests are still absent; and the E2E suite, while much broader, remains weighted toward accessibility coverage rather than functional teacher/admin flows. L-6 (retention sweeper) was paused deliberately; a handful of Epic 10 tickets (L-7..L-10) and Epic 11 tickets (C-5 regen in flight, C-7 PDF smoke, C-8 mobile parity) remain open.
+
+---
+
+## What Changed Since v1.7 (2026-09-01 refresh)
+
+No architectural overturn — the v1.3–v1.7 platform posture holds. The window since the v1.7 cut (**357 commits**; HEAD `b686be7` on branch `main`, 2026-09-01; anchor `d50bc3e`) is dominated by **grade integrity, delivery calibration, and monetization completion** — a materially bigger window than any prior refresh by commit count. Re-measured current numbers (commands run against `origin/main` @ `b686be7`):
+
+| Metric | v1.7 stated | Now (2026-09-01) |
+|---|---|---|
+| Backend tests | 1,085 across 77 files | **1,454 passed, 2 skipped, across 129 files** (raw `grep -c "def test_"` = 1,428; pytest is the authoritative count) |
+| Alembic migrations | 60 (latest 0060) | **68 (latest 0068, `feedback_question_grain`)** |
+| ADRs in `docs/` | 4 (ADR-001, 004, 005, 006) | **8 — ADR-007 (academic calendar, Proposed) + ADR-008 (delivery calibration, Proposed) added.** ADR-005 remains Proposed; no ADR-002/003 (closed without merge, per v1.6). |
+| Playwright specs | 17 files / 2,779 LOC | **19 files / 3,156 LOC** ("120 tests / 4 projects") |
+| Web unit tests | 65 files / 948 `it/test` blocks | **975 passed** |
+| RLS-enabled tenant tables | 7 (migration 0028) + RESTRICTIVE `curricula` (0046) | **21 tables** enabled through 0068 (0028's 7 + 0029/0038/0039/0043/0050/0051/0053/0054/0056/0059 additions) |
+| Epic status | 11 epics tracked, INDEX in lock-step | **18 epic specs (no Epic 14)**: done — 1, 3(scoped), 7, 10, 11, 12, 13, 15; in-progress — 6; pending ("Your call") — 2, 4, 5, 8, 9, 16; CONTESTED — 17; shipped-as-gated-demo — 18 |
+
+**Headline capability — server-side quiz grading (breaking change, #524-adjacent, 2026-07-12).** The quiz-scoring path stopped trusting a client-submitted score; the backend now resolves the quiz curriculum and computes the grade itself (`fix(progress): resolve the quiz curriculum server-side, not from the client`). This closes a real grade-integrity hole — a client that can compute its own score can also fabricate one. Rated a **strength** this cycle: it is the kind of trust-boundary fix that is easy to defer indefinitely because "it works in the demo."
+
+**Headline process fix — the live-stack `quiz_suite`, born from a P0 escape (#524).** A grading regression reached production because every layer of the existing test suite mocked past the exact seam that broke — the mocks proved the code *called* the right functions, not that the *real* stack produced the right quiz. The fix is `backend/quiz_suite/` (`test_smoke.py`, `test_journey.py`, `test_anticheat.py`, `test_content_integrity.py`, `test_failure_surface.py`) plus `web/tests/e2e/quiz-suite/`, run via `scripts/quiz_suite.sh` against the **real dev stack** (not test fixtures, not mocks) and deliberately excluded from normal CI (`pytest -m "not quiz_live"` / opt-in via `QUIZ_SUITE=1`). `test_smoke.py`'s own docstring states the discipline: *"Proves the suite can reach the live app before any other tier is trusted."* This is a durable "mock discipline" lesson — see `docs/superpowers/specs/2026-08-01-quiz-testing-suite-design.md` — worth carrying into `studybuddy-practices.md`.
+
+**ADR-007 (academic calendar) + ADR-008 (delivery calibration) — both Proposed, both partly shipped.** ADR-007 (`docs/ADR_007_academic_calendar.md`, 2026-08-25) formalizes an academic year, grade promotion, and stable per-question identity (migration 0067, `0067_stable_question_id`); ADR-008 (2026-08-31) covers syllabus-fidelity/local-tuning/year-over-year delivery calibration with question-grain feedback (migration 0068). Both ship migrations before their ADR is Accepted — the same "decision-ahead-of-code" pattern noted for ADR-005 in v1.7, now recurring at scale (2 ADRs, 2 migrations, in one window).
+
+**Independent-teacher subscription tier is now a complete, live product surface.** Solo/Growth/Pro ($29/$59/$99/mo, 25/75/200 students — `web/lib/pricing.ts:180-193`, `backend/src/pricing.py:320-371`) with a `/teacher/subscription` page and full Stripe checkout/upgrade/downgrade/cancel (#105). **Doc/code drift found:** `pricing.ts:180` still comments the section `// 4. Independent teacher plans (future — teacher tier rebuild, #57)` — the comment reads as speculative but the tier is live and billing real cards. Low-severity but worth a one-line comment fix so a future reader doesn't assume it's unshipped.
+
+**Accessibility: 2 of 3 disabled axe rules resolved (#189, `4c551d7`).** `html-has-lang` was fixed with a server-side `"en"` fallback in `app/layout.tsx`; `document-title` was fixed by giving every portal layout an explicit `export const metadata` (splitting the admin layout into a server shell + client auth component to allow it). The portal-wide warm-neutrals pass brought gray-400/blue-100-class combos from 2.59–4.31:1 (failing AA) to 4.79+:1. `color-contrast` remains excluded (`KNOWN_A11Y_EXCLUSIONS = ["color-contrast"]` in the three persona specs) — not every page cleared 4.5:1, so the rule stays off rather than being silently narrowed. Worth noting: an earlier oklch-as-RGB contrast probe had **false-passed** before this pass; the fix used a canvas-based probe instead — a real instance of a verification tool itself having a bug.
+
+**Epic 18 (corporate-compliance scenario catalog) shipped inside the main app; Epic 17 (fork) remains CONTESTED.** Two compliance scenarios shipped as a gated `/jt` demo route inside OnDemand rather than a separate corporate-L&D codebase — an advisor's "Path A: tenant_type flag, no fork" recommendation, avoiding the fork Epic 17 proposed. Includes avatar video via D-ID. This is a live instance of the CONTESTED-status discipline (v1.5) resolving into a scoped compromise rather than either extreme.
+
+**#188 (school-admin curriculum submission E2E) narrowed but not closed.** `school-admin-curriculum-flow.spec.ts` now has the real spec (was accessibility-only); **5 assertions remain `test.fixme`'d** (down from 6 in v1.6/v1.7), each with a comment naming the concrete unblock step (a `--trace=on` dependency chain: detail-view render → cost-estimate → trigger → allowance-exceeded). Progress, but still open.
+
+**Unchanged findings — both prior P2s STILL OPEN.** (a) The onboarding-wizard (#420) / Administration-menu (#415/#417) E2E gap is unchanged — still web-unit-tested only, no Playwright coverage. (b) `purge_account.py` (#416) is unchanged — still a **comment-only** safety gate (a docstring warning "DO NOT run against a database holding real customer / student records" plus a dry-run default), with **no environment or hostname assertion**. Both should be treated as still-open, not stale.
+
+**New headline gap — Epic 2 (production launch) is the feature-complete platform's biggest maturity-vs-deployability gap.** Per `docs/epics/EPIC_02_production_launch.md` (status "💭 Your call"), G-2 (CI/CD), G-3 (demo seed script), and G-5 (demo reset endpoint) are done, but **G-1 (cloud deployment: no K8s/Terraform, no managed Postgres/Redis, no domain/TLS/DNS) and G-4 (observability dashboards) are explicitly ⏸ Blocked on a hosting decision.** The platform has never run outside Docker-on-localhost. This is now called out as the **security/scalability headline gap** (see Priority Actions) rather than a background item, because every other launch-readiness item (backup, RLS, grading integrity, a11y) has matured while this one has not moved since v1.3.
+
+**Unchanged residual risks (no commits touched them).** `APP_ENV` enum assertion, slowapi/Redis limiter coexistence, pool-arithmetic warn-not-assert, absent load/perf tests, visual-library promotion CI gated on AWS secrets, DEV_ACCOUNTS.md redaction/relocation unverified.
 
 ---
 
@@ -173,6 +211,8 @@ No architectural change — the v1.4 posture holds in full. The window since the
 
 ### Gaps & Risks
 
+⚠️ **[HEADLINE, v1.8] The platform has never run outside Docker-on-localhost.** `EPIC_02_production_launch.md` status is "💭 Your call": CI/CD (G-2), demo seeding (G-3), and demo reset (G-5) are done, but cloud deployment (G-1 — no K8s/Terraform, no managed Postgres/Redis, no domain/TLS/DNS) and observability dashboards (G-4) are explicitly ⏸ Blocked on a hosting decision that has not moved since v1.3. This is now the single biggest gap between "feature-complete" and "deployable" — every other maturity axis (grading integrity, RLS coverage, backup/restore, a11y) has advanced meaningfully across 2026 while this has not.
+
 ⚠️ **The mobile/web capability boundary is still undocumented.** As Epic 3 (Path B) activates, decisions about which client owns which feature will accumulate ad hoc. A written boundary document is due before native-app work begins.
 
 ⚠️ **No API versioning or deprecation policy.** Still absent. With a mobile client that users may not update promptly, the first `/api/v2` change without a policy will cause incidents.
@@ -214,18 +254,19 @@ No architectural change — the v1.4 posture holds in full. The window since the
 - **`fakeredis` for Redis.** No live Redis required.
 - **Token factory pattern.** `tests/helpers/token_factory.py` provides deterministic JWTs; Auth0 mock not scattered.
 - **Per-module coverage thresholds enforced.** `scripts/check_coverage_thresholds.py` — longest-prefix-wins: `src/auth/` = 90%, `src/subscription/` = 90%, `src/school/subscription` = 90%, `src/content/` = 85%, default = 80%. Runs in CI after pytest.
-- **Backend test suite has grown.** 835 test functions across 59 files (up from 215 in v1.2). Test files span auth, content, subscription, progress, school, enrolment, notifications, pipeline, curriculum, feedback, reports, RLS, streams, and Epic 10/11 governance paths.
-- **RLS isolation verified.** `test_rls.py` uses deterministic school UUIDs; the `SET LOCAL ROLE` strategy covers cross-tenant visibility.
-- **Playwright persona coverage is broad.** 16 spec files totalling 2,620 LOC — student-accessibility (276 LOC), teacher-accessibility (319), admin-accessibility (232), school-admin-curriculum-flow (327), plus auth, landing, pricing, admin-portal, and student critical path. Status: 35/35 persona specs + 86/86 chromium-project specs passing.
+- **Backend test suite has grown.** **1,454 tests passed, 2 skipped, across 129 files** (up from 215 in v1.2, 835 in v1.3, 1,085 in v1.7). Test files span auth, content, subscription, progress, school, enrolment, notifications, pipeline, curriculum, feedback, reports, RLS, streams, and Epic 10/11/18 governance paths.
+- **RLS isolation verified.** `test_rls.py` uses deterministic school UUIDs; the `SET LOCAL ROLE` strategy covers cross-tenant visibility, now across **21 RLS-enabled tenant tables**.
+- **[NEW, v1.8] A live-stack test tier now exists specifically to catch what mocks can't.** `backend/quiz_suite/` + `web/tests/e2e/quiz-suite/` run against the real dev stack (not fixtures) via `scripts/quiz_suite.sh`, deliberately outside normal CI (`pytest -m "not quiz_live"`, opt-in via `QUIZ_SUITE=1`). Born from #524 — a grading regression that every existing mocked layer missed because the mocks proved the code *called* the right functions without proving the *real* stack produced the right quiz. This is a durable process fix, not just a bug patch: a persistent, opt-in live-stack tier that stays available for the next seam-crossing regression class.
+- **Playwright persona coverage is broad and growing.** **19 spec files totalling 3,156 LOC** ("120 tests / 4 projects") — student-accessibility, teacher-accessibility, admin-accessibility, school-admin-curriculum-flow, quiz-suite, plus auth, landing, pricing, admin-portal, and student critical path.
 - **E2E runbook.** `web/tests/e2e/README.md` documents the host-Chromium Playwright setup (not containerised — Chromium is glibc-linked).
 - **Mobile logic tests exist.** `test_event_queue`, `test_local_cache`, `test_sync_manager`, `test_i18n` cover offline-sync logic.
 - **SBOM generated per CI run.** Syft produces SPDX + CycloneDX artifacts retained 90 days.
 
 ### Gaps & Risks
 
-⚠️ **Playwright coverage, while broad, is weighted toward accessibility.** The persona specs predominantly assert axe-rule compliance and structural presence. Functional teacher flows (roster management, reports, alerts) and school admin flows (subscription, billing, content review) have specs only at the accessibility layer. `school-admin-curriculum-flow.spec.ts` has 6 `fixme`'d scenarios (issue #188) covering the actual submission journey.
+⚠️ **Playwright coverage, while broad, is still weighted toward accessibility.** Functional teacher flows (roster management, reports, alerts) and school admin flows (subscription, billing, content review) have specs only at the accessibility layer. `school-admin-curriculum-flow.spec.ts` (issue #188) now has the real submission-journey spec, but **5 assertions remain `test.fixme`'d** (narrowed from 6 in v1.6/v1.7), each with a comment naming the concrete `--trace=on` unblock step. **Still open, 2 windows running.** The school onboarding wizard (#420) and Administration menu (#415/#417) also remain E2E-untested — web-unit-tested only.
 
-⚠️ **Accessibility debt: 3 axe rules disabled** (`color-contrast`, `html-has-lang`, `document-title`), tracked in issue #189. These are not minor — they are the rules with the highest compliance weight for school-district procurement.
+⚠️ **Accessibility debt narrowed to 1 of 3 disabled axe rules** (issue #189). `html-has-lang` (server-side `"en"` fallback in `app/layout.tsx`) and `document-title` (explicit `export const metadata` per portal layout) are **resolved**. `color-contrast` remains disabled — the #189 warm-neutrals pass brought most gray-400/blue-100-class combos from 2.59–4.31:1 up to 4.79+:1, but not every page cleared WCAG AA 4.5:1, so the rule stays off rather than being narrowed dishonestly. Worth noting: an earlier oklch-as-RGB contrast probe had **false-passed** before this fix — the replacement canvas-based probe is itself a small case study in "the verification tool can be the bug."
 
 ⚠️ **No load or performance tests.** `SCALABILITY.md` projects specific request volumes, but there are no k6, Locust, or wrk scripts. DB pool sizing, Redis TTL assumptions, S3 throughput, and the `--stream` pipeline path's memory profile are theoretical.
 
@@ -246,7 +287,7 @@ No architectural change — the v1.4 posture holds in full. The window since the
 - **Epic INDEX is the operational source of truth.** `docs/epics/INDEX.md` tracks all 11 epics with status, updated in lock-step with implementation.
 - **Module-level docstrings on routers/services** list endpoints, security model, and key functions.
 - **`CHANGES.md` is maintained.** ADR-001 (school-as-primary), retention, streams entries each document the change at file-level fidelity.
-- **ADR discipline is healthy and growing.** `docs/` now carries **4 ADRs** — ADR-001 (tenancy/subscription), ADR-004 (authoring-studio home repo), **ADR-005 (school roles + single-key uniqueness, Proposed 2026-06-08)**, **ADR-006 (multi-provider LLM, Accepted 2026-06-09, retro-documenting shipped Epic 1)**. ADR-006 in particular shows the team back-filling a decision record for an already-live capability rather than leaving it undocumented. `docs/SCHOOL_USER_MANAGEMENT.md` (257 LOC) accompanies ADR-005.
+- **ADR discipline is healthy and growing.** `docs/` now carries **8 ADRs** — ADR-001 (tenancy/subscription), ADR-004 (authoring-studio home repo), ADR-005 (school roles + single-key uniqueness, Proposed 2026-06-08), ADR-006 (multi-provider LLM, Accepted 2026-06-09, retro-documenting shipped Epic 1), **ADR-007 (academic calendar, Proposed 2026-08-25)**, **ADR-008 (delivery calibration, Proposed 2026-08-31)**. ADR-006 shows the team back-filling a decision record for an already-live capability; ADR-007/008 show the opposite discipline — a decision record drafted for capability that is landing *as* the ADR is written (migrations 0067/0068 shipped ahead of either flipping to Accepted). `docs/SCHOOL_USER_MANAGEMENT.md` (257 LOC) accompanies ADR-005.
 - **`StudyBuddy_VC_Deck_Final.md` in docs repo.** Business context alongside technical docs.
 
 ### Gaps & Risks
@@ -276,7 +317,8 @@ No architectural change — the v1.4 posture holds in full. The window since the
 - **Rate limiting on auth endpoints (Redis-backed).** `ip_auth_rate_limit` dependency (10 req/60 s per IP). Correctly uses `Depends()` to avoid the slowapi/Pydantic v2 decorator incompatibility.
 - **COPPA compliance is now explicit.** `web/lib/compliance.ts` (242 LOC) codifies COPPA, FERPA, GDPR minor handling, data-minimisation, and explicitly excludes location and fingerprinting. Closes the v1.2 gap.
 - **Auth0 management token cached.** 23h Redis TTL (1h buffer before Auth0's 24h expiry). Auto-evict and retry on 401.
-- **RLS extended.** Migration 0028 (seven tables) is now joined by migration 0046 adding RESTRICTIVE RLS on `curricula` for platform-write protection.
+- **RLS extended.** Migration 0028 (seven tables) is now joined by migration 0046 adding RESTRICTIVE RLS on `curricula` for platform-write protection, plus continued additive coverage through 0068 — **21 tenant tables now RLS-enabled** total.
+- **[NEW, v1.8] Server-side quiz grading closes a real grade-integrity hole.** The quiz-scoring path no longer trusts a client-submitted score; the backend resolves the quiz curriculum and computes the grade itself (2026-07-12, breaking change). A client that can compute its own score can also forge one — this was a live risk, not a theoretical one, and it shipped as a deliberate trust-boundary fix rather than a quiet patch.
 
 ### Gaps & Risks
 
@@ -287,6 +329,8 @@ No architectural change — the v1.4 posture holds in full. The window since the
 ⚠️ **No Content Security Policy (CSP) or HSTS verified.** For a platform serving minors, CSP is a baseline requirement. Verify in nginx/ALB configuration.
 
 ⚠️ **Pool arithmetic is warn-not-assert.** `app_factory.py` logs `DATABASE_POOL_MAX × WORKER_COUNT` vs `PGBOUNCER_POOL_SIZE` but does not refuse to start when the arithmetic is wrong. Under misconfiguration, silent connection exhaustion can occur after cache warmup.
+
+⚠️ **[STILL OPEN, 3 windows running] `purge_account.py` (#416) is gated by a comment, not code.** The script's own docstring is explicit — "DO NOT run against a database holding real customer / student records — it destroys educational records irrecoverably" — and it defaults to a dry-run transaction that rolls back unless `--commit` is passed. That is real defense-in-depth, but there is still no `APP_ENV`/hostname assertion refusing to run against anything but a designated test database. First flagged v1.6, unchanged v1.7, unchanged v1.8.
 
 ---
 
@@ -330,7 +374,7 @@ No architectural change — the v1.4 posture holds in full. The window since the
 ✅ Structured logs with correlation IDs.
 ✅ RedBeat gives Beat resilience without manual intervention.
 ⚠️ No documented alerting rules or runbooks for: DB connection exhaustion, Redis OOM, Stripe webhook backlog, Beat lock expiry, pipeline failure, `--stream` mode memory pressure.
-⚠️ No documented Alembic `downgrade` testing. With 60 migrations, the rollback path for the most recent migration (0060, the Authoring Studio tables) should be verified before each production deploy.
+⚠️ No documented Alembic `downgrade` testing. With **68 migrations**, the rollback path for the most recent migration (0068, `feedback_question_grain`) should be verified before each production deploy.
 
 ### SaaS Subscription Model Specific
 
@@ -338,6 +382,8 @@ No architectural change — the v1.4 posture holds in full. The window since the
 ✅ Grace period (3 days) for `past_due` subscriptions.
 ✅ Entitlement cache invalidated on every subscription state change.
 ✅ `invoice.payment_action_required` handled — SCA/3DS email dispatched to school admin with hosted invoice URL.
+✅ **[NEW, v1.8] Independent-teacher tier is fully live.** Solo/Growth/Pro ($29/$59/$99, 25/75/200 students) with a `/teacher/subscription` page and full Stripe checkout/upgrade/downgrade/cancel (#105) — a second, parallel monetization path alongside school-as-primary billing (ADR-001).
+⚠️ **[NEW, v1.8] Doc/code drift:** `web/lib/pricing.ts:180` still comments the independent-teacher plans section `// future — teacher tier rebuild, #57`, but the tier is live and processing real Stripe charges. Low-severity, but a stale comment on a monetization surface should not survive a launch review.
 ⚠️ No documented process for Stripe test → live key rotation.
 ⚠️ School-as-primary billing (ADR-001) removed individual student and private-teacher subscription paths. Verify that all legacy subscription webhook events are either handled gracefully or that no live subscriptions remain on the old schema before launch.
 
@@ -353,14 +399,18 @@ No architectural change — the v1.4 posture holds in full. The window since the
 
 ## Priority Actions (Ordered)
 
+**Top-3 this cycle (v1.8):** (1) resolve the Epic 2 hosting decision — feature-complete but never run outside local Docker, now the single biggest maturity-vs-deployability gap; (2) harden `purge_account.py` with a real environment/hostname gate — comment-only across 3 review windows; (3) close #188's remaining 5 `fixme`'d assertions and add E2E coverage for the onboarding wizard / Administration menu — both still web-unit-tested only.
+
 | Priority | Action | Area |
 |---|---|---|
+| **P1** | **[NEW, v1.8] Make the Epic 2 hosting/deployment call** — pick and stand up a cloud target (K8s, or Fly.io/Railway per the epic's own suggestion), managed Postgres + Redis, domain/TLS/DNS; unblocks G-1 and the G-4 observability dashboards behind it | Architecture / Scalability |
+| **P1** | **[ESCALATED, 3rd window] Harden `purge_account.py` (#416) with a real environment/hostname gate**, not a docstring warning — assert `APP_ENV` and/or a target-host allowlist before allowing `--commit` | Security |
 | P1 | Add startup assertion: `APP_ENV ∈ {"development", "staging", "production"}` | Security |
 | P1 | Consolidate rate limiting: remove slowapi in-process limiter from auth routes; use Redis-backed `ip_auth_rate_limit` only | Security |
 | P1 | Turn `DATABASE_POOL_MAX × WORKER_COUNT ≥ PGBOUNCER_POOL_SIZE` warning into a hard startup assertion | Scalability |
 | P1 | Expand E2E suite beyond accessibility — functional teacher admin flows, subscription checkout, school admin flows, content review | Testing |
-| P1 | Resolve the 3 disabled axe rules (`color-contrast`, `html-has-lang`, `document-title`) — issue #189 | Accessibility |
-| P1 | Unfixme the 6 school-admin curriculum submission specs — issue #188 | Testing |
+| P1 | **[NARROWED, v1.8] Un-fixme the remaining 5 school-admin curriculum submission specs** (down from 6) — issue #188; each fixme names its own unblock step | Testing |
+| P1 | **[NARROWED, v1.8] Resolve the last disabled axe rule, `color-contrast`** — issue #189; `html-has-lang` and `document-title` are now fixed | Accessibility |
 | P2 | Add load tests (k6 or Locust) for content fetch, auth exchange, and the `--stream` pipeline | Testing |
 | P2 | Document the mobile/web capability boundary before Epic 3 Path B activates | Architecture |
 | P2 | Add cross-client auth continuity tests (mobile + web same student session) | Testing |
@@ -369,12 +419,13 @@ No architectural change — the v1.4 posture holds in full. The window since the
 | P2 | Implement L-6 TTL sweeper before archived-curriculum storage cost becomes material | Governance |
 | P2 | Run book-export (#400) against a real Studio-published curriculum end-to-end — it has unit tests but has never executed on live content | Content |
 | P2 | Add E2E coverage for the Authoring Studio flow (TOC structure → generate → publish-gate 409 → publish) — currently backend-test-only | Testing |
-| P2 | Add E2E coverage for the school onboarding wizard (#420) and the Administration menu (#415/#417) — currently web-unit-tested only | Testing |
+| P2 | **[STILL OPEN, 2nd window] Add E2E coverage for the school onboarding wizard (#420) and the Administration menu (#415/#417)** — currently web-unit-tested only | Testing |
 | P2 | Track ADR-005 from **Proposed → Accepted** — implement/verify the soft-delete account flow; confirm the email-only uniqueness decision is enforced (no live `UNIQUE(schools.name)` assumption remains) | Architecture |
-| P2 | Verify `purge_account.py` (#416) is hard-gated as test-only and cannot run against production data before launch | Security |
+| P2 | **[NEW, v1.8] Track ADR-007 (academic calendar) and ADR-008 (delivery calibration) from Proposed → Accepted** — both shipped migrations (0067/0068) ahead of the decision record; close the gap before a third such ADR accrues | Architecture |
+| P2 | **[NEW, v1.8] Fix the `pricing.ts:180` stale comment** — independent-teacher plans are live and billing, not "future — teacher tier rebuild, #57" | Documentation |
 | P3 | Add a `Makefile` | DevEx |
 | P3 | Add runbooks: DB exhaustion, Redis OOM, Stripe webhook backlog, Beat lock expiry, `--stream` memory | Operations |
-| P3 | Document Alembic `downgrade` testing procedure (60 migrations) | Operations |
+| P3 | Document Alembic `downgrade` testing procedure (**68 migrations**) | Operations |
 | P3 | Schedule Kivy platform assessment before Epic 3 Path B activation | Architecture |
 | P3 | Write API deprecation policy for `/api/v1` → `/v2` migration | Architecture |
 | P3 | Consolidate docstring style (prefer Google style) | Documentation |
