@@ -718,6 +718,12 @@
         <mxCell id="e2_r8" parent="1" edge="1" source="root2" target="g2_8" style="edgeStyle=entityRelationEdgeStyle;curved=1;startArrow=none;endArrow=none;rounded=0;strokeColor=#d79b00;strokeWidth=1.5;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="g2_sme" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="&lt;b&gt;SME Studio (ADR-037)&lt;/b&gt;&lt;br&gt;Capture→Validate→Share · Expert approval&lt;br&gt;Publish→Library (EPUB/PDF) · Studio theming&lt;br&gt;&lt;font color=&quot;#9a9a9a&quot;&gt;(hosted library ADR-033 designed)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="66" width="200" x="1965" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_rsme" parent="1" edge="1" source="root2" target="g2_sme" style="edgeStyle=entityRelationEdgeStyle;curved=1;startArrow=none;endArrow=none;rounded=0;strokeColor=#d79b00;strokeWidth=1.5;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="e2_gg2_8_0" parent="1" edge="1" source="g2_8" target="l2_8_0" style="edgeStyle=entityRelationEdgeStyle;curved=1;startArrow=none;endArrow=none;rounded=0;strokeColor=#d79b00;strokeWidth=1.5;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -730,7 +736,7 @@
         <mxCell id="e2_gg2_8_3" parent="1" edge="1" source="g2_8" target="l2_8_3" style="edgeStyle=entityRelationEdgeStyle;curved=1;startArrow=none;endArrow=none;rounded=0;strokeColor=#d79b00;strokeWidth=1.5;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="foot" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" value="Solid = live in code; dashed / grey = designed, built-but-off, or partial (marker in label: (planned)=spec/design only, (built, off)/(gated)=code-complete but disabled, (partial)=partly shipped). PRAMANA is SOX single-tenant v1 - much of Certification, bulk assign, SAML, GDPR erasure and 5-of-6 frameworks are spec, not runtime. All three apps share the wegofwd-llm seam; PRAMANA + kathai-chithiram also share wegofwd-video (ADR-026); Mentible adds shared wegofwd-secure / wegofwd-help - see shared_library.drawio. Mentible is repositioning to an SME expert-validation studio (ADR-037) with a per-user private hosted library (ADR-033) - designed, not yet built; see apps_features.drawio. AGASTYA (cyber, reference impl - mock data, 108 tests) and Atri Sangam (GPS/PNT, alpha v0.1.8) are the no-LLM line - deterministic, no shared content engine. Verified against each repo README/docs/ADRs/source, 2026-08-17." vertex="1">
+        <mxCell id="foot" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#666666;" value="Solid = live in code; dashed / grey = designed, built-but-off, or partial (marker in label: (planned)=spec/design only, (built, off)/(gated)=code-complete but disabled, (partial)=partly shipped). PRAMANA is SOX single-tenant v1 - much of Certification, bulk assign, SAML, GDPR erasure and 5-of-6 frameworks are spec, not runtime. All three apps share the wegofwd-llm seam; PRAMANA + kathai-chithiram also share wegofwd-video (ADR-026); Mentible adds shared wegofwd-secure / wegofwd-help - see shared_library.drawio. Mentible has repositioned to an SME expert-validation studio (ADR-037) - now BUILT (capture→validate→share, expert approval, publish→library, studio theming; verified vs Mentible origin/main e13f10b); its per-user private hosted library (ADR-033) is still designed; see apps_features.drawio. AGASTYA (cyber, reference impl - mock data, 108 tests) and Atri Sangam (GPS/PNT, alpha v0.1.8) are the no-LLM line - deterministic, no shared content engine. Verified against each repo README/docs/ADRs/source, 2026-09-01 (Mentible ADR-037 Studio re-verified vs origin/main)." vertex="1">
           <mxGeometry height="60" width="1900" x="40" y="1980" as="geometry" />
         </mxCell>
         <!-- Row 2: standalone no-LLM products (added 2026-08-17) -->
