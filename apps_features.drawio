@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 applications — feature overview (3 apps, 3 audiences) · 2026-08-17">
+        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 applications — feature overview (3 apps, 3 audiences) · 2026-09-01">
           <mxGeometry height="30" width="1000" x="30" y="20" as="geometry" />
         </mxCell>
         <mxCell id="h0" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#6c8ebf;strokeColor=#3c5a80;fontColor=#ffffff;fontSize=12;arcSize=8;" value="&lt;b&gt;PRAMANA&lt;/b&gt;&lt;br&gt;Audit-grade compliance training &amp; evidence&lt;br&gt;&lt;i&gt;Audience: compliance officers · regulated enterprises&lt;/i&gt;&lt;br&gt;Stage: backend + content pipeline live; assignment / cert runtime pending (SOX v1)">
@@ -55,7 +55,7 @@
         <mxCell id="c1_6" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;" value="&lt;b&gt;Visual &amp; Brand System&lt;/b&gt;&lt;br&gt;• Kolam-inspired logo&lt;br&gt;• Accessible palette (no red)&lt;br&gt;• Baloo bilingual type (Tamil + Latin)&lt;br&gt;• Child &amp; adult icon sets">
           <mxGeometry height="106" width="450" x="510" y="898" as="geometry" />
         </mxCell>
-        <mxCell id="h2" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d79b00;strokeColor=#a06800;fontColor=#ffffff;fontSize=12;arcSize=8;" value="&lt;b&gt;MENTIBLE&lt;/b&gt;&lt;br&gt;Scoped query → publishable EPUB3 / PDF book&lt;br&gt;&lt;i&gt;Audience: SME experts (primary, ADR-037) · adult self-learners (secondary) · BYOK&lt;/i&gt;&lt;br&gt;Stage: v0.2.x live in prod (authoring / export / accounts / help); draft-sharing built; SME-validation Studio (ADR-037) built — capture→validate→share, expert approval, publish-to-library, studio theming; private hosted library (ADR-033) still designed">
+        <mxCell id="h2" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d79b00;strokeColor=#a06800;fontColor=#ffffff;fontSize=12;arcSize=8;" value="&lt;b&gt;MENTIBLE&lt;/b&gt;&lt;br&gt;Scoped query → publishable EPUB3 / PDF book&lt;br&gt;&lt;i&gt;Audience: SME experts (primary, ADR-037) · adult self-learners (secondary) · BYOK&lt;/i&gt;&lt;br&gt;Stage: v0.2.x live in prod (authoring / export / accounts / help); draft-sharing built; SME-validation Studio (ADR-037) built">
           <mxGeometry height="96" width="450" x="990" y="70" as="geometry" />
         </mxCell>
         <mxCell id="c2_0" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;arcSize=8;" value="&lt;b&gt;Book Authoring &amp; Generation&lt;/b&gt;&lt;br&gt;• Book-scoped 6-dim topics (ADR-009)&lt;br&gt;• Free-text TOC → structure&lt;br&gt;• Lesson / explanation / quiz gen&lt;br&gt;• Regenerate-with-reason · topic-tree editor&lt;br&gt;• Collaborative draft sharing + comments">
