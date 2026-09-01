@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 portfolio - feature mind-maps (5 products) - 2026-08-17" vertex="1">
+        <mxCell id="title" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;" value="WeGoFwd2020 portfolio - feature mind-maps (5 products) - 2026-09-01" vertex="1">
           <mxGeometry height="30" width="1200" x="20" y="20" as="geometry" />
         </mxCell>
         <mxCell id="l0_0_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;arcSize=20;" value="Course versioning" vertex="1">
@@ -719,7 +719,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="g2_sme" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#ffcc80;strokeColor=#d79b00;fontSize=11;fontStyle=1;arcSize=20;" value="&lt;b&gt;SME Studio (ADR-037)&lt;/b&gt;&lt;br&gt;Capture→Validate→Share · Expert approval&lt;br&gt;Publish→Library (EPUB/PDF) · Studio theming&lt;br&gt;&lt;font color=&quot;#9a9a9a&quot;&gt;(hosted library ADR-033 designed)&lt;/font&gt;" vertex="1">
-          <mxGeometry height="66" width="200" x="1965" y="1160" as="geometry" />
+          <mxGeometry height="72" width="230" x="1740" y="1360" as="geometry" />
         </mxCell>
         <mxCell id="e2_rsme" parent="1" edge="1" source="root2" target="g2_sme" style="edgeStyle=entityRelationEdgeStyle;curved=1;startArrow=none;endArrow=none;rounded=0;strokeColor=#d79b00;strokeWidth=1.5;">
           <mxGeometry relative="1" as="geometry" />
