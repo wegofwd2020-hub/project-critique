@@ -1,5 +1,16 @@
 # Mentible — Scoping, Design, Architecture & Development Pattern
 
+<!-- doc-meta:start -->
+| Field | Value |
+|---|---|
+| Product repo | `wegofwd2020-hub/Mentible` |
+| Branch | `main` |
+| Git commit | `e13f10b` (as of 2026-08-30) |
+| Product version | 0.2.63 |
+| Doc updated | 2026-09-02 |
+| Last deployed | not deployed — pre-deploy MVP (never run against a deployed backend) |
+<!-- doc-meta:end -->
+
 **Document type:** Development pattern analysis
 **Scope:** Full lifecycle — from advisor feedback to a multi-provider, package-seam pre-deploy MVP
 **Period:** 2026-04-25 → 2026-08-30 (~18 weeks, 1,354 commits)

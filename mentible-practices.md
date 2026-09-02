@@ -1,5 +1,16 @@
 # Mentible — Good Practices, Bad Practices & How to Improve
 
+<!-- doc-meta:start -->
+| Field | Value |
+|---|---|
+| Product repo | `wegofwd2020-hub/Mentible` |
+| Branch | `main` |
+| Git commit | `e13f10b` (as of 2026-08-30) |
+| Product version | 0.2.63 |
+| Doc updated | 2026-09-02 |
+| Last deployed | not deployed — pre-deploy MVP (never run against a deployed backend) |
+<!-- doc-meta:end -->
+
 **Document type:** Engineering practices analysis
 **Scope:** Backend (FastAPI/Python), Mobile (React Native/Expo), Compiler (TypeScript/Node), Pipeline (vendored), **the shared `wegofwd-llm` seam package**, Infrastructure
 **Last refresh:** 2026-09-01 (v2.1 — targeted update; measured on `origin/main@e13f10b`, v0.2.63, 1,354 commits. See **"Update — 2026-09-01"** below.)

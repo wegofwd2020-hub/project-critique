@@ -1,5 +1,16 @@
 # StudyBuddy OnDemand — Scoping, Design, Architecture & Development Pattern
 
+<!-- doc-meta:start -->
+| Field | Value |
+|---|---|
+| Product repo | `wegofwd2020-hub/StudyBuddy_OnDemand` |
+| Branch | `main` |
+| Git commit | `b686be7` (as of 2026-09-01) |
+| Product version | —  (commit-based; no release version) |
+| Doc updated | 2026-09-02 |
+| Last deployed | not deployed — late-build; local Docker only (Epic 2 hosting pending) |
+<!-- doc-meta:end -->
+
 **Document type:** Development pattern analysis
 **Scope:** Full lifecycle — from idea to late-build production system
 **Period:** 2025–2026

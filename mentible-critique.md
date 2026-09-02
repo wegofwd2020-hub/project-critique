@@ -1,5 +1,16 @@
 # Mentible — Code Review & Critique
 
+<!-- doc-meta:start -->
+| Field | Value |
+|---|---|
+| Product repo | `wegofwd2020-hub/Mentible` |
+| Branch | `main` |
+| Git commit | `e13f10b` (as of 2026-08-30) |
+| Product version | 0.2.63 |
+| Doc updated | 2026-09-02 |
+| Last deployed | not deployed — pre-deploy MVP (never run against a deployed backend) |
+<!-- doc-meta:end -->
+
 **Reviewed:** 2026-09-01 (v2.1 — refresh; measured on disk at branch `main` @ `e13f10b`, app version `v0.2.63`. **1,354 commits total, +1,226 since v2.0's `40166ee`**. Headline: **ADR-037's expert-validation Studio is built end-to-end** (capture→structure→validate→share, per-topic approve/withdraw, publish→Library EPUB/PDF/DOCX, a 10-palette re-skin) — while the project's own designated-canonical status doc has gone **717 commits stale** and doesn't mention it. See **"Update — 2026-09-01"** below.
 **Addendum:** 2026-07-14 — **the AI-capability expansion (ADR-028 → ADR-032)**, measured at `main@28a62c8` (**677 commits**, +135 since 2026-07-06). Open Shelves is **built**; ADR-029/030/032 are **paper**; **ADR-032 amends ADR-001 (no server-side key custody)** and reverses ADR-028's device-local promise in its own words. See the §1 and §5 updates, the new P0s, and the companion diagram [`mentible_enhanced_features_mindmap.drawio`](mentible_enhanced_features_mindmap.drawio).
 **Prior review:** 2026-06-09 (v2.0 — major refresh, `40166ee`) · 2026-06-02 (v1.0 — first review, branch `feat/authoring-regenerate-export-fixes` @ `e1c66f7`)

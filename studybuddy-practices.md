@@ -1,5 +1,16 @@
 # StudyBuddy OnDemand — Good Practices, Bad Practices & How to Improve
 
+<!-- doc-meta:start -->
+| Field | Value |
+|---|---|
+| Product repo | `wegofwd2020-hub/StudyBuddy_OnDemand` |
+| Branch | `main` |
+| Git commit | `b686be7` (as of 2026-09-01) |
+| Product version | —  (commit-based; no release version) |
+| Doc updated | 2026-09-02 |
+| Last deployed | not deployed — late-build; local Docker only (Epic 2 hosting pending) |
+<!-- doc-meta:end -->
+
 **Document type:** Engineering practices analysis
 **Scope:** Backend (FastAPI/Python), Web (Next.js), Mobile (Kivy), Pipeline, Infrastructure
 **Period:** 2026-09-01 (v1.8 — alignment with critique v1.8: numbers re-measured on `main` @ `b686be7`; new practices surfaced — server-side-grading-over-client-trust, live-stack `quiz_suite` born from a mocked-past-the-seam P0 escape (#524), an a11y contrast probe that itself had a false-passing bug)

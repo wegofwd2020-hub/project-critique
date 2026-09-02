@@ -1,5 +1,16 @@
 # StudyBuddy OnDemand — Code Review & Critique
 
+<!-- doc-meta:start -->
+| Field | Value |
+|---|---|
+| Product repo | `wegofwd2020-hub/StudyBuddy_OnDemand` |
+| Branch | `main` |
+| Git commit | `b686be7` (as of 2026-09-01) |
+| Product version | —  (commit-based; no release version) |
+| Doc updated | 2026-09-02 |
+| Last deployed | not deployed — late-build; local Docker only (Epic 2 hosting pending) |
+<!-- doc-meta:end -->
+
 **Reviewed:** 2026-09-01 (v1.8 — refresh: numbers re-measured on `main` @ `b686be7`; **server-side quiz grading** closes a grade-integrity gap (client score no longer trusted); live-stack `quiz_suite` born from the #524 mocked-past-the-seam P0 escape — a real "mock discipline" lesson; ADR-007 (academic calendar) + ADR-008 (delivery calibration) added, both shipped ahead of the ADR flipping Accepted; independent-teacher Solo/Growth/Pro tier fully live with Stripe checkout/upgrade/downgrade/cancel; portal-wide warm-neutrals + a11y contrast pass (#189) resolves 2 of 3 disabled axe rules; Epic 18 corporate-compliance scenario catalog shipped as a gated in-app demo, Epic 17 fork still CONTESTED; Epic 2 production-hosting decision still the headline gap) · 2026-06-09 (v1.7 — refresh: numbers re-measured on `main` @ `d50bc3e`; school onboarding wizard #420; "Administration" top-bar menu #415/#417; ADR-005 school_admin superset role + single-key uniqueness; ADR-006 multi-provider LLM formalized; backup restore-path + PII hardening #410/#411/#413; classroom curriculum picker #418; banyan favicon/branding; `purge_account.py`) · 2026-06-02 (v1.6 — refresh: numbers re-measured on `main` @ `0d7abe1`; Curriculum Authoring Studio (Epic 12) shipped; book-export #400 + publish-gating #401/#402; ADR-004 sends the standalone author-your-own-book product to the Mentible repo) · 2026-05-24 (v1.5 — numbers re-measured; `teacher_capabilities` #358; corporate-L&D epics 17/18 surfaced) · May 2026 (v1.4 — visual-library wave 1+2, four bug close-outs, PAI removal)
 **Prior reviews:** v1.3 April 2026 (Epic 10 / Epic 11 / Streams) · v1.2 March 2026 · v1.1 Feb 2026
 **Repos:** `wegofwd2020-hub/StudyBuddy_OnDemand` · `wegofwd2020-hub/studybuddy-docs` · sibling: `wegofwd2020-hub/Mentible` (brand **Mentible**, see [mentible-critique.md](mentible-critique.md))
