@@ -1,6 +1,6 @@
 # Project Critique — WeGoFwd2020
 
-Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thittam, dronePrjs, MarketingTools, medtracker, atri-sangam, agastya, and the claude_memory tooling.
+Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thittam, dronePrjs, MarketingTools, medtracker, atri-sangam, agastya, wegofwd-expenses, local_watch, timesheet, and the claude_memory tooling.
 
 **Reviewed:** 2026-09-01 (v3.0 — **re-measured StudyBuddy OnDemand and Mentible against `origin/main` after ~3 months of drift**. **StudyBuddy** → **1,454 backend tests** (from 1,085), 68 migrations, **RLS on 21 tenant tables** (from 7), the **independent-teacher subscription tier is live** (Solo/Growth/Pro with a real Stripe-backed page), **server-side quiz grading** closed a client-trust hole, and a **live-stack "quiz suite"** was born from a P0 escape where every mocked layer had stubbed the one seam that shipped a dead "Submit" button — but it is **still late-build**: Epic 2's production-hosting blocker is open (never run outside local Docker) and both prior P2s (`purge_account.py` env-gate, onboarding-wizard E2E) are **unresolved**. **Mentible** → **ADR-037 SME expert-validation Studio built end-to-end** (capture→structure→validate→share, per-topic generate/approve/withdraw, publish→Library EPUB/PDF/DOCX, studio re-skin), production LOC **~13k→~61k**, **42 ADRs**, and the v2.5 **wegofwd-llm pin lag is closed** — but **doc-drift regressed** (`docs/STATUS.md` is 717 commits stale and never mentions ADR-037, though it's the doc CLAUDE.md names as canonical) and the **Celery migration is only half-done** (new trust path on Celery, legacy routers still in-process). New products (**agastya, wegofwd-expenses, local_watch, timesheet**) now exist but are **not yet in the suite** — first-reviews pending.)
 **Prior:** 2026-07-18 v2.9 (**atri-sangam admitted to the critique suite** — a fixed-site GPS/PNT integrity monitor; stdlib-only core, 66 tests/90 %, headline gaps = spoofable SNTP reference channel + no runner/daemon; first product under the new public/private doc split) · 2026-07-14 v2.8 (**medtracker admitted to the critique suite (full four-lens first review v1.0)**: the portfolio's first *deployed-and-in-daily-use* product, and its only one with **no LLM at runtime** — runs at $0/month, built in a single day, the control case for what the shared-engine thesis is actually worth; because it handles personal health data in production, its four documents are held in the private `medtracker` repo and not published here) · 2026-07-01 v2.7 (**wegofwd-video admitted to the critique suite (full four-lens first review v1.0)**: the shared video-generation seam is the **second** cross-cutting shared dependency in the set, load-bearing for pramana (AI Veo path) and Kathai Chithiram (deterministic-renderer path); first review flags a provenance-integrity gap — `veo` stamps `model_verified=True` with no live call ever made — and no in-repo CI/watch yet) · 2026-06-13 v2.6 (**wegofwd-llm admitted to the watch set**, critique v1.0 — the first cross-cutting shared dependency; load-bearing for StudyBuddy_OnDemand, Mentible, and Kathai Chithiram) · 2026-06-09 v2.5 (StudyBuddy OnDemand → v1.7 on `main` @ `d50bc3e`; Mentible → v2.0 on `main` @ `40166ee` with the `wegofwd-llm` extraction itself; new four-lens sets for MarketingTools and claude_memory) · 2026-06-02 v2.4 (StudyBuddy OnDemand → critique v1.6 Authoring Studio/Epic 12; new project Mentible v1.0) · May 2026 v2.3 (all three re-measured on disk: StudyBuddy v1.5, Thittam v1.3, dronePrjs v1.1) · v2.2 (adds dronePrjs first-review; StudyBuddy v1.4; Thittam v1.2) · v2.1 (StudyBuddy visual-library wave 1+2) · April 2026 v2 (proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
@@ -22,6 +22,9 @@ Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thitta
 | [wegofwd-llm-critique.md](wegofwd-llm-critique.md) | wegofwd-llm (shared library) | Code review — multi-provider LLM seam; key-leak discipline, provider verification, watch cadence |
 | [wegofwd-video-critique.md](wegofwd-video-critique.md) | wegofwd-video (shared library) | Code review — video-generation seam; provenance integrity, provider readiness, deterministic-render seam (dev-pattern · practices · cost linked below) |
 | [atri-sangam-critique.md](atri-sangam-critique.md) | atri-sangam | Code review — GPS/PNT integrity monitor; SNTP anti-spoof gap, library-not-monitor framing, detector soundness |
+| [wegofwd-expenses-critique.md](wegofwd-expenses-critique.md) | wegofwd-expenses | Code review — email→ledger expense pipeline; live daily cron, no CI, undocumented redaction scope |
+| [local-watch-critique.md](local-watch-critique.md) | local_watch | Code review — read-only fleet monitor; fail-open incident history now closed, README metric-domain oversell |
+| [timesheet-critique.md](timesheet-critique.md) | timesheet | Code review — testers time & payments Django app; Decimal money, earned-vs-amount rounding caveat |
 | [studybuddy-development-pattern.md](studybuddy-development-pattern.md) | StudyBuddy OnDemand | Full lifecycle analysis — scoping, design, architecture, development |
 | [mentible-development-pattern.md](mentible-development-pattern.md) | Mentible | Lifecycle analysis — subtractive scoping, ADR-driven re-scoping, security-first design |
 | [thittam-development-pattern.md](thittam-development-pattern.md) | Thittam | Full lifecycle analysis — scoping, design, architecture, development |
@@ -29,6 +32,9 @@ Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thitta
 | [MarketingTools-development-pattern.md](MarketingTools-development-pattern.md) | MarketingTools | Lifecycle analysis — one-source-of-truth asset model, deterministic deck builders |
 | [claude-memory-development-pattern.md](claude-memory-development-pattern.md) | claude_memory (tooling) | How the portable-memory system was designed and grew to 10 repos |
 | [atri-sangam-development-pattern.md](atri-sangam-development-pattern.md) | atri-sangam | Design methodology — scope by failure-mode independence, specs-as-contracts, injectable determinism, honest subtractive scoping |
+| [wegofwd-expenses-development-pattern.md](wegofwd-expenses-development-pattern.md) | wegofwd-expenses | Lifecycle analysis — subagent-driven TDD across 10 tasks, ADRs 0001–0003 |
+| [local-watch-development-pattern.md](local-watch-development-pattern.md) | local_watch | Lifecycle analysis — safety-floor-first design, real production incidents converted into regression tests over a 3-day/37-commit hardening arc |
+| [timesheet-development-pattern.md](timesheet-development-pattern.md) | timesheet | Lifecycle analysis — two chained SDD passes in a single 1h49m session |
 | [studybuddy-practices.md](studybuddy-practices.md) | StudyBuddy OnDemand | Good practices, bad practices, and how to improve |
 | [mentible-practices.md](mentible-practices.md) | Mentible | Good practices, bad practices, and how to improve |
 | [thittam-practices.md](thittam-practices.md) | Thittam | Good practices, bad practices, and how to improve |
@@ -36,6 +42,9 @@ Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thitta
 | [MarketingTools-practices.md](MarketingTools-practices.md) | MarketingTools | Good practices, bad practices, and how to improve |
 | [claude-memory-practices.md](claude-memory-practices.md) | claude_memory (tooling) | Good practices (durability, no-op-safe hook), risks (silent failure, secrets-in-memory) |
 | [atri-sangam-practices.md](atri-sangam-practices.md) | atri-sangam | Good practices (injectable determinism, no fabricated data), bad practices (spoofable SNTP, unvalidated lat/lon), how to improve |
+| [wegofwd-expenses-practices.md](wegofwd-expenses-practices.md) | wegofwd-expenses | Good practices (Decimal-as-TEXT money, refund-aware dedup), bad practices (no CI, undocumented redaction scope), how to improve |
+| [local-watch-practices.md](local-watch-practices.md) | local_watch | Good practices (None-vs-empty-string probe signal, LLM never in the control path), bad practices (README oversells the metric domain), how to improve |
+| [timesheet-practices.md](timesheet-practices.md) | timesheet | Good practices (derived-not-stored money, CSV formula-injection guard), bad practices (undocumented rounding caveat, no-auth risk unstated), how to improve |
 | [agastya-development-pattern.md](agastya-development-pattern.md) | agastya | Design methodology — rehabilitating an inherited AI code-drop via SDD; safe-defaults, verify-don't-trust *(critique + cost held privately — see note)* |
 | [agastya-practices.md](agastya-practices.md) | agastya | Good/bad practices, general engineering only — the product-specific security assessment is held privately *(see note)* |
 | [NEW_MACHINE_SETUP.md](NEW_MACHINE_SETUP.md) | claude_memory (tooling) | Runbook — restore the per-project memory system on a fresh machine (13 repos) |
@@ -243,6 +252,75 @@ Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thitta
 > **Watch case.** `wegofwd-video` is the **second** cross-cutting shared dependency in the set (after `wegofwd-llm`): a regression cascades into both pramana and Kathai Chithiram. Its watch is now **wired and live** too — `wegofwd-video/.github/workflows/watch.yml` (plus an in-repo `ci.yml`), the `PROJECT_CRITIQUE_PR_TOKEN` secret set, **verified green** (2026-07-01), baseline at HEAD `837dfb5`. **Both shared-library watches are now active** — each opens a single PR here only when a real commit lands in its repo.
 
 💰 **Real-world cost** — conventional **~$42k (US) / ~$14k (blended)**, ~8 calendar weeks for a one-senior-plus-reviewer team. Actual: **~$2.4k all-in, ~1–2 founder-days, one calendar day.** Headline: **~17× cheaper US / ~6× blended, ~40× faster** — the large time multiplier is the *derivative discount*: the hard design was amortized from `wegofwd-llm`, so this was domain-specialization + Veo long-running-job wiring, not a from-scratch seam. Caveat: some scope is interface-only (no live Veo run, two placeholder providers), so a *fully proven* library costs more than the banked figure.
+
+---
+
+### wegofwd-expenses
+
+**Overall:** New this cycle (v3.1, first review 2026-09-03). A deterministic **email→ledger expense pipeline** for a single WeGoFwd mailbox — five fixed stages (`mailfetch` → `billclassify` → `billextract` → `ledger` → `expensereport`) plus a self-contained HTML dashboard (`expenseweb`), with the LLM confined to classification/extraction behind schema gates and never in control flow (ADR-0001, "pipeline, not agent"). Measured against `wegofwd2020-hub/wegofwd-expenses` `master` @ `aaa7fb3` (2026-08-01). **130 tests** (verified by running pytest locally; up from 76 at the 2026-07-06 merge), 3 ADRs, no CI, no lint/type gate. The headline finding is a **correction to prior tracking, not a code defect**: the pipeline has been running as a **live daily cron against the real mailbox continuously since 2026-07-06** — not the "dry-run pending" state carried in prior notes — and this review found direct production evidence that its own anticipated Gmail-cursor-retention gotcha fired for real on 2026-07-12 and self-healed exactly as designed.
+
+| Area | Rating | Key Finding |
+|---|---|---|
+| Architecture | 🟢 Strong | Pipeline-not-agent boundary is structural (separate installable packages, artifact-only handoff); LLM confined to two stages, both schema/confidence-gated |
+| Code Quality | 🟡 Good | Decimal-as-TEXT money enforced everywhere (test-checked), typed exception hierarchies per package; but **no ruff/mypy config anywhere in the six packages** |
+| Test Coverage | 🟢 Strong | **130 tests passing** (verified locally); the suite honestly names its own two untested boundaries (Gmail wire, pdfminer) in module docstrings |
+| Documentation | 🟡 Good | Three ADRs record real trade-offs; but the **README still reads as pre-dry-run** — no mention of the live daily cron or two months of production history |
+| Security | 🟡 Good | Uniform env→file(`0600`)→prompt credential precedence; idempotent `message_id` dedup protects financial integrity; but `redact.py`'s SSN/card-only scope is undocumented as a deliberate trade-off |
+| Scalability / Ops | 🟡 Good | Lockfile + bounded-lookback cursor recovery **proven live** (self-healed a real 2026-07-12 incident); but no CI, no alerting on a halted cron, no log rotation |
+
+**Top 3 actions:** (1) Refresh the README and docstrings to reflect production reality — it is live, not dry-run-pending. (2) Add CI — even one workflow running `pytest` across all six packages would close the largest process gap found. (3) Document `redact.py`'s narrow redaction scope as a deliberate decision (a fourth ADR).
+
+💰 **Real-world cost** — Headline: **~59× cheaper all-in (US) / ~21× (blended)**. Full analysis held privately in `wegofwd-private-docs`.
+
+---
+
+### local_watch
+
+**Overall:** New this cycle (v3.1, first review 2026-09-03). A read-only **personal-fleet monitor** — per-machine collectors (Linux + macOS) → sync over Tailscale → a central aggregator on `mambakkam` → deterministic threshold/trend rules → an LLM agent that writes plain-language recommendations **never in the control path** → an HTML dashboard + Markdown report, surfaced via a `wegofwd-hub` tile. Measured against `wegofwd2020-hub/local_watch` `main` @ `13e387e` (2026-08-31). 848 production LOC / 1,170 test LOC, **130 tests**, CI (pytest only, Python 3.11 + 3.13). The headline is a real production incident history: between first merge (2026-08-29) and the three-machine live deploy (2026-08-31), the system **failed in production four distinct ways — three of them the exact "fails open, reads as healthy" class it exists to prevent** — and every one was diagnosed, fixed, and pinned under a regression test inside the same 3-day, 37-commit, 5-PR window.
+
+| Area | Rating | Key Finding |
+|---|---|---|
+| Architecture | 🟢 Strong | Strict one-way layering (collectors→store→rules→agent→report); LLM-out-of-control-path is structural — `agent.recommend()` only ever populates an opaque, uniformly-escaped text dict |
+| Code Quality | 🟡 Good | Atomic-write race fix (motivated by a real `RunAtLoad` race), careful disk-trend numerics (min points + min time span); but **`ruff` is a dev dependency never run in CI** |
+| Test Coverage | 🟢 Strong | **130 tests**; each of the four historical incidents has a named regression test, not incidental coverage |
+| Documentation | 🟡 Good | Deploy runbook is exceptional (exact verification commands, explicit "do not continue" gates); but the **README oversells the collected metric domain ~5×** and its status line is stale ("not yet running on the fleet") |
+| Safety | 🟢 Strong | All 4 production incidents (3-way fail-open, XSS via LLM output, deploy gap, self-sync bug) verified **FIXED with dedicated regression tests**; no defense-in-depth beyond the Tailscale transport itself |
+| Scalability / Ops | 🟡 Good | Staggered timer cadence explicitly coupled to the staleness threshold; but the aggregator is a single point of failure and no alerting exists on a stale/degraded state |
+
+**Top 3 actions:** (1) Reconcile the README with the shipped collectors — implement or strike the ~10 metric domains that don't exist (only `disk_root_pct`/`mem_used_pct` are collected). (2) Update the README's status line and "Getting started" section to reflect the live 2026-08-31 three-machine deploy. (3) Add `ruff check` to CI alongside `pytest`.
+
+💰 **Real-world cost** — Headline: **~39× cheaper all-in (US) / ~14× (blended)**. Full analysis held privately in `wegofwd-private-docs`.
+
+---
+
+### timesheet
+
+**Overall:** New this cycle (v3.1, first review 2026-09-03). A small Django app living inside `wegofwd-hub` (not a standalone product repo) — testers'/contractors' time-by-project tracking and bank-payment tracking, rolled up into a per-tester running balance (earned − paid) and per-project cost, with a monthly drill-down and a CSV export for the books. Local-only, `127.0.0.1`, no authentication by design. Measured against `wegofwd2020-hub/wegofwd-hub` `main` @ `dd7d888` (2026-09-01). 309 production LOC, **39 app tests** (56 hub-wide) — built in a single ~1h49m session across two chained SDD passes. The money model is right: `hours`/`rate_usd`/`amount_usd` are `Decimal` end-to-end, and `amount_usd`/`total_cost_usd` are derived `@property` methods computed on read, never stored columns. The one real subtlety: the app computes "earned" **two different ways that can disagree by a cent** — `TimeEntry.amount_usd` rounds per-entry, while `summary.py`'s dashboard figure sums first and rounds once — both individually valid, neither documented as different from the other, and no fixture currently exercises the case where they diverge.
+
+| Area | Rating | Key Finding |
+|---|---|---|
+| Architecture | 🟢 Strong | Decimal end-to-end, derived-not-stored money properties (no column to drift); `summary.py` is a pure zero-HTTP aggregation module |
+| Code Quality | 🟡 Good | CSV formula-injection guard correctly scoped (OWASP trigger set) with its own regression test; but hub-wide `DEBUG = True` and no lint/type gate anywhere |
+| Test Coverage | 🟢 Strong | **39 tests** (corrected from a stale "~52" planning estimate); real assertions incl. 3 rounds of 500-hardening regressions with inline "was 500: ..." comments |
+| Documentation | 🟡 Good | Design doc and shipped code match exactly (same session); but the earned/amount rounding caveat and the no-auth risk assumption are undocumented at the point of risk |
+| Security | 🟡 Good | CSRF on every mutating form, Django autoescape protects every free-text field; **no-auth-by-design** is fine for its actual `127.0.0.1` deployment but stated nowhere as an explicit risk boundary |
+| Correctness | 🟡 Good | The **earned-vs-amount cent-reconciliation caveat** — two valid but different rounding conventions (round-per-entry vs. round-after-sum) can diverge by up to a cent; untested, undocumented |
+
+**Top 3 actions:** (1) Document the earned-figure reconciliation caveat — one sentence stating the dashboard and the CSV/drill-down use different (both valid) rounding conventions. (2) Add a fixture that actually exercises the rounding disagreement, pinning current behavior with a test. (3) State the no-auth assumption where the risk lives (near `views.py`'s top or `ALLOWED_HOSTS`), not only in the roadmap's "out of scope" list.
+
+💰 **Real-world cost** — Headline: **~24× cheaper all-in (US) / ~7× (blended)**. Full analysis held privately in `wegofwd-private-docs`.
+
+---
+
+## What Changed in v3.1 (2026-09-03)
+
+This cycle admits **three new internal tools** to the critique suite — **wegofwd-expenses**, **local_watch**, and **timesheet** — completing the four products flagged as pending in v3.0, one day after **agastya** was admitted (2026-09-02). All three are reviewed under the **normal** public/private split (critique + development-pattern + practices public here, cost private in `wegofwd-private-docs`), unlike agastya's **tightened** split — none of these three has a live-intended attack surface that would turn a public weakness list into an attacker roadmap.
+
+- **New: wegofwd-expenses — full four-lens first review (v1.0).** A deterministic email→ledger pipeline, measured against `master` @ `aaa7fb3`. Headline: the pipeline is not dry-run-pending as prior tracking held — it has been a **live daily cron since 2026-07-06** (130 tests, up from 76 at merge), and a real Gmail-cursor-retention incident on 2026-07-12 self-healed exactly as designed. Gaps are process-level: no CI, no lint/type gate, and an undocumented redaction-scope trade-off. Headline cost: ~59× cheaper US / ~21× blended.
+- **New: local_watch — full four-lens first review (v1.0).** A read-only fleet monitor, measured against `main` @ `13e387e`, **live on 3 machines** since 2026-08-31. Headline: four real production incidents (three "fails open, reads as healthy") between first merge and live deploy, all fixed with dedicated regression tests inside a 3-day, 37-commit window — but the README oversells the collected metric domain ~5× and its status line is stale. Headline cost: ~39× cheaper US / ~14× blended.
+- **New: timesheet — full four-lens first review (v1.0).** A testers' time & payments Django app inside `wegofwd-hub`, measured against `main` @ `dd7d888`, live at `127.0.0.1:8088/timesheet/` since 2026-09-01. Money is Decimal end-to-end with derived-not-stored totals; the one real subtlety is an underdocumented cent-level reconciliation gap between two valid ways of computing "earned." Headline cost: ~24× cheaper US / ~7× blended.
+- **Doc-meta table standard shipped.** Every product document now carries a doc-meta table (git commit · branch · product version · doc-updated · last-deployed) right after its H1, per `DOC_STANDARDS.md` and stamped via `scripts/stamp_doc.py`; applied to all three new admissions' docs (and to agastya's the day before).
+- **Other projects unchanged this cycle.** StudyBuddy OnDemand, Mentible, Thittam, dronePrjs, MarketingTools, medtracker, atri-sangam, agastya, claude_memory, wegofwd-llm, and wegofwd-video carry forward at their prior measurements.
 
 ---
 

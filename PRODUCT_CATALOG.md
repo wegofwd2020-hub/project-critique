@@ -1,7 +1,7 @@
 # WeGoFwd2020 — Product Catalog
 
 **Owner:** WeGoFwd2020 (`github.com/wegofwd2020-hub`)
-**Generated:** 2026-06-11 · **Last updated:** 2026-09-02 (added `agastya`)
+**Generated:** 2026-06-11 · **Last updated:** 2026-09-03 (`wegofwd-expenses` re-measured; added `local_watch`, `timesheet`)
 **Scope:** All 19 code repositories in the GitHub organization, cloned and synced into this
 folder. (The 13 `*-memory` repos — portable Claude memory, one per project — are excluded;
 see `claude-memory-add-project.md`.)
@@ -23,10 +23,12 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | 6 | **dronePrjs** | `dronePrjs` | Robotics / drone simulation | Python · pytest | Early build (sim, Phase 3 partial) |
 | 7 | **MarketingTools** | `MarketingTools` | Internal go-to-market tooling | Python · Anthropic API · YAML | Active internal tool |
 | 8 | **mambakkam.net** | `mambakkam-net` | Company website / demo host | Astro 5 · Tailwind (AstroWind) | Live / actively published |
-| 9 | **wegofwd-expenses** | `wegofwd-expenses` | Internal finance/ops tooling | Python · Gmail API · SQLite · `wegofwd-llm` · pdfminer.six | P0 built (76/76 tests, merged); on GitHub org (private); awaiting real-mailbox dry run |
+| 9 | **wegofwd-expenses** | `wegofwd-expenses` | Internal finance/ops tooling | Python · Gmail API · SQLite · `wegofwd-llm` · pdfminer.six | Reviewed 2026-09-03 (first review v1.0) — **LIVE**, daily cron since 2026-07-06, **130/130 tests** (up from 76 at merge); on GitHub org (private) |
 | 10 | **medtracker** | `medtracker` | Personal/family health ops | Django 5 · django-allauth (Google) · `cryptography` (encrypted JSON vaults) · gunicorn · Tailscale | v0.2.0 — **deployed and in daily use** (tailnet-only, real family data); on GitHub org (private) since 2026-07-14 |
 | 11 | **Atri Sangam** | `atri-sangam` | GNSS/PNT integrity monitoring | Python 3.10+ (stdlib-only core) · Dash (optional) · SQLite | Alpha `v0.1.0` — detection library + red-team simulator; no runner/daemon yet; on GitHub org (private) since 2026-07-18 |
 | 12 | **agastya** | `agastya` | Cybersecurity (threat detection) | Python · FastAPI · Docker | Reviewed 2026-09-02 (first review v1.0) — FastAPI threat-monitoring service, deployment-hardened; live demo intended (in progress); on GitHub org (private). **Security assessment held privately** (see note) |
+| 13 | **local_watch** | `local_watch` | Personal infra / fleet monitoring | Python 3.11+ · Tailscale · `wegofwd-llm` | Reviewed 2026-09-03 (first review v1.0) — read-only fleet monitor, **live on 3 machines** since 2026-08-31, 130 tests; on GitHub org (**public**) |
+| 14 | **timesheet** | `wegofwd-hub` (app) | Internal ops tooling | Python · Django 5 · SQLite | Reviewed 2026-09-03 (first review v1.0) — testers' time & USD-payments tracker, **local-only, live** via the hub's systemd service since 2026-09-01, 39 app tests (56 hub-wide); on GitHub org (private) |
 
 ### Archived products (no longer maintained)
 
@@ -147,8 +149,8 @@ lockfile and env→`~/.config/wegofwd/`→prompt credential loading. Money is
 `Decimal`-as-TEXT (never float); low-confidence extractions divert to a review
 queue. Built subagent-driven over 10 TDD tasks; ADRs 0001–0003.
 - **Stack:** Python 3.11 · Gmail API (OAuth) · SQLite · `wegofwd-llm` (Anthropic: haiku classify / sonnet extract) · pdfminer.six
-- **Status:** **P0 built** — 76/76 tests green, merged to `master`; on the **GitHub org (private)**. Next step: real-mailbox dry run (live Gmail/LLM/PDF paths are the network boundary, unit-untested by design).
-- **Note:** Consumes the shared `wegofwd-llm` seam. Real Anthropic billing PDFs (home address in bill-to) live in a gitignored data dir; a hermetic golden test validates the ledger→report math against the documented totals.
+- **Status:** **LIVE** — running as a daily cron against the real mailbox continuously since 2026-07-06 (60+ run directories, a real Gmail `historyId` cursor progressing); **130 tests passing** (up from 76 at the 2026-07-06 merge), verified by running `pytest` locally. Reviewed 2026-09-03 (four-lens first review v1.0, measured @ `aaa7fb3`). On the **GitHub org (private)**. No CI, no lint/type gate.
+- **Note:** Consumes the shared `wegofwd-llm` seam. Real Anthropic billing PDFs (home address in bill-to) live in a gitignored data dir; a hermetic golden test validates the ledger→report math against the documented totals. This review's headline finding was a **correction to prior tracking, not a code defect**: the pipeline was carried in earlier notes as "dry-run pending" but has in fact been live in production for two months, including a real Gmail-cursor-retention incident (2026-07-12) that self-healed exactly as designed.
 
 ### 10. medtracker — `medtracker`
 Family **medication refill tracker**. A Django app that answers one question per
@@ -194,6 +196,45 @@ scored threats on a dashboard, with a red-team-style event feed for demonstratio
   security product: only **development-pattern + practices** are public in `project-critique` (general
   engineering method, no vulnerability map); the **critique (security assessment) and cost** are held
   privately in `wegofwd-private-docs/agastya/`.
+
+### 13. local_watch — `local_watch`
+Read-only **personal-fleet monitor** across `mambakkam` (aggregator), a second Linux machine
+(`vaganam`), and a MacBook, connected over Tailscale. Per-machine collectors emit two metrics
+(`disk_root_pct`, `mem_used_pct`) plus operational facts (pending updates, failed systemd
+units), the central aggregator on `mambakkam` runs deterministic threshold/trend rules, and
+an LLM agent (`wegofwd-llm`) writes plain-language optimization recommendations that are
+**never in the control path** — a provider failure degrades to a labelled deterministic
+fallback, never a retry or a mutation. Between its first merge (2026-08-29) and its
+three-machine live deploy (2026-08-31) it failed in production four distinct ways (three of
+them the "fails open, reads as healthy" class the design exists to prevent); every one is now
+fixed and pinned under a dedicated regression test.
+- **Stack:** Python 3.11+ · Tailscale · `wegofwd-llm[anthropic]` · systemd/launchd timer units
+- **Status:** **v1 built and deployed** — live on 3 machines since 2026-08-31; 130 tests, CI
+  (pytest, Python 3.11+3.13). Reviewed 2026-09-03 (four-lens first review v1.0, measured @
+  `13e387e`). On the **GitHub org (public)**.
+- **Note:** Reviewed under the **normal** public/private split — critique · development-pattern
+  · practices are public in `project-critique`; the cost analysis is held privately in
+  `wegofwd-private-docs/local_watch/`. Headline finding: the README describes ~12 metric
+  categories but only 2 are actually collected — a documentation-vs-code gap, not a safety one.
+
+### 14. timesheet — `wegofwd-hub` (app)
+Testers'/contractors' **time-by-project and USD-payment tracker** — a Django app living
+inside the `wegofwd-hub` repo (the portfolio's local dashboard launcher), not a standalone
+product repo. Tracks hours × per-entry rate and bank payments (with transfer fees), rolled
+up into a per-tester running balance (earned − paid) and per-project cost, with a monthly
+drill-down and a CSV export for the books. Money is `Decimal` end-to-end; `amount_usd` and
+`total_cost_usd` are derived `@property` methods computed on read, never stored columns.
+Built in a single ~1h49m session as two chained SDD passes (base app, then a same-day
+drill-down feature). Local-only, `127.0.0.1`, no authentication by design.
+- **Stack:** Python · Django 5 (hosted inside `wegofwd-hub`) · SQLite
+- **Status:** **Shipped, merged, live** at `127.0.0.1:8088/timesheet/` via the hub's systemd
+  user service since 2026-09-01; 39 app tests (56 hub-wide). Reviewed 2026-09-03 (four-lens
+  first review v1.0, measured @ `dd7d888`). On the **GitHub org (private)**, inside `wegofwd-hub`.
+- **Note:** Reviewed under the **normal** public/private split — critique · development-pattern
+  · practices are public in `project-critique`; the cost analysis is held privately in
+  `wegofwd-private-docs/timesheet/`. Headline finding: the app computes "earned" two valid but
+  different ways (round-per-entry vs. round-after-sum) that can disagree by up to a cent — an
+  underdocumented reconciliation caveat, not a bug.
 
 ---
 

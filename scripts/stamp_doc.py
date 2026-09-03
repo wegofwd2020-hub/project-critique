@@ -46,7 +46,12 @@ PRODUCT_REPOS = {
     "timesheet": "wegofwd-hub",  # timesheet is a Django app inside wegofwd-hub
 }
 
-# Where a product's real release version lives (origin/main path, JSON key or regex).
+# Repos whose default branch is not "main" (repo dir name -> branch).
+BRANCHES = {
+    "wegofwd-expenses": "master",
+}
+
+# Where a product's real release version lives (origin/<branch> path, JSON key or regex).
 # Git tags are unreliable here (StudyBuddy tags are demo markers; Mentible's
 # app version isn't a tag), so read the authoritative version FILE. Products with
 # no meaningful release version resolve to "—" (commit-based).
@@ -91,9 +96,9 @@ def _resolve_version(repo: pathlib.Path, ref: str) -> str:
 
 
 def _product_info(repo: pathlib.Path, commit_override: str | None = None) -> dict:
-    # measure the doc against origin/main (the published state), per house discipline
-    branch = "main"
-    ref = "origin/main"
+    # measure the doc against origin/<default-branch> (the published state)
+    branch = BRANCHES.get(repo.name, "main")
+    ref = f"origin/{branch}"
     _git(repo, "fetch", "-q", "origin")  # best-effort; offline is fine
     if commit_override:
         commit = _git(repo, "rev-parse", "--short", commit_override) or commit_override
