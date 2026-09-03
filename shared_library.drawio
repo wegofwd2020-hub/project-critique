@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontStyle=1;" value="WeGoFwd2020 shared libraries &amp; services — verified dependencies (2026-09-01). Arrow = &amp;quot;is used by&amp;quot;.">
+        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontStyle=1;" value="WeGoFwd2020 shared libraries &amp; services — verified dependencies (2026-09-03). Arrow = &amp;quot;is used by&amp;quot;.">
           <mxGeometry height="24" width="680" x="40" y="40" as="geometry" />
         </mxCell>
 
@@ -50,6 +50,12 @@
           <mxGeometry height="40" width="170" x="595" y="410" as="geometry" />
         </mxCell>
         <mxCell id="e-llm-localwatch" parent="1" edge="1" source="llm" target="localwatch" style="endArrow=classic;html=1;rounded=1;curved=1;strokeColor=#6c8ebf;fontColor=#6c8ebf;" value="pip v0.2.0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="expenses" parent="1" vertex="1" style="whiteSpace=wrap;html=1;rounded=1;arcSize=40;align=center;verticalAlign=middle;" value="wegofwd-expenses&#10;(billclassify + billextract)">
+          <mxGeometry height="40" width="190" x="595" y="558" as="geometry" />
+        </mxCell>
+        <mxCell id="e-llm-expenses" parent="1" edge="1" source="llm" target="expenses" style="endArrow=classic;html=1;rounded=1;curved=1;strokeColor=#6c8ebf;fontColor=#6c8ebf;" value="pip (unpinned)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
