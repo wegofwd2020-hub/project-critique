@@ -1,6 +1,6 @@
 # Project Critique — WeGoFwd2020
 
-Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thittam, dronePrjs, MarketingTools, medtracker, atri-sangam, and the claude_memory tooling.
+Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thittam, dronePrjs, MarketingTools, medtracker, atri-sangam, agastya, and the claude_memory tooling.
 
 **Reviewed:** 2026-09-01 (v3.0 — **re-measured StudyBuddy OnDemand and Mentible against `origin/main` after ~3 months of drift**. **StudyBuddy** → **1,454 backend tests** (from 1,085), 68 migrations, **RLS on 21 tenant tables** (from 7), the **independent-teacher subscription tier is live** (Solo/Growth/Pro with a real Stripe-backed page), **server-side quiz grading** closed a client-trust hole, and a **live-stack "quiz suite"** was born from a P0 escape where every mocked layer had stubbed the one seam that shipped a dead "Submit" button — but it is **still late-build**: Epic 2's production-hosting blocker is open (never run outside local Docker) and both prior P2s (`purge_account.py` env-gate, onboarding-wizard E2E) are **unresolved**. **Mentible** → **ADR-037 SME expert-validation Studio built end-to-end** (capture→structure→validate→share, per-topic generate/approve/withdraw, publish→Library EPUB/PDF/DOCX, studio re-skin), production LOC **~13k→~61k**, **42 ADRs**, and the v2.5 **wegofwd-llm pin lag is closed** — but **doc-drift regressed** (`docs/STATUS.md` is 717 commits stale and never mentions ADR-037, though it's the doc CLAUDE.md names as canonical) and the **Celery migration is only half-done** (new trust path on Celery, legacy routers still in-process). New products (**agastya, wegofwd-expenses, local_watch, timesheet**) now exist but are **not yet in the suite** — first-reviews pending.)
 **Prior:** 2026-07-18 v2.9 (**atri-sangam admitted to the critique suite** — a fixed-site GPS/PNT integrity monitor; stdlib-only core, 66 tests/90 %, headline gaps = spoofable SNTP reference channel + no runner/daemon; first product under the new public/private doc split) · 2026-07-14 v2.8 (**medtracker admitted to the critique suite (full four-lens first review v1.0)**: the portfolio's first *deployed-and-in-daily-use* product, and its only one with **no LLM at runtime** — runs at $0/month, built in a single day, the control case for what the shared-engine thesis is actually worth; because it handles personal health data in production, its four documents are held in the private `medtracker` repo and not published here) · 2026-07-01 v2.7 (**wegofwd-video admitted to the critique suite (full four-lens first review v1.0)**: the shared video-generation seam is the **second** cross-cutting shared dependency in the set, load-bearing for pramana (AI Veo path) and Kathai Chithiram (deterministic-renderer path); first review flags a provenance-integrity gap — `veo` stamps `model_verified=True` with no live call ever made — and no in-repo CI/watch yet) · 2026-06-13 v2.6 (**wegofwd-llm admitted to the watch set**, critique v1.0 — the first cross-cutting shared dependency; load-bearing for StudyBuddy_OnDemand, Mentible, and Kathai Chithiram) · 2026-06-09 v2.5 (StudyBuddy OnDemand → v1.7 on `main` @ `d50bc3e`; Mentible → v2.0 on `main` @ `40166ee` with the `wegofwd-llm` extraction itself; new four-lens sets for MarketingTools and claude_memory) · 2026-06-02 v2.4 (StudyBuddy OnDemand → critique v1.6 Authoring Studio/Epic 12; new project Mentible v1.0) · May 2026 v2.3 (all three re-measured on disk: StudyBuddy v1.5, Thittam v1.3, dronePrjs v1.1) · v2.2 (adds dronePrjs first-review; StudyBuddy v1.4; Thittam v1.2) · v2.1 (StudyBuddy visual-library wave 1+2) · April 2026 v2 (proto completion, Epic 10/11 delivery, T1 secret fix, schema injection fix, multi-tenant demo expansion)
@@ -36,6 +36,8 @@ Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thitta
 | [MarketingTools-practices.md](MarketingTools-practices.md) | MarketingTools | Good practices, bad practices, and how to improve |
 | [claude-memory-practices.md](claude-memory-practices.md) | claude_memory (tooling) | Good practices (durability, no-op-safe hook), risks (silent failure, secrets-in-memory) |
 | [atri-sangam-practices.md](atri-sangam-practices.md) | atri-sangam | Good practices (injectable determinism, no fabricated data), bad practices (spoofable SNTP, unvalidated lat/lon), how to improve |
+| [agastya-development-pattern.md](agastya-development-pattern.md) | agastya | Design methodology — rehabilitating an inherited AI code-drop via SDD; safe-defaults, verify-don't-trust *(critique + cost held privately — see note)* |
+| [agastya-practices.md](agastya-practices.md) | agastya | Good/bad practices, general engineering only — the product-specific security assessment is held privately *(see note)* |
 | [NEW_MACHINE_SETUP.md](NEW_MACHINE_SETUP.md) | claude_memory (tooling) | Runbook — restore the per-project memory system on a fresh machine (13 repos) |
 | [claude-memory-add-project.md](claude-memory-add-project.md) | claude_memory (tooling) | Runbook — wire a new project into git-backed memory + verify the auto-push |
 | [elevator-pitch.md](elevator-pitch.md) | Siva Mambakkam | Elevator pitch for employers and consulting clients |
@@ -50,6 +52,17 @@ Code review and architectural critique for StudyBuddy OnDemand, Mentible, Thitta
 > What is safe to say here: it is the **only product with no LLM at runtime**, it costs **$0/month to
 > run**, and it was built in **one day** — the portfolio's control case for what the shared-engine
 > thesis is actually worth.
+
+> **agastya — reviewed 2026-09-02, security assessment held privately.** agastya is a **live-intended
+> cyber-detection product**, so a public line-referenced weakness list would be an attacker roadmap.
+> Its **critique and cost** lenses therefore live privately in `wegofwd-private-docs/agastya/`; only the
+> **development-pattern** and **practices** lenses (general engineering method, no vulnerability map) are
+> published here. What is safe to say: it is a FastAPI threat-monitoring service whose **deployment
+> hardening is genuinely well-executed** (read-only-by-default container, safe-state-as-default design),
+> reviewed as an **inherited AI code-drop rehabilitated via SDD** (a prior "41+ tests passing" claim was
+> false — 111 real tests verified on `origin/main`, 7 delivered bugs already fixed by the rehab work).
+> The honest maturity read — how much of it is a *demonstrator* versus a shipping detector — is in the
+> private critique.
 
 ---
 

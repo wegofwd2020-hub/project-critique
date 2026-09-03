@@ -1,7 +1,7 @@
 # WeGoFwd2020 — Product Catalog
 
 **Owner:** WeGoFwd2020 (`github.com/wegofwd2020-hub`)
-**Generated:** 2026-06-11 · **Last updated:** 2026-07-18 (added `atri-sangam`)
+**Generated:** 2026-06-11 · **Last updated:** 2026-09-02 (added `agastya`)
 **Scope:** All 19 code repositories in the GitHub organization, cloned and synced into this
 folder. (The 13 `*-memory` repos — portable Claude memory, one per project — are excluded;
 see `claude-memory-add-project.md`.)
@@ -26,6 +26,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | 9 | **wegofwd-expenses** | `wegofwd-expenses` | Internal finance/ops tooling | Python · Gmail API · SQLite · `wegofwd-llm` · pdfminer.six | P0 built (76/76 tests, merged); on GitHub org (private); awaiting real-mailbox dry run |
 | 10 | **medtracker** | `medtracker` | Personal/family health ops | Django 5 · django-allauth (Google) · `cryptography` (encrypted JSON vaults) · gunicorn · Tailscale | v0.2.0 — **deployed and in daily use** (tailnet-only, real family data); on GitHub org (private) since 2026-07-14 |
 | 11 | **Atri Sangam** | `atri-sangam` | GNSS/PNT integrity monitoring | Python 3.10+ (stdlib-only core) · Dash (optional) · SQLite | Alpha `v0.1.0` — detection library + red-team simulator; no runner/daemon yet; on GitHub org (private) since 2026-07-18 |
+| 12 | **agastya** | `agastya` | Cybersecurity (threat detection) | Python · FastAPI · Docker | Reviewed 2026-09-02 (first review v1.0) — FastAPI threat-monitoring service, deployment-hardened; live demo intended (in progress); on GitHub org (private). **Security assessment held privately** (see note) |
 
 ### Archived products (no longer maintained)
 
@@ -179,6 +180,20 @@ test data, demo driver, and red-team tool.
 - **Stack:** Python 3.10+ (stdlib-only core) · Dash/Plotly (optional dashboard) · SQLite · pytest
 - **Status:** **Alpha `v0.1.0`, MIT.** Detection logic, collectors, persistence, simulator, and dashboard are built and tested (66 tests, 90 % coverage, 6 OpenSpec contracts, CI on Python 3.10 + 3.12). **No runner/daemon yet** — a well-tested detection *library* + red-team simulator, not yet a deployable monitor. Reviewed 2026-07-18 (four-lens first review v1.0, from a source snapshot). Pushed to the **GitHub org (private)** 2026-07-18.
 - **Note:** First product reviewed under the **public/private documentation split** — its critique · development-pattern · practices are public in `project-critique`; the **cost analysis is held privately** in `wegofwd-private-docs` (per-engineer rate assumptions are internal). Headline finding: the SNTP reference channel lacks anti-spoofing origin/replay validation — the channel meant to catch spoofing is itself spoofable.
+
+### 12. agastya — `agastya`
+A **FastAPI cyber threat-monitoring service** — ingests events, enriches them, and surfaces
+scored threats on a dashboard, with a red-team-style event feed for demonstration.
+- **Stack:** Python · FastAPI · Docker · pytest
+- **Status:** Reviewed 2026-09-02 (four-lens first review v1.0, measured @ `2abde5a`). **Deployment
+  hardening is the strong part** — read-only-by-default container, safe-state-as-default design.
+  Reviewed as an inherited AI code-drop rehabilitated via SDD (a prior "41+ tests passing" claim
+  proved false — 111 real tests verified on `origin/main`, 7 delivered bugs fixed by the rehab).
+  Live demo intended (`agastya.mambakkam.net`) — in progress, not yet live. On the **GitHub org (private)**.
+- **Note:** Reviewed under a **tightened** public/private split, because it is a live-intended
+  security product: only **development-pattern + practices** are public in `project-critique` (general
+  engineering method, no vulnerability map); the **critique (security assessment) and cost** are held
+  privately in `wegofwd-private-docs/agastya/`.
 
 ---
 
