@@ -19,7 +19,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | 2 | **Mentible** | `Mentible` | Education (B2C, self-learners) | React Native · Expo · FastAPI (BYOK) | Pre-MVP (spec + stubs) |
 | 3 | **Thittam** | `thittam` | Production-management SaaS | Go microservices · gRPC · NATS · Next.js | Late-build / pre-production |
 | 4 | **Pramana** | `pramana` | Compliance training & tracking | Python · FastAPI · SQLAlchemy · PostgreSQL | Spec + early data model |
-| 5 | **Kathai Chithiram** | `kathai-chithiram` | Assistive media (special needs) | Python · matplotlib/imageio · Blender | Prototype (PoC renderers) |
+| 5 | **Kathai Chithiram** | `kathai-chithiram` | Assistive media (special needs) | Python · matplotlib/imageio · Blender · local LLM seam · `wegofwd-video`/`-arivu` | Prototype `v0.1.0` — pipeline built & green (735 tests), **not deployed**; four-lens reviewed |
 | 6 | **dronePrjs** | `dronePrjs` | Robotics / drone simulation | Python · pytest | Early build (sim, Phase 3 partial) |
 | 7 | **MarketingTools** | `MarketingTools` | Internal go-to-market tooling | Python · Anthropic API · YAML | Active internal tool |
 | 8 | **mambakkam.net** | `mambakkam-net` | Company website / demo host | Astro 5 · Tailwind (AstroWind) | Live / actively published |
@@ -112,9 +112,12 @@ a SQLAlchemy data model + Alembic baseline, and in-process quiz generation.
 *Kathai Chithiram* (Tamil, "story → picture"). Turns a **parent's written story into a short,
 calm, captioned animation** designed to be understood by a child with special needs (autism
 spectrum / developmental needs) — a personalised, on-demand take on social stories. Pipeline:
-parent story → `wegofwd-llm` → structured scene script → renderer (`wegofwd-video`) → mp4.
-- **Stack:** Python · matplotlib + imageio (v1 renderer) · Blender Grease Pencil (v2) · `wegofwd-llm` · `wegofwd-video`
-- **Status:** Prototype — two reference renderers and a first hand-built story ("Silas Shines His Smile").
+parent story → pseudonymize → **local LLM seam** (Anthropic, ZDR-or-refuse, fail-closed) →
+structured scene script → deterministic validation + render (`wegofwd-video`) → render-time
+safety guards → **mandatory human review** → mp4. Child content stays in-process by design.
+- **Stack:** Python · matplotlib + imageio (v1 renderer) · Blender Grease Pencil (v2, **not CLI-wired**) · a **local vendored** `wegofwd_llm` seam (Anthropic) · `wegofwd-video` · `wegofwd-arivu` (optional grounding)
+- **Status:** Prototype `v0.1.0` @ `e19ca0d` — single-operator `kc` CLI; animation pipeline built & green (**735 tests**, mypy `--strict` clean), **not deployed**. The wider "context dictionary" vision (ADRs 006–013) is written but **unbuilt**; launch gated on a clinician, a DPO/legal review, and an ops boundary.
+- **Critique:** four-lens first review 2026-09-13 — `kathai-chithiram-critique.md` · `kathai-chithiram-development-pattern.md` · `kathai-chithiram-practices.md` (cost lens private in `wegofwd-private-docs`). Headline gaps: no CI (repo fails its own `ruff` blind-except rule), no SAST despite child data, content-appropriateness has no deterministic check (human gate is the backstop).
 
 ### 6. dronePrjs — `dronePrjs`
 Umbrella for two domain-specific drone applications sharing a common engine: **closedSpace**
