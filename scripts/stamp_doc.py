@@ -45,6 +45,7 @@ PRODUCT_REPOS = {
     "local_watch": "local_watch",
     "timesheet": "wegofwd-hub",  # timesheet is a Django app inside wegofwd-hub
     "kathai-chithiram": "kathai-chithiram",
+    "pramana": "pramana",
 }
 
 # Repos whose default branch is not "main" (repo dir name -> branch).
@@ -59,6 +60,7 @@ BRANCHES = {
 VERSION_SOURCES = {
     "Mentible": ("mobile/app.json", "json:version"),
     "kathai-chithiram": ("pyproject.toml", r'version\s*=\s*"([^"]+)"'),
+    "pramana": ("pyproject.toml", r'version\s*=\s*"([^"]+)"'),
 }
 
 START = "<!-- doc-meta:start -->"

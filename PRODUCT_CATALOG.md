@@ -18,7 +18,7 @@ docs. Status reflects what the repos themselves claim as of their latest synced 
 | 1 | **StudyBuddy OnDemand** | `StudyBuddy_OnDemand` | Education (B2B / schools) | Python · FastAPI · Kivy · PostgreSQL | Active — demo live; awaiting external input (school/teacher pilots) |
 | 2 | **Mentible** | `Mentible` | Education (B2C, self-learners) | React Native · Expo · FastAPI (BYOK) | Pre-MVP (spec + stubs) |
 | 3 | **Thittam** | `thittam` | Production-management SaaS | Go microservices · gRPC · NATS · Next.js | Late-build / pre-production |
-| 4 | **Pramana** | `pramana` | Compliance training & tracking | Python · FastAPI · SQLAlchemy · PostgreSQL | Spec + early data model |
+| 4 | **Pramana** | `pramana` | Compliance training & tracking | Python · FastAPI · SQLAlchemy · PostgreSQL · Alembic · Celery/Redis | Pre-release `v0.1.0` — feature-complete core loop (731 tests), **not deployed**; four-lens reviewed |
 | 5 | **Kathai Chithiram** | `kathai-chithiram` | Assistive media (special needs) | Python · matplotlib/imageio · Blender · local LLM seam · `wegofwd-video`/`-arivu` | Prototype `v0.1.0` — pipeline built & green (735 tests), **not deployed**; four-lens reviewed |
 | 6 | **dronePrjs** | `dronePrjs` | Robotics / drone simulation | Python · pytest | Early build (sim, Phase 3 partial) |
 | 7 | **MarketingTools** | `MarketingTools` | Internal go-to-market tooling | Python · Anthropic API · YAML | Active internal tool |
@@ -101,11 +101,16 @@ in PostgreSQL. Companion docs report four verticals at GA.
 
 ### 4. Pramana — `pramana`
 *Pramāṇa* (Sanskrit, "valid means of knowledge") — a compliance **training and tracking**
-platform. v1 is single-tenant for a corporate client, scoped to SOX, with later frameworks
-(HIPAA, ISO 27001, GDPR, PCI DSS) on the roadmap. Repo currently holds locked requirements,
-a SQLAlchemy data model + Alembic baseline, and in-process quiz generation.
-- **Stack:** Python 3.12 · FastAPI · SQLAlchemy 2.x + Alembic · PostgreSQL · Celery/Redis · `wegofwd-video`
-- **Status:** Specification + early data model (no full service yet).
+platform whose **primary product is auditable evidence**, not the course: a SHA-256
+hash-chained, append-only audit log (immutable by DB triggers), with quiz attempts and
+certificates pinned to the exact content version that produced them. v1 is single-tenant,
+scoped to SOX, for one named corporate client (multi-tenancy carried in the schema but
+deferred; FCPA + GDPR/HIPAA/ISO/PCI authored as story libraries, "future phase"). The
+four-stage content loop (request → ingest signed package → two-gate human approval →
+publish immutable version) feeds an assign → play → grade → prove runtime.
+- **Stack:** Python 3.12 · FastAPI · SQLAlchemy 2.x (async) + Alembic (13 migrations) · PostgreSQL · Celery/Redis · OIDC/RBAC · external git-pinned `wegofwd-llm` + `wegofwd-video`
+- **Status:** Pre-release `v0.1.0` @ `f23749f` — **feature-complete on the core loop, not deployed** (deploy pipeline built but gated off). 731 tests (CI vs real Postgres+Redis), mypy `--strict` + ruff + bandit CI. Launch gated on external sign-off (client, legal, the open SOX video pilot), not code.
+- **Critique:** four-lens first review 2026-09-13 — `pramana-critique.md` · `pramana-development-pattern.md` · `pramana-practices.md` (cost lens private in `wegofwd-private-docs`). Portfolio's best-engineered + most honest codebase; headline gaps: migrations never run in CI, no lockfile, bandit-only scanning, and a "video complete" status that ships no usable lesson yet (refused at the human fidelity gate — the control working).
 - **License:** Proprietary — © WeGoFwd.
 
 ### 5. Kathai Chithiram — `kathai-chithiram`
