@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-14T11:30:14+00:00",
+  "generated": "2026-09-15T11:30:48+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -48,7 +48,7 @@
       },
       "git": {
         "commits_30d": 6,
-        "last_commit_age_days": 13,
+        "last_commit_age_days": 14,
         "branch": "main"
       },
       "rigor": {
@@ -112,7 +112,7 @@
       },
       "git": {
         "commits_30d": 347,
-        "last_commit_age_days": 2,
+        "last_commit_age_days": 3,
         "branch": "main"
       },
       "rigor": {
@@ -247,8 +247,8 @@
         "implemented": 9
       },
       "git": {
-        "commits_30d": 160,
-        "last_commit_age_days": 2,
+        "commits_30d": 159,
+        "last_commit_age_days": 3,
         "branch": "fix/one-email-one-role"
       },
       "rigor": {
@@ -281,7 +281,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 35,
+        "last_commit_age_days": 36,
         "branch": "main"
       },
       "rigor": {
@@ -291,7 +291,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 35d"
+        "reason": "dormant \u2014 no commits in 36d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -314,7 +314,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 45,
+        "last_commit_age_days": 46,
         "branch": "main"
       },
       "rigor": {
@@ -324,7 +324,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 45d"
+        "reason": "dormant \u2014 no commits in 46d"
       },
       "staleness": {
         "reviewed_sha": "0effae1a327b241adb1dd671b2c27ea1b5726348",
@@ -347,7 +347,7 @@
       },
       "git": {
         "commits_30d": 16,
-        "last_commit_age_days": 2,
+        "last_commit_age_days": 3,
         "branch": "main"
       },
       "rigor": {
@@ -411,7 +411,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 70,
+        "last_commit_age_days": 71,
         "branch": "main"
       },
       "rigor": {
@@ -421,7 +421,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 70d"
+        "reason": "dormant \u2014 no commits in 71d"
       },
       "staleness": {
         "reviewed_sha": "de3d9fa243f1ad4e0f7763cee50693d12e9b270d",
@@ -474,7 +474,7 @@
         "implemented": 4
       },
       "git": {
-        "commits_30d": 78,
+        "commits_30d": 92,
         "last_commit_age_days": 1,
         "branch": "main"
       },
@@ -508,7 +508,7 @@
       },
       "git": {
         "commits_30d": 37,
-        "last_commit_age_days": 14,
+        "last_commit_age_days": 15,
         "branch": "main"
       },
       "rigor": {
@@ -517,8 +517,8 @@
         "has_license": false
       },
       "health": {
-        "status": "green",
-        "reason": "active, no feature list, tests+docs"
+        "status": "yellow",
+        "reason": "slowing \u2014 15d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -572,7 +572,7 @@
       },
       "git": {
         "commits_30d": 183,
-        "last_commit_age_days": 2,
+        "last_commit_age_days": 3,
         "branch": "main"
       },
       "rigor": {
@@ -702,7 +702,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 62,
+        "last_commit_age_days": 63,
         "branch": "main"
       },
       "rigor": {
@@ -712,7 +712,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 62d"
+        "reason": "dormant \u2014 no commits in 63d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -874,7 +874,7 @@
       },
       "git": {
         "commits_30d": 128,
-        "last_commit_age_days": 4,
+        "last_commit_age_days": 5,
         "branch": "main"
       },
       "rigor": {
@@ -907,7 +907,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 13,
+        "last_commit_age_days": 14,
         "branch": "main"
       },
       "rigor": {
@@ -2243,7 +2243,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 46,
+        "last_commit_age_days": 47,
         "branch": "security/expense-self-scope-po-pettycash-220"
       },
       "rigor": {
@@ -2253,7 +2253,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 46d"
+        "reason": "dormant \u2014 no commits in 47d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2276,7 +2276,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 84,
+        "last_commit_age_days": 85,
         "branch": "main"
       },
       "rigor": {
@@ -2286,7 +2286,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "deferred \u2014 intentionally parked, resumes later (84d quiet)"
+        "reason": "deferred \u2014 intentionally parked, resumes later (85d quiet)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2309,7 +2309,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 1,
+        "last_commit_age_days": 2,
         "branch": "master"
       },
       "rigor": {
@@ -2342,7 +2342,7 @@
       },
       "git": {
         "commits_30d": 20,
-        "last_commit_age_days": 13,
+        "last_commit_age_days": 14,
         "branch": "main"
       },
       "rigor": {
@@ -2374,9 +2374,9 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 0,
-        "last_commit_age_days": 76,
-        "branch": "main"
+        "commits_30d": 1,
+        "last_commit_age_days": 1,
+        "branch": "feat/qwen-intl-endpoint"
       },
       "rigor": {
         "has_tests": true,
@@ -2384,13 +2384,13 @@
         "has_license": false
       },
       "health": {
-        "status": "red",
-        "reason": "dormant \u2014 no commits in 76d"
+        "status": "green",
+        "reason": "active, no feature list, tests+docs"
       },
       "staleness": {
         "reviewed_sha": "3b08f4422ee003ee764303161b5c4ce9d236216a",
-        "commits_behind": 0,
-        "status": "fresh"
+        "commits_behind": 1,
+        "status": "stale"
       }
     },
     {
@@ -2408,7 +2408,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 51,
+        "last_commit_age_days": 52,
         "branch": "main"
       },
       "rigor": {
@@ -2418,7 +2418,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 51d"
+        "reason": "dormant \u2014 no commits in 52d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2441,7 +2441,7 @@
       },
       "git": {
         "commits_30d": 16,
-        "last_commit_age_days": 1,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -2474,7 +2474,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 90,
+        "last_commit_age_days": 91,
         "branch": "main"
       },
       "rigor": {
@@ -2484,7 +2484,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "stable \u2014 released library (90d, low-touch by design)"
+        "reason": "stable \u2014 released library (91d, low-touch by design)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2507,7 +2507,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 38,
+        "last_commit_age_days": 39,
         "branch": "feat/poc-core"
       },
       "rigor": {
@@ -2517,7 +2517,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 38d"
+        "reason": "dormant \u2014 no commits in 39d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2540,7 +2540,7 @@
       },
       "git": {
         "commits_30d": 13,
-        "last_commit_age_days": 4,
+        "last_commit_age_days": 5,
         "branch": "main"
       },
       "rigor": {
@@ -2563,12 +2563,12 @@
     "projects": 23,
     "health": {
       "green": 8,
-      "yellow": 7,
-      "red": 8
+      "yellow": 8,
+      "red": 7
     },
     "staleness": {
-      "fresh": 2,
-      "stale": 5,
+      "fresh": 1,
+      "stale": 6,
       "unknown": 16
     },
     "features": {
