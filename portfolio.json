@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-17T11:30:14+00:00",
+  "generated": "2026-09-18T11:30:29+00:00",
   "root": "/home/sivam/Documents/code/projects/AIStuff/STEM_studybuddy",
   "projects": [
     {
@@ -48,7 +48,7 @@
       },
       "git": {
         "commits_30d": 6,
-        "last_commit_age_days": 16,
+        "last_commit_age_days": 17,
         "branch": "main"
       },
       "rigor": {
@@ -58,7 +58,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 16d since last commit"
+        "reason": "slowing \u2014 17d since last commit"
       },
       "staleness": {
         "reviewed_sha": "76addee7704271e9bdfde9f10fe2119b9711b6b1",
@@ -111,8 +111,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 288,
-        "last_commit_age_days": 5,
+        "commits_30d": 260,
+        "last_commit_age_days": 6,
         "branch": "main"
       },
       "rigor": {
@@ -247,9 +247,9 @@
         "implemented": 9
       },
       "git": {
-        "commits_30d": 163,
-        "last_commit_age_days": 1,
-        "branch": "main"
+        "commits_30d": 173,
+        "last_commit_age_days": 0,
+        "branch": "feat/762-quiz-answer-review"
       },
       "rigor": {
         "has_tests": true,
@@ -262,7 +262,7 @@
       },
       "staleness": {
         "reviewed_sha": "d50bc3ef78c77f0cd8cd415e4c5782647de62bd0",
-        "commits_behind": 405,
+        "commits_behind": 418,
         "status": "stale"
       }
     },
@@ -281,7 +281,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 38,
+        "last_commit_age_days": 39,
         "branch": "main"
       },
       "rigor": {
@@ -291,7 +291,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 38d"
+        "reason": "dormant \u2014 no commits in 39d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -314,7 +314,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 48,
+        "last_commit_age_days": 49,
         "branch": "main"
       },
       "rigor": {
@@ -324,7 +324,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 48d"
+        "reason": "dormant \u2014 no commits in 49d"
       },
       "staleness": {
         "reviewed_sha": "0effae1a327b241adb1dd671b2c27ea1b5726348",
@@ -346,7 +346,7 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 17,
+        "commits_30d": 18,
         "last_commit_age_days": 1,
         "branch": "main"
       },
@@ -410,8 +410,8 @@
         "implemented": 3
       },
       "git": {
-        "commits_30d": 0,
-        "last_commit_age_days": 73,
+        "commits_30d": 1,
+        "last_commit_age_days": 1,
         "branch": "main"
       },
       "rigor": {
@@ -420,13 +420,13 @@
         "has_license": false
       },
       "health": {
-        "status": "red",
-        "reason": "dormant \u2014 no commits in 73d"
+        "status": "yellow",
+        "reason": "0% of features done"
       },
       "staleness": {
         "reviewed_sha": "de3d9fa243f1ad4e0f7763cee50693d12e9b270d",
-        "commits_behind": 0,
-        "status": "fresh"
+        "commits_behind": 1,
+        "status": "stale"
       }
     },
     {
@@ -475,7 +475,7 @@
       },
       "git": {
         "commits_30d": 95,
-        "last_commit_age_days": 1,
+        "last_commit_age_days": 2,
         "branch": "main"
       },
       "rigor": {
@@ -508,7 +508,7 @@
       },
       "git": {
         "commits_30d": 37,
-        "last_commit_age_days": 17,
+        "last_commit_age_days": 18,
         "branch": "main"
       },
       "rigor": {
@@ -518,7 +518,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 17d since last commit"
+        "reason": "slowing \u2014 18d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -571,8 +571,8 @@
         "implemented": 5
       },
       "git": {
-        "commits_30d": 169,
-        "last_commit_age_days": 5,
+        "commits_30d": 161,
+        "last_commit_age_days": 6,
         "branch": "main"
       },
       "rigor": {
@@ -702,7 +702,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 65,
+        "last_commit_age_days": 66,
         "branch": "main"
       },
       "rigor": {
@@ -712,7 +712,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 65d"
+        "reason": "dormant \u2014 no commits in 66d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -874,7 +874,7 @@
       },
       "git": {
         "commits_30d": 128,
-        "last_commit_age_days": 7,
+        "last_commit_age_days": 8,
         "branch": "main"
       },
       "rigor": {
@@ -885,6 +885,278 @@
       "health": {
         "status": "green",
         "reason": "active, 100% done, tests+docs"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
+      }
+    },
+    {
+      "project": "StudyBuddy OnDemand",
+      "stage": "late-build",
+      "source_kind": "progress",
+      "source_error": null,
+      "features": [
+        {
+          "id": "Epic 1",
+          "name": "Multi-Provider LLM Pipeline",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "Epic 2",
+          "name": "Production Launch & Demo Readiness",
+          "status": "pending",
+          "commits": 1
+        },
+        {
+          "id": "Epic 3",
+          "name": "Student Mobile App (Expo / React Native)",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "Epic 4",
+          "name": "Parent Portal",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 5",
+          "name": "District Admin",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 6",
+          "name": "Platform Hardening",
+          "status": "in-progress",
+          "commits": 1
+        },
+        {
+          "id": "Epic 7",
+          "name": "Self-Serve Demo System",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "Epic 8",
+          "name": "Onboarding Completeness (Address & Measurement Units)",
+          "status": "pending",
+          "commits": 3
+        },
+        {
+          "id": "Epic 9",
+          "name": "Accessibility & Personalization",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 10",
+          "name": "Curriculum Lifecycle & Governance",
+          "status": "done",
+          "commits": 14
+        },
+        {
+          "id": "Epic 11",
+          "name": "Content Presentation & Formatting",
+          "status": "done",
+          "commits": 11
+        },
+        {
+          "id": "Epic 12",
+          "name": "Teacher Content Authoring",
+          "status": "done",
+          "commits": 13
+        },
+        {
+          "id": "Epic 13",
+          "name": "Branding Refresh: STEM \u2192 Education Enhancement",
+          "status": "done",
+          "commits": 3
+        },
+        {
+          "id": "Epic 15",
+          "name": "School Curriculum Backup & Restore",
+          "status": "done",
+          "commits": 4
+        },
+        {
+          "id": "Epic 16",
+          "name": "Public Site Redesign: School-First Marketing Pages",
+          "status": "pending",
+          "commits": 5
+        },
+        {
+          "id": "Epic 17",
+          "name": "Corporate L&D Fork",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 18",
+          "name": "Corporate Compliance Scenario Catalog",
+          "status": "pending",
+          "commits": 0
+        }
+      ],
+      "counts": {
+        "total": 17,
+        "done": 8,
+        "in_progress": 1,
+        "pending": 8,
+        "implemented": 9
+      },
+      "git": {
+        "commits_30d": 164,
+        "last_commit_age_days": 1,
+        "branch": "fix/769-quiz-markdown"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "47% of features done"
+      },
+      "staleness": {
+        "reviewed_sha": null,
+        "commits_behind": null,
+        "status": "unknown"
+      }
+    },
+    {
+      "project": "StudyBuddy OnDemand",
+      "stage": "late-build",
+      "source_kind": "progress",
+      "source_error": null,
+      "features": [
+        {
+          "id": "Epic 1",
+          "name": "Multi-Provider LLM Pipeline",
+          "status": "done",
+          "commits": 1
+        },
+        {
+          "id": "Epic 2",
+          "name": "Production Launch & Demo Readiness",
+          "status": "pending",
+          "commits": 1
+        },
+        {
+          "id": "Epic 3",
+          "name": "Student Mobile App (Expo / React Native)",
+          "status": "done",
+          "commits": 2
+        },
+        {
+          "id": "Epic 4",
+          "name": "Parent Portal",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 5",
+          "name": "District Admin",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 6",
+          "name": "Platform Hardening",
+          "status": "in-progress",
+          "commits": 1
+        },
+        {
+          "id": "Epic 7",
+          "name": "Self-Serve Demo System",
+          "status": "done",
+          "commits": 0
+        },
+        {
+          "id": "Epic 8",
+          "name": "Onboarding Completeness (Address & Measurement Units)",
+          "status": "pending",
+          "commits": 3
+        },
+        {
+          "id": "Epic 9",
+          "name": "Accessibility & Personalization",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 10",
+          "name": "Curriculum Lifecycle & Governance",
+          "status": "done",
+          "commits": 14
+        },
+        {
+          "id": "Epic 11",
+          "name": "Content Presentation & Formatting",
+          "status": "done",
+          "commits": 11
+        },
+        {
+          "id": "Epic 12",
+          "name": "Teacher Content Authoring",
+          "status": "done",
+          "commits": 13
+        },
+        {
+          "id": "Epic 13",
+          "name": "Branding Refresh: STEM \u2192 Education Enhancement",
+          "status": "done",
+          "commits": 3
+        },
+        {
+          "id": "Epic 15",
+          "name": "School Curriculum Backup & Restore",
+          "status": "done",
+          "commits": 4
+        },
+        {
+          "id": "Epic 16",
+          "name": "Public Site Redesign: School-First Marketing Pages",
+          "status": "pending",
+          "commits": 5
+        },
+        {
+          "id": "Epic 17",
+          "name": "Corporate L&D Fork",
+          "status": "pending",
+          "commits": 0
+        },
+        {
+          "id": "Epic 18",
+          "name": "Corporate Compliance Scenario Catalog",
+          "status": "pending",
+          "commits": 0
+        }
+      ],
+      "counts": {
+        "total": 17,
+        "done": 8,
+        "in_progress": 1,
+        "pending": 8,
+        "implemented": 9
+      },
+      "git": {
+        "commits_30d": 164,
+        "last_commit_age_days": 1,
+        "branch": "fix/770-engagement-layout"
+      },
+      "rigor": {
+        "has_tests": true,
+        "has_docs": true,
+        "has_license": true
+      },
+      "health": {
+        "status": "yellow",
+        "reason": "47% of features done"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -907,7 +1179,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 16,
+        "last_commit_age_days": 17,
         "branch": "main"
       },
       "rigor": {
@@ -917,7 +1189,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 16d since last commit"
+        "reason": "slowing \u2014 17d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2243,7 +2515,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 49,
+        "last_commit_age_days": 50,
         "branch": "security/expense-self-scope-po-pettycash-220"
       },
       "rigor": {
@@ -2253,7 +2525,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 49d"
+        "reason": "dormant \u2014 no commits in 50d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2276,7 +2548,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 87,
+        "last_commit_age_days": 88,
         "branch": "main"
       },
       "rigor": {
@@ -2286,7 +2558,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "deferred \u2014 intentionally parked, resumes later (87d quiet)"
+        "reason": "deferred \u2014 intentionally parked, resumes later (88d quiet)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2309,7 +2581,7 @@
       },
       "git": {
         "commits_30d": 2,
-        "last_commit_age_days": 2,
+        "last_commit_age_days": 3,
         "branch": "master"
       },
       "rigor": {
@@ -2342,7 +2614,7 @@
       },
       "git": {
         "commits_30d": 20,
-        "last_commit_age_days": 16,
+        "last_commit_age_days": 17,
         "branch": "main"
       },
       "rigor": {
@@ -2352,7 +2624,7 @@
       },
       "health": {
         "status": "yellow",
-        "reason": "slowing \u2014 16d since last commit"
+        "reason": "slowing \u2014 17d since last commit"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2375,7 +2647,7 @@
       },
       "git": {
         "commits_30d": 1,
-        "last_commit_age_days": 3,
+        "last_commit_age_days": 4,
         "branch": "feat/qwen-intl-endpoint"
       },
       "rigor": {
@@ -2408,7 +2680,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 54,
+        "last_commit_age_days": 55,
         "branch": "main"
       },
       "rigor": {
@@ -2418,7 +2690,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 54d"
+        "reason": "dormant \u2014 no commits in 55d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2440,8 +2712,8 @@
         "implemented": 0
       },
       "git": {
-        "commits_30d": 18,
-        "last_commit_age_days": 1,
+        "commits_30d": 20,
+        "last_commit_age_days": 0,
         "branch": "main"
       },
       "rigor": {
@@ -2474,7 +2746,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 93,
+        "last_commit_age_days": 94,
         "branch": "main"
       },
       "rigor": {
@@ -2484,7 +2756,7 @@
       },
       "health": {
         "status": "green",
-        "reason": "stable \u2014 released library (93d, low-touch by design)"
+        "reason": "stable \u2014 released library (94d, low-touch by design)"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2507,7 +2779,7 @@
       },
       "git": {
         "commits_30d": 0,
-        "last_commit_age_days": 41,
+        "last_commit_age_days": 42,
         "branch": "feat/poc-core"
       },
       "rigor": {
@@ -2517,7 +2789,7 @@
       },
       "health": {
         "status": "red",
-        "reason": "dormant \u2014 no commits in 41d"
+        "reason": "dormant \u2014 no commits in 42d"
       },
       "staleness": {
         "reviewed_sha": null,
@@ -2540,7 +2812,7 @@
       },
       "git": {
         "commits_30d": 13,
-        "last_commit_age_days": 7,
+        "last_commit_age_days": 8,
         "branch": "main"
       },
       "rigor": {
@@ -2560,23 +2832,23 @@
     }
   ],
   "summary": {
-    "projects": 23,
+    "projects": 25,
     "health": {
       "green": 6,
-      "yellow": 10,
-      "red": 7
+      "yellow": 13,
+      "red": 6
     },
     "staleness": {
-      "fresh": 1,
-      "stale": 6,
-      "unknown": 16
+      "fresh": 0,
+      "stale": 7,
+      "unknown": 18
     },
     "features": {
-      "total": 298,
-      "done": 253,
-      "in_progress": 14,
-      "pending": 31,
-      "implemented": 267
+      "total": 332,
+      "done": 269,
+      "in_progress": 16,
+      "pending": 47,
+      "implemented": 285
     }
   }
 }
