@@ -5,13 +5,13 @@
 |---|---|
 | Product repo | `wegofwd2020-hub/StudyBuddy_OnDemand` |
 | Branch | `main` |
-| Git commit | `b686be7` (as of 2026-09-01) |
+| Git commit | `9f480a7e` (as of 2026-10-01) |
 | Product version | —  (commit-based; no release version) |
-| Doc updated | 2026-09-02 |
+| Doc updated | 2026-10-01 |
 | Last deployed | not deployed — late-build; local Docker only (Epic 2 hosting pending) |
 <!-- doc-meta:end -->
 
-**Reviewed:** 2026-09-01 (v1.8 — refresh: numbers re-measured on `main` @ `b686be7`; **server-side quiz grading** closes a grade-integrity gap (client score no longer trusted); live-stack `quiz_suite` born from the #524 mocked-past-the-seam P0 escape — a real "mock discipline" lesson; ADR-007 (academic calendar) + ADR-008 (delivery calibration) added, both shipped ahead of the ADR flipping Accepted; independent-teacher Solo/Growth/Pro tier fully live with Stripe checkout/upgrade/downgrade/cancel; portal-wide warm-neutrals + a11y contrast pass (#189) resolves 2 of 3 disabled axe rules; Epic 18 corporate-compliance scenario catalog shipped as a gated in-app demo, Epic 17 fork still CONTESTED; Epic 2 production-hosting decision still the headline gap) · 2026-06-09 (v1.7 — refresh: numbers re-measured on `main` @ `d50bc3e`; school onboarding wizard #420; "Administration" top-bar menu #415/#417; ADR-005 school_admin superset role + single-key uniqueness; ADR-006 multi-provider LLM formalized; backup restore-path + PII hardening #410/#411/#413; classroom curriculum picker #418; banyan favicon/branding; `purge_account.py`) · 2026-06-02 (v1.6 — refresh: numbers re-measured on `main` @ `0d7abe1`; Curriculum Authoring Studio (Epic 12) shipped; book-export #400 + publish-gating #401/#402; ADR-004 sends the standalone author-your-own-book product to the Mentible repo) · 2026-05-24 (v1.5 — numbers re-measured; `teacher_capabilities` #358; corporate-L&D epics 17/18 surfaced) · May 2026 (v1.4 — visual-library wave 1+2, four bug close-outs, PAI removal)
+**Reviewed:** 2026-10-01 (v1.9 — refresh: numbers re-measured on `main` @ `9f480a7e`; 241-commit window; **reports overhaul** — every teacher report gained Grade/Stream filters, a rebuilt engagement report (#770), new alert types (student stopped working #743, student stuck on unit #737), consistent "no activity" naming; **quiz integrity wave** — duplicate-option grading fix (#754), balanced answer positions (#779), question registry backfill (ADR-008 Phase 3a, #728), quiz answer review for school reviewers (#762); **Tutorial content type** (#756) joins Lesson + Quiz; **school localization foundation** (#827) — currency/timezone/number formatting per school; **`/health/deep`** comprehensive 6-service health check endpoint; anthropic SDK 0.28→0.125 unbreak (#726, Claude calls were silently broken); Next.js RCE patch 16.3.0→16.3.4 (#738); 77 platform curricula authored and loaded; still not deployed) · 2026-09-01 (v1.8 — refresh: numbers re-measured on `main` @ `b686be7`; **server-side quiz grading** closes a grade-integrity gap (client score no longer trusted); live-stack `quiz_suite` born from the #524 mocked-past-the-seam P0 escape — a real "mock discipline" lesson; ADR-007 (academic calendar) + ADR-008 (delivery calibration) added, both shipped ahead of the ADR flipping Accepted; independent-teacher Solo/Growth/Pro tier fully live with Stripe checkout/upgrade/downgrade/cancel; portal-wide warm-neutrals + a11y contrast pass (#189) resolves 2 of 3 disabled axe rules; Epic 18 corporate-compliance scenario catalog shipped as a gated in-app demo, Epic 17 fork still CONTESTED; Epic 2 production-hosting decision still the headline gap) · 2026-06-09 (v1.7 — refresh: numbers re-measured on `main` @ `d50bc3e`; school onboarding wizard #420; "Administration" top-bar menu #415/#417; ADR-005 school_admin superset role + single-key uniqueness; ADR-006 multi-provider LLM formalized; backup restore-path + PII hardening #410/#411/#413; classroom curriculum picker #418; banyan favicon/branding; `purge_account.py`) · 2026-06-02 (v1.6 — refresh: numbers re-measured on `main` @ `0d7abe1`; Curriculum Authoring Studio (Epic 12) shipped; book-export #400 + publish-gating #401/#402; ADR-004 sends the standalone author-your-own-book product to the Mentible repo) · 2026-05-24 (v1.5 — numbers re-measured; `teacher_capabilities` #358; corporate-L&D epics 17/18 surfaced) · May 2026 (v1.4 — visual-library wave 1+2, four bug close-outs, PAI removal)
 **Prior reviews:** v1.3 April 2026 (Epic 10 / Epic 11 / Streams) · v1.2 March 2026 · v1.1 Feb 2026
 **Repos:** `wegofwd2020-hub/StudyBuddy_OnDemand` · `wegofwd2020-hub/studybuddy-docs` · sibling: `wegofwd2020-hub/Mentible` (brand **Mentible**, see [mentible-critique.md](mentible-critique.md))
 **Phase:** Late-build / pre-production
@@ -44,6 +44,56 @@ The platform continues to mature along the trajectory set by v1.2. All prior P0/
 The Playwright suite has grown from 3 student-path specs to 16 spec files totalling 2,620 LOC across persona-accessibility, auth, admin, and public flows (35/35 persona + 86/86 chromium-project specs passing). The backend test count has grown to 835 test functions across 59 files; per-module coverage thresholds (auth/subscription 90%, content 85%, default 80%) are still enforced by `scripts/check_coverage_thresholds.py`.
 
 The remaining risks are second-tier: `APP_ENV` is still not asserted against a valid enum at startup; the Redis-backed auth rate-limiter and the slowapi in-process limiter still coexist; pool arithmetic is logged but not a hard assertion; load/performance tests are still absent; and the E2E suite, while much broader, remains weighted toward accessibility coverage rather than functional teacher/admin flows. L-6 (retention sweeper) was paused deliberately; a handful of Epic 10 tickets (L-7..L-10) and Epic 11 tickets (C-5 regen in flight, C-7 PDF smoke, C-8 mobile parity) remain open.
+
+---
+
+## What Changed Since v1.8 (2026-10-01 refresh)
+
+No architectural overturn — the v1.3–v1.8 platform posture holds. The window since the v1.8 cut (**241 commits**; HEAD `9f480a7e` on branch `main`, 2026-10-01; anchor `b686be7`) is the largest by commit count of any refresh and spans five distinct capability waves: reports overhaul, quiz integrity, Tutorial content type, school localization, and infrastructure hardening. Re-measured current numbers (commands run against `origin/main` @ `9f480a7e`):
+
+| Metric | v1.8 stated | Now (2026-10-01) |
+|---|---|---|
+| Backend test functions | 1,428 (`def test_`) / 1,454 pytest | **1,670 across 154 files** |
+| Alembic migrations | 68 (latest 0068, `feedback_question_grain`) | **74 (latest 0074, `version_mapping`)** |
+| ADRs in `docs/` | 8 (ADR-001, 004–008) | **6 active** (ADR-001, 004–008 — no new ones; ADR-002/003 remain closed without merge) |
+| Playwright specs | 19 files / 3,156 LOC | **19 files / 3,163 LOC** (stable) |
+| Web unit tests | 975 | **1,033** |
+
+**Wave 1 — Reports overhaul (~15 PRs, the headline of this window).** Every teacher/school report was reworked:
+
+- **Engagement report rebuilt (#770)** — replaced bespoke markup with shared `KpiCard`, added period selector (hardcoded "last 30 days" was the defect), and added `ScopeNote` so a teacher can tell whether figures cover their grades or the whole school. Tests: `engagement-report-770.test.tsx` (5 behavioral pins).
+- **Grade/Subject filters + grouped unit lists on overview report (#773/#786).** Grade and Subject dropdowns now live on the overview; units are listed grouped by grade/stream.
+- **Grade/Stream on Feedback report, grouped no-activity units (#771/#776).** Feedback counts now reconcile with the dashboard (#731); attempts-to-pass counts attempts needed, not attempts made.
+- **Grade/Stream in Unit Performance export (#772); stream filter on Unit Performance (#793/#794).** CSV export now scoped to the caller's school (#784) — a cross-school download vector was closed.
+- **Alert system landed (#737, #743, #755/#787).** New alert types: "student cannot get through a unit" (#737) and "student stopped working" (#743). Alert copy now distinguishes "never started" from "stopped" and states what the day count measures (#755/#787). Pass-rate alerts recalculate immediately after a quiz submission (#821).
+- **Consistent "no activity" naming (#775/#761).** The one-holdout card said "zero activity" while every other surface said "no activity" — unified.
+- **Earlier-curriculum activity grouped separately (#758/#763).** Units from a superseded curriculum no longer inflate current-curriculum figures.
+
+**Wave 2 — Quiz integrity.** Building on the server-side grading and `quiz_suite` from v1.8:
+
+- **Duplicate-option grading fix (#754/#778).** Options a student cannot distinguish (identical or whitespace-only differences) no longer grade wrong — a student who knows the right answer had no way to pick it. Covered by `test_duplicate_option_grading_754.py`.
+- **Question registry + backfill (ADR-008 Phase 3a, #728).** Questions now get stable registry IDs across regeneration runs. `test_question_registry_adr008.py` covers provenance, reimport, status constraints.
+- **Balanced correct-answer positions (#779).** Generated quizzes no longer cluster correct answers at option A.
+- **Quiz answer review for school reviewers (#762).** A school reviewer can now flag and override a question's correct option; audit trail records old + new correct text. Covered by `test_answer_review_*.py` (11 tests).
+- **Render question text as markdown (#769).** Quiz stems with LaTeX/formatting previously rendered as raw source.
+- **Client-side option dedup (#820).** Duplicate option texts collapsed on render before the grading fix was available.
+
+**Wave 3 — Tutorial content type (#756).** Third content type alongside Lesson and Quiz. The authoring pipeline, content store, and teacher portal all surface Tutorial as a peer of Lesson/Quiz. The publish-completeness gate (from #401/#402, v1.6) now enforces Tutorial coverage per unit per language.
+
+**Wave 4 — School localization foundation (#827).** `backend/src/school/localization_service.py` + `backend/src/school/schemas.py` add per-school currency code, currency symbol, thousands/decimal separators, and timezone. No migration yet — stored in an existing school preferences column. OpenAPI regenerated with localization types (#840). No ADR yet for this decision.
+
+**Wave 5 — Infrastructure and dependency hardening.**
+
+- **`/health/deep` endpoint** (`GET /health/deep` + `/api/v1/health/deep`). Comprehensive 6-service check: API, Web (Next.js), DB (PostgreSQL), Redis, PgBouncer, Auth0. Returns HTTP 200 / 503. `observability.py` +117 lines.
+- **Anthropic SDK 0.28.0 → 0.125.0 (#726).** Claude API calls were **silently broken** — the SDK was 97 minor versions behind current and the call contract had changed. This was caught in the wild, not by a CI gate. A dependency staleness risk worth noting: the gap went undetected until calls started failing.
+- **Next.js 16.3.0 → 16.3.4 (#738).** Unauthenticated remote-code-execution CVE. Patched immediately.
+- **README rewritten (#727)** against what the repo actually contains — the old README described a different product.
+- **CI doc-drift checks now fail instead of skip (#729).** Prior behaviour masked doc drift silently; now gated.
+- **77 platform curricula authored and loaded** (`content: add 77 authored curricula and default/lesson-gate curriculum sets`). First real content load at this scale — a meaningful shift from seed-only data.
+
+**Other items.** dd/mm/yyyy dates + 24h times everywhere (#759). Invite link survives sign-in + clear copy (#764). One colour per subject on Subjects + Curriculum map (#760). Sign-out top-right, subject on content pages (#767/#768). EH-001 teacher login subject column/filter (#817). EH-003 engagement report metric corrections. EH-004 grouped report schemas + utilities. Golden-rules script fixed to find `config` when run by path (#757). Demo-seed enrolments carry student grade (#765/#766). Fix `sync-content` cache invalidation (#748/#750). Pipeline: stop instructing the model to emit a JSON-invalid escape (#749); record per-unit build in DB (#752).
+
+**Unchanged residual risks (no commits touched them).** `APP_ENV` enum assertion, slowapi/Redis limiter coexistence, pool-arithmetic warn-not-assert, absent load/perf tests, a11y-weighted E2E. ADR-007 (academic calendar) and ADR-008 (delivery calibration) remain Proposed. No ADR for Tutorial content type or school localization. Still not deployed — local Docker only (Epic 2 hosting pending). The anthropic SDK staleness pattern is a new risk class: add dependency-freshness monitoring before launch.
 
 ---
 
