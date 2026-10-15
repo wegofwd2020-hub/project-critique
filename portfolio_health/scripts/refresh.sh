@@ -48,7 +48,7 @@ if ! git diff --quiet portfolio.json portfolio.html; then
   # the two generated artifacts, so a rebase almost never conflicts; on the
   # rare true conflict, abort and keep the commit local for the next run rather
   # than forcing over someone else's work.
-  if ! git -c rebase.autoStash=false pull --rebase --quiet "$URL" main; then
+  if ! git -c rebase.autoStash=false -c commit.gpgsign=false pull --rebase --quiet "$URL" main; then
     git rebase --abort 2>/dev/null || true
     echo "refresh: rebase conflict against origin/main — commit kept local, push skipped"
     exit 1
