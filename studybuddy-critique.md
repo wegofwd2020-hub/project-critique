@@ -5,9 +5,9 @@
 |---|---|
 | Product repo | `wegofwd2020-hub/StudyBuddy_OnDemand` |
 | Branch | `main` |
-| Git commit | `9f480a7e` (as of 2026-10-01) |
+| Git commit | `8b13b2ff` (as of 2026-11-16) |
 | Product version | —  (commit-based; no release version) |
-| Doc updated | 2026-10-01 |
+| Doc updated | 2026-11-16 |
 | Last deployed | not deployed — late-build; local Docker only (Epic 2 hosting pending) |
 <!-- doc-meta:end -->
 
